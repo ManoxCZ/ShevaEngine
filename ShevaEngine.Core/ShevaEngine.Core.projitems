@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+    <HasSharedItems>true</HasSharedItems>
+    <SharedGUID>e37132b5-b28a-4b94-aa66-4bb698bfd0df</SharedGUID>
+  </PropertyGroup>
+  <PropertyGroup Label="Configuration">
+    <Import_RootNamespace>ShevaEngine.Core</Import_RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <MonoGameContentReference Include="$(MSBuildThisFileDirectory)Content\Content.mgcb" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)Content\ContentManagerEx.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Filesystem\Filesystem.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Graphics\Camera.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Graphics\Materials\MaterialWithLights.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Graphics\Materials\TexturedNormalEmissiveMaterial.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Graphics\Materials\TexturedNormalMaterial.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Graphics\PostProcesses\PostProcess.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Graphics\RenderingPipeline.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Graphics\Shadows\Shadow.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Graphics\Shadows\SingleMapShadow.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Graphics\VertexTypes\VertexIndicesWeightsPositionNormal.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Graphics\VertexTypes\VertexMatrix.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Input\InputState.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Localization\LocalizationString.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Localization\LocalizationManager.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Logging\ILogReceiver.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Logging\Log.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Logging\LogManager.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Logging\LogMessage.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Logging\TextFileLogReceiver.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Meshes\ModelExtensions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Meshes\ModelMeshExtensions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Meshes\PlaneMesh.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Meshes\QuadMesh.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ShevaGameComponent.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Graphics\Lights\DirectionalLight.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Graphics\Lights\Light.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Graphics\Materials\Material.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Graphics\Materials\MaterialsManager.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Graphics\Materials\ColoredMaterial.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Graphics\Materials\TexturedMaterial.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Scene\Scene.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ShevaGame.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Settings\ShevaGameSettings.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Settings\GameSettings.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Settings\Resolution.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Settings\GraphicsQuality.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)SkeletalAnimations\Animations.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)SkeletalAnimations\AnimationsController.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)SkeletalAnimations\Clip.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)SkeletalAnimations\ContentReaders\AnimationsReader.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)SkeletalAnimations\ContentReaders\ClipReader.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)SkeletalAnimations\Extensions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)SkeletalAnimations\Keyframe.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Utils\Axis.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Utils\MathUtils.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)DebugUI\DebugUI.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)DebugUI\ImGuiRenderer.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)DebugUI\DrawVertDeclaration.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)DebugUI\IDebugUIPage.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)LoadingScreen\LoadingScreenComponent.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Fonts\Font.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Fonts\FontSize.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Serialization\Serializer.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Serialization\BehaviorSubjectConverter.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Serialization\BehaviorSubjectConverterFactory.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Utils\Version.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="$(MSBuildThisFileDirectory)Graphics\VertexTypes\" />
+  </ItemGroup>
+</Project>
