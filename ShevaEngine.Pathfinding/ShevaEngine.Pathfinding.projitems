@@ -9,12 +9,6 @@
     <Import_RootNamespace>ShevaEngine.Pathfinding</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
-    <Folder Include="$(MSBuildThisFileDirectory)Content\" />
-  </ItemGroup>
-  <ItemGroup>
-    <MonoGameContentReference Include="$(MSBuildThisFileDirectory)Content\Content.mgcb" />
-  </ItemGroup>
-  <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)Heuristics\DistanceHeuristic.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Heuristics\Heuristic.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)NavigationGraph.cs" />

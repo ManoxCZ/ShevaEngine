@@ -1,10 +1,11 @@
 ShevaEngine.AnimationImporters/bin/
 ShevaEngine.AnimationImporters/obj/
-ShevaEngine.Core/Content/Content.mgcb
-ShevaEngine.Core/Content/obj/
-ShevaEngine.UI/Content/obj/
-ShevaEngine.Oceans/Content/
 ShevaEngine.Pathfinding/Content/
-ShevaEngine.PostProcesses/Content/
 ShevaEngine.UI/Content/
 ShevaEngine.UserAccounts/Content/
+ShevaEngine.Core/Content/bin/
+ShevaEngine.Core/Content/obj/
+ShevaEngine.Oceans/Content/bin
+ShevaEngine.Oceans/Content/obj
+ShevaEngine.PostProcesses/Content/bin/
+ShevaEngine.PostProcesses/Content/obj/

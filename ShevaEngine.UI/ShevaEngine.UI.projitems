@@ -9,9 +9,6 @@
     <Import_RootNamespace>ShevaEngine.UI</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
-    <MonoGameContentReference Include="$(MSBuildThisFileDirectory)Content\Content.mgcb" />
-  </ItemGroup>
-  <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)Animations\Animation.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Animations\ChangeTextAnimation.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Animations\ChangeColorAnimation.cs" />
@@ -42,8 +39,5 @@
     <Compile Include="$(MSBuildThisFileDirectory)EventContext.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Layer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Margin.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="$(MSBuildThisFileDirectory)Content\" />
   </ItemGroup>
 </Project>
