@@ -25,7 +25,7 @@ namespace ShevaEngine.Core
 		/// <summary>
 		/// Update method.
 		/// </summary>
-		public override void Update(GameTime gameTime, Scene scene, Light light, Camera camera)
+		public override void Update(GameTime gameTime, IScene scene, Light light, Camera camera)
 		{
 			if (ShadowMap == null || ShadowMap.Width != Size.Width || ShadowMap.Height != Size.Height)
 			{

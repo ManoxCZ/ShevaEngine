@@ -22,6 +22,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Graphics\RenderingPipeline.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Graphics\Shadows\Shadow.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Graphics\Shadows\SingleMapShadow.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Graphics\Textures\TextureUtils.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Graphics\VertexTypes\VertexIndicesWeightsPositionNormal.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Graphics\VertexTypes\VertexMatrix.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Input\InputState.cs" />
@@ -43,7 +44,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Graphics\Materials\MaterialsManager.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Graphics\Materials\ColoredMaterial.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Graphics\Materials\TexturedMaterial.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Scene\Scene.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Scene\IScene.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ShevaGame.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Settings\ShevaGameSettings.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Settings\GameSettings.cs" />

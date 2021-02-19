@@ -1,19 +1,16 @@
 ﻿using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using ShevaEngine.UI;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Reactive.Subjects;
 
 namespace ShevaEngine.Core
 {
-	/// <summary>
-	/// Game component.
-	/// </summary>
-	public abstract class ShevaGameComponent : IDisposable
+    /// <summary>
+    /// Game component.
+    /// </summary>
+    public abstract class ShevaGameComponent : IDisposable
     {
 		protected readonly Log Log;
 		private SpriteBatch _spriteBatch;
@@ -47,7 +44,15 @@ namespace ShevaEngine.Core
 		/// </summary>
 		public virtual void Initialize(ShevaGame game)
 		{			
-			IsInitialized = true;			
+			IsInitialized = true;
+
+            Disposables.Add(game.Settings.Resolution.Subscribe(item =>
+            {
+                foreach (Layer layer in Layers)
+                {
+                    layer.OnWindowResize(item.Width, item.Height);
+                }
+            }));
 		}
 
 		/// <summary>
@@ -77,7 +82,10 @@ namespace ShevaEngine.Core
 			{
 				UpdateInputEvents(ref item);
 			});
-		}
+
+            foreach (Layer layer in Layers)
+                layer.OnWindowResize(game.Settings.Resolution.Value.Width, game.Settings.Resolution.Value.Height);            
+        }
 
 		/// <summary>
 		/// Deactivate method.

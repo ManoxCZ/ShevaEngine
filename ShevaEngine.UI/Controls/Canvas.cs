@@ -10,7 +10,7 @@ namespace ShevaEngine.UI
 	public class Canvas : Control
 	{		
 		public Camera Camera { get; set; }		
-		public Scene Scene { get; set; }		
+		public IScene Scene { get; set; }		
 		private RenderTarget2D _renderTarget;
 		private RenderTarget2D _depthTarget;
 		private object _lock = new object();

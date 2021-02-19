@@ -25,7 +25,7 @@ namespace ShevaEngine.Core
 		/// <summary>
 		/// Apply post process.
 		/// </summary>				
-		public virtual void Apply(Camera camera, GameTime time, Scene scene)
+		public virtual void Apply(Camera camera, GameTime time, IScene scene)
 		{
 
 		}

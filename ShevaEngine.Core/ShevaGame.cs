@@ -4,18 +4,16 @@ using Microsoft.Xna.Framework.Media;
 using ShevaEngine.UserAccounts;
 using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Threading.Tasks;
 
 namespace ShevaEngine.Core
 {
-	/// <summary>
-	/// Engine base class.
-	/// </summary>
-	public class ShevaGame : Microsoft.Xna.Framework.Game
+    /// <summary>
+    /// Engine base class.
+    /// </summary>
+    public class ShevaGame : Game
     {		
         public static ShevaGame Instance { get; set; }
 
@@ -159,7 +157,9 @@ namespace ShevaEngine.Core
         {
 			_log.Info("Loading content started");			
 
-            base.LoadContent();			
+            base.LoadContent();
+
+            TextureUtils.Prepare(GraphicsDevice);
 
 			_log.Info("Loading content finished");
 
@@ -181,7 +181,7 @@ namespace ShevaEngine.Core
 				{
 					_log.Info($"Component added to game");
 
-					PushGameComponent(gameComponent);
+					PushGameComponentAsync(gameComponent);
 				}
 				else
 				{
@@ -270,30 +270,55 @@ namespace ShevaEngine.Core
         /// </summary>        
         public void PushGameComponent(ShevaGameComponent component)
         {
-			lock (_gameComponents)
-			{
-				if (component == null)
-					return;
+            lock (_gameComponents)
+            {
+                if (component == null)
+                    return;
 
-				if (_gameComponents.Count > 0)
-					_gameComponents.Peek().Deactivate(this);
+                if (_gameComponents.Count > 0)
+                    _gameComponents.Peek().Deactivate(this);
+                
+                if (!component.IsInitialized)
+                    component.Initialize(this);
 
+                if (!component.IsContentLoaded)
+                    component.LoadContent(this);
 
-				Task.Run(() =>
-				{
-					if (!component.IsInitialized)
-						component.Initialize(this);
+                component.Activate(this);
 
-					if (!component.IsContentLoaded)
-						component.LoadContent(this);
-
-					component.Activate(this);
-
-					_gameComponents.Push(component);
-				});
-			}
+                _gameComponents.Push(component);
+            }
         }
-        
+
+        /// <summary>
+        /// Push game component.
+        /// </summary>        
+        public void PushGameComponentAsync(ShevaGameComponent component)
+        {
+            lock (_gameComponents)
+            {
+                if (component == null)
+                    return;
+
+                if (_gameComponents.Count > 0)
+                    _gameComponents.Peek().Deactivate(this);
+
+
+                Task.Run(() =>
+                {
+                    if (!component.IsInitialized)
+                        component.Initialize(this);
+
+                    if (!component.IsContentLoaded)
+                        component.LoadContent(this);
+
+                    component.Activate(this);
+
+                    _gameComponents.Push(component);
+                });
+            }
+        }
+
         /// <summary>
         /// Pop game component.
         /// </summary>        

@@ -126,7 +126,7 @@ namespace ShevaEngine.UI
 		/// </summary>        
 		public virtual void LoadContent(ContentManager contentManager)
         {
-			_whiteTexture = contentManager.Load<Texture2D>(@"Content\Graphics\White");
+            _whiteTexture = TextureUtils.WhiteTexture;
 
             Disposables.Add(Background.Subscribe(item =>
             {

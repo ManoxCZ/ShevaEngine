@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
+using ShevaEngine.Core;
 using System;
 using System.Linq;
 using System.Reactive.Subjects;
@@ -35,7 +36,7 @@ namespace ShevaEngine.UI
         {
             _effect = contentManager.Load<Effect>(_effectFilename);
 
-            Texture = contentManager.Load<Texture2D>(@"Content\Graphics\White");
+            Texture = TextureUtils.WhiteTexture;
         }
 
         /// <summary>

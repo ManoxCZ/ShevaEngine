@@ -16,6 +16,6 @@ namespace ShevaEngine.Core
 		/// <summary>
 		/// Update method.
 		/// </summary>
-		public abstract void Update(GameTime gametime, Scene scene, Light light, Camera camera);
+		public abstract void Update(GameTime gametime, IScene scene, Light light, Camera camera);
 	}
 }

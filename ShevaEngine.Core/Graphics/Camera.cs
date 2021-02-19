@@ -187,7 +187,7 @@ namespace ShevaEngine.Core
 		/// <summary>
 		/// Draw.
 		/// </summary>
-		public void Draw(MaterialProfile profile, Scene scene, GameTime gameTime, RenderTarget2D renderTarget, RenderTarget2D depthTarget = null)
+		public void Draw(MaterialProfile profile, IScene scene, GameTime gameTime, RenderTarget2D renderTarget, RenderTarget2D depthTarget = null)
 		{
 			// Get visible objects.
 			_pipeline.Clear();
