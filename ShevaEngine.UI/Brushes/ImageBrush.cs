@@ -43,6 +43,33 @@ namespace ShevaEngine.UI
             _colorTint = colorTint;
         }
 
+        /// <summary>
+        /// Constructor.
+        /// </summary>        
+        public ImageBrush(Texture2D texture)
+            : this(texture, Stretch.Uniform)
+        {
+
+        }
+
+        /// <summary>
+        /// Constructor.
+        /// </summary>        
+        public ImageBrush(Texture2D texture, Stretch stretch)
+            : this(texture, stretch, Color.White)
+        {
+
+        }
+
+        /// <summary>
+        /// Constructor.
+        /// </summary>        
+        public ImageBrush(Texture2D texture, Stretch stretch, Color colorTint)
+        {
+            _texture = texture;
+            _stretch = stretch;
+            _colorTint = colorTint;
+        }
 
         /// <summary>
         /// Load content.

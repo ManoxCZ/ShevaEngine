@@ -42,7 +42,7 @@ namespace ShevaEngine.Core
 					NearPlane = camera.NearPlane,
 					FarPlane = camera.FarPlane,
 					FieldOfView = camera.FieldOfView,
-					RasterizerState = RasterizerState.CullCounterClockwise
+					//RasterizerState = RasterizerState.CullCounterClockwise
 				};
 			}
 
@@ -58,5 +58,13 @@ namespace ShevaEngine.Core
 
 			ShevaGame.Instance.GraphicsDevice.SetRenderTarget(null);
 		}
-	}
+
+        /// <summary>
+        /// Get shadow map.
+        /// </summary>        
+        public override Texture2D GetShadowMap()
+        {
+            return ShadowMap;
+        }
+    }
 }

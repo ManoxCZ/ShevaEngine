@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 
 namespace ShevaEngine.Core
 {
@@ -33,6 +34,6 @@ namespace ShevaEngine.Core
 		/// <summary>
 		/// Get light camera position.
 		/// </summary>
-		public abstract Vector3 GetLightCameraPosition(Camera camera);
+		public abstract Vector3 GetLightCameraPosition(Camera camera);        
     }
 }

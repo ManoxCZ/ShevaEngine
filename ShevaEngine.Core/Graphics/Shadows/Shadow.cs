@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 
 namespace ShevaEngine.Core
 {
@@ -17,5 +18,10 @@ namespace ShevaEngine.Core
 		/// Update method.
 		/// </summary>
 		public abstract void Update(GameTime gametime, IScene scene, Light light, Camera camera);
-	}
+
+        /// <summary>
+        /// Get shadow map.
+        /// </summary>        
+        public abstract Texture2D GetShadowMap();
+    }
 }

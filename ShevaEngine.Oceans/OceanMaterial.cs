@@ -92,10 +92,10 @@ namespace ShevaEngine.Oceans
 			_depthFactorParameter = GetParameter("DepthFactor");
 			_lightFactorParameter = GetParameter("LightFactor");
 			
-			UpdateGerstnerWaves(0.5f);
+			UpdateGerstnerWaves(0.1f);
 
-            OceanColor = Color.FromNonPremultiplied(new Vector4(0.6f, 0.55f, 0.26f, 1));
-            SkyColor = Color.FromNonPremultiplied(new Vector4(0.8f, 0.67f, 0.46f, 1));
+            OceanColor = Color.FromNonPremultiplied(new Vector4(0.4f, 0.35f, 0.06f, 1));
+            SkyColor = Color.FromNonPremultiplied(new Vector4(0.6f, 0.47f, 0.26f, 1));
             //OceanColor = Color.FromNonPremultiplied(new Vector4(0.13f, 0.44f, 0.47f, 1));	
             //SkyColor = Color.FromNonPremultiplied(new Vector4(0.8490f, 0.9019f, 1.0f, 1));
             DepthFactor = 0.85f;
