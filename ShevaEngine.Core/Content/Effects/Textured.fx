@@ -124,6 +124,8 @@ OutputWithDepth MainPSPNT(VertexShaderOutputPNTWD input)
 
 	float4 texColor = tex2D(TextureSampler,input.TextureCoordinates0);
 
+	clip(texColor.a - 0.5f);
+
 	float3 light = ComputeDiffuseLighting(normalize(input.Normal), input.WorldPosition);	
 	
 	float3 specular = ComputeSpecularLighting(normalize(input.Normal), 

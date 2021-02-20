@@ -119,6 +119,20 @@ VertexShaderOutputPNWD MainVSPBBNTTTAnimated(VertexShaderInputPBBNTTT input, mat
 	return output;
 }
 
+VertexShaderOutputPNWD MainVSPNTTT(const VertexShaderInputPNTTT input, matrix transform : COLOR0)
+{
+	VertexShaderOutputPNWD output;
+
+	matrix transformTrans = transpose(transform);
+
+	output.WorldPosition = mul(input.Position, transformTrans);	
+	output.Position = mul(mul(mul(input.Position, transformTrans), ViewMatrix), ProjMatrix);
+	output.Normal = mul(input.Normal, (float3x3)transformTrans);	
+	output.Depth = output.Position.zw;
+
+	return output;
+}
+
 OutputWithDepth MainPSPN(VertexShaderOutputPNWD input)
 {	
 	OutputWithDepth result;
@@ -187,6 +201,12 @@ technique Default
 		VertexShader = compile VS_SHADERMODEL MainVSPBBNTTTAnimated();
 		PixelShader = compile PS_SHADERMODEL MainPSPN();
 	}
+
+	pass PNTTT72
+	{
+		VertexShader = compile VS_SHADERMODEL MainVSPNTTT();
+		PixelShader = compile PS_SHADERMODEL MainPSPN();
+	}
 };
 
 technique Shadows
@@ -236,6 +256,12 @@ technique Shadows
 	pass PBBNTTT68Animated
 	{
 		VertexShader = compile VS_SHADERMODEL MainVSPBBNTTTAnimated();
+		PixelShader = compile PS_SHADERMODEL MainPSPNShadows();
+	}
+
+	pass PNTTT72
+	{
+		VertexShader = compile VS_SHADERMODEL MainVSPNTTT();
 		PixelShader = compile PS_SHADERMODEL MainPSPNShadows();
 	}
 };

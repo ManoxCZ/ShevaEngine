@@ -1,10 +1,10 @@
-﻿using System.Runtime.InteropServices;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using System.Runtime.InteropServices;
 
 namespace ShevaEngine.Core
 {
-	[StructLayout(LayoutKind.Explicit)]
+    [StructLayout(LayoutKind.Explicit)]
 	public struct VertexIndicesWeightsPositionNormal : IVertexType
 	{
 		[FieldOffset(0)] public byte BlendIndex0;

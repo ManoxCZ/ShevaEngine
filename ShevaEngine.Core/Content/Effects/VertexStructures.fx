@@ -168,3 +168,12 @@ struct VertexShaderInputPBBNTTB
 	uint4 BlendIndices : BLENDINDICES0;
     float4 BlendWeight : BLENDWEIGHT0;	
 };
+
+struct VertexShaderInputPNTTT
+{
+	float3 Position : POSITION0;
+	float3 Normal : NORMAL0;	
+	float4 TextureCoordinates0 : TEXCOORD0;
+	float4 TextureCoordinates1 : TEXCOORD1;
+	float4 TextureCoordinates2 : TEXCOORD2;		
+};

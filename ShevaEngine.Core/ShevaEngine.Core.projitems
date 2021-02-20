@@ -25,6 +25,10 @@
     <Compile Include="$(MSBuildThisFileDirectory)Graphics\Textures\TextureUtils.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Graphics\VertexTypes\VertexIndicesWeightsPositionNormal.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Graphics\VertexTypes\VertexMatrix.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Graphics\VertexTypes\VertexPositionColorNormalTextureTangent.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Graphics\VertexTypes\VertexPositionNormalMultitextured.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Graphics\VertexTypes\VertexPositionNormalTangent.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Graphics\VertexTypes\VertexPositionNormalTextureTangent.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Input\InputState.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Localization\LocalizationString.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Localization\LocalizationManager.cs" />
@@ -70,8 +74,5 @@
     <Compile Include="$(MSBuildThisFileDirectory)Serialization\BehaviorSubjectConverter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Serialization\BehaviorSubjectConverterFactory.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Utils\Version.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="$(MSBuildThisFileDirectory)Graphics\VertexTypes\" />
   </ItemGroup>
 </Project>

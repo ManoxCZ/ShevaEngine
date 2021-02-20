@@ -270,21 +270,21 @@ namespace ShevaEngine.Core
         /// </summary>        
         public void PushGameComponent(ShevaGameComponent component)
         {
+            if (component == null)
+                return;
+                       
+            if (!component.IsInitialized)
+                component.Initialize(this);
+
+            if (!component.IsContentLoaded)
+                component.LoadContent(this);
+
+            component.Activate(this);
+
             lock (_gameComponents)
             {
-                if (component == null)
-                    return;
-
                 if (_gameComponents.Count > 0)
                     _gameComponents.Peek().Deactivate(this);
-                
-                if (!component.IsInitialized)
-                    component.Initialize(this);
-
-                if (!component.IsContentLoaded)
-                    component.LoadContent(this);
-
-                component.Activate(this);
 
                 _gameComponents.Push(component);
             }
@@ -295,28 +295,27 @@ namespace ShevaEngine.Core
         /// </summary>        
         public void PushGameComponentAsync(ShevaGameComponent component)
         {
-            lock (_gameComponents)
+            if (component == null)
+                return;
+                                 
+            Task.Run(() =>
             {
-                if (component == null)
-                    return;
+                if (!component.IsInitialized)
+                    component.Initialize(this);
 
-                if (_gameComponents.Count > 0)
-                    _gameComponents.Peek().Deactivate(this);
+                if (!component.IsContentLoaded)
+                    component.LoadContent(this);
 
+                component.Activate(this);
 
-                Task.Run(() =>
+                lock (_gameComponents)
                 {
-                    if (!component.IsInitialized)
-                        component.Initialize(this);
-
-                    if (!component.IsContentLoaded)
-                        component.LoadContent(this);
-
-                    component.Activate(this);
+                    if (_gameComponents.Count > 0)
+                        _gameComponents.Peek().Deactivate(this);
 
                     _gameComponents.Push(component);
-                });
-            }
+                }
+            });
         }
 
         /// <summary>

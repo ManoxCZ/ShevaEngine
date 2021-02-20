@@ -53,14 +53,14 @@ namespace ShevaEngine.Oceans
 		/// <summary>
 		/// Apply.
 		/// </summary>
-		public override void Apply(Camera camera, GameTime time, Scene scene)
+		public override void Apply(Camera camera, GameTime time, IScene scene)
 		{				
 			_pipeline.GameTime = time;
 			_pipeline.SetCamera(camera);
 
 			_pipeline.ClearLights();
 
-			foreach (Light light in scene.Lights)
+			foreach (Light light in scene.GetLights())
 				_pipeline.AddLight(light);
 
 			_oceanMaterial.RefractionTexture = InputTexture;

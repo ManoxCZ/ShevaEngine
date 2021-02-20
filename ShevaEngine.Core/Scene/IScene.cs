@@ -1,5 +1,5 @@
 ﻿using System;
-
+using System.Collections.Generic;
 
 namespace ShevaEngine.Core
 {
@@ -12,5 +12,10 @@ namespace ShevaEngine.Core
         /// Get visible objects method.
         /// </summary>
         void GetVisibleObjects(RenderingPipeline pipeline);
+
+        /// <summary>
+        /// Get lights
+        /// </summary>
+        IEnumerable<Light> GetLights();
     }
 }
