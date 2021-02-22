@@ -16,7 +16,8 @@ namespace ShevaEngine.Core
 		public GraphicsDevice Device => ShevaGame.Instance.GraphicsDevice;
 		public string Name { get; }
 		public Camera Camera { get; private set; }
-		public GameTime GameTime { get; set; }
+        public MaterialProfile Profile { get; set; }
+        public GameTime GameTime { get; set; }
 		public List<Light> Lights { get; private set; } = new List<Light>();
         private readonly Dictionary<Effect, Dictionary<ModelMeshPart, List<Matrix>>> OpaqueDrawCalls = new Dictionary<Effect, Dictionary<ModelMeshPart, List<Matrix>>>();
 		private readonly List<Tuple<Material, ModelMeshPart, Matrix>> TransparentDrawCalls = new List<Tuple<Material, ModelMeshPart, Matrix>>();
@@ -35,9 +36,10 @@ namespace ShevaEngine.Core
 		public RenderingPipeline(string name)
 		{
 			Name = name;
-
+            
 			_log = new Log(typeof(RenderingPipeline), Name);
-		}
+            Profile = MaterialProfile.Default;
+        }
 
 		/// <summary>
 		/// Clear method.
@@ -115,6 +117,9 @@ namespace ShevaEngine.Core
 		{
 			if (modelMeshPart.Effect is Material material)
 			{
+                if (Profile == MaterialProfile.Shadows && !material.CastShadows)
+                    return;
+
 				if (material.Animated)
 					material.Bones = controller.GetTransforms(GameTime);					
 				
@@ -163,14 +168,17 @@ namespace ShevaEngine.Core
 		/// </summary>
 		public void AddObject(ModelMeshPart modelMeshPart, IEnumerable<Matrix> worldMatrices)
 		{
-			if (modelMeshPart.Effect is ColoredMaterial coloredMaterial)
+			if (modelMeshPart.Effect is ColoredMaterial material)
 			{
-				if (coloredMaterial.Transparent)
+                if (Profile == MaterialProfile.Shadows && !material.CastShadows)
+                    return;
+
+                if (material.Transparent)
 				{
 					foreach (Matrix worldMatrix in worldMatrices)
 					{
 						TransparentDrawCalls.Add(new Tuple<Material, ModelMeshPart, Matrix>(
-							coloredMaterial, modelMeshPart, worldMatrix));
+							material, modelMeshPart, worldMatrix));
 					}
 				}
 				else
@@ -191,9 +199,9 @@ namespace ShevaEngine.Core
 		/// <summary>
 		/// Draw method.
 		/// </summary>		
-		public void Draw(MaterialProfile profile)
+		public void Draw()
 		{
-			_log.Info($"Draw started with {profile} profile");
+			_log.Info($"Draw started with {Profile} profile");
 
 			try
 			{
@@ -209,14 +217,14 @@ namespace ShevaEngine.Core
 						{
 							if (effectMeshes.Key is MaterialWithLights material)
 							{
-								if (profile != MaterialProfile.Shadows || material.CastShadows)
+								if (Profile != MaterialProfile.Shadows || material.CastShadows)
 								{
 									_log.Debug($"Applying material {material}");
 
-									if (profile != MaterialProfile.Shadows)
+									if (Profile != MaterialProfile.Shadows)
 										material.Lights = Lights;
 
-									material.Apply(profile, Camera, (float)GameTime.TotalGameTime.TotalSeconds, modelPart.Key.VertexBuffer.VertexDeclaration);
+									material.Apply(Profile, Camera, (float)GameTime.TotalGameTime.TotalSeconds, modelPart.Key.VertexBuffer.VertexDeclaration);
 
 									UpdateInstancesData(Device, modelPart.Value);
 
@@ -239,12 +247,12 @@ namespace ShevaEngine.Core
 				Device.DepthStencilState = DepthStencilState.DepthRead;				
 
 				// Transparent materials, don't render to the shadow map.
-				if (profile != MaterialProfile.Shadows)
+				if (Profile != MaterialProfile.Shadows)
 				{
 					foreach (var transparentMesh in
 						TransparentDrawCalls.OrderByDescending(item => Vector3.DistanceSquared(item.Item3.Translation, Camera.Position)))
 					{
-						transparentMesh.Item1.Apply(profile, Camera, GameTime.TotalGameTime.Seconds, transparentMesh.Item2.VertexBuffer.VertexDeclaration);
+						transparentMesh.Item1.Apply(Profile, Camera, GameTime.TotalGameTime.Seconds, transparentMesh.Item2.VertexBuffer.VertexDeclaration);
 
 						UpdateInstancesData(Device, new[] { transparentMesh.Item3 });
 

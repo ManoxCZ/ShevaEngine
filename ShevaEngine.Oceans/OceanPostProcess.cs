@@ -41,7 +41,7 @@ namespace ShevaEngine.Oceans
 			_oceanModel = PlaneMesh.GenerateModel(120, 60);
 			_oceanModel.Meshes[0].MeshParts[0].Effect = _oceanMaterial;
 
-			_pipeline = new RenderingPipeline("Ocean post process");
+            _pipeline = new RenderingPipeline("Ocean post process");
 			_pipeline.AddObject(_oceanModel, Matrix.Identity);	
         }
 
@@ -66,7 +66,7 @@ namespace ShevaEngine.Oceans
 			_oceanMaterial.RefractionTexture = InputTexture;
 			_oceanMaterial.DepthTexture = DepthTexture;
 
-			_pipeline.Draw(MaterialProfile.Default);						
+            _pipeline.Draw();
 
 			_oceanMaterial.RefractionTexture = null;
 			_oceanMaterial.DepthTexture = null;

@@ -34,7 +34,7 @@ namespace ShevaEngine.Core
 				ShadowMap = new RenderTarget2D(ShevaGame.Instance.GraphicsDevice,
 					Size.Width, Size.Height, false, SurfaceFormat.Single, DepthFormat.Depth16);
 
-				_camera = new Camera("ShadowMap")
+				_camera = new Camera("ShadowMap", MaterialProfile.Shadows)
 				{
 					CameraType = CameraType.Orthographic,
 					Size = Size,
@@ -43,7 +43,7 @@ namespace ShevaEngine.Core
 					FarPlane = camera.FarPlane,
 					FieldOfView = camera.FieldOfView,
 					//RasterizerState = RasterizerState.CullCounterClockwise
-				};
+				};                
 			}
 
 			ShevaGame.Instance.GraphicsDevice.SetRenderTarget(ShadowMap);
@@ -54,7 +54,7 @@ namespace ShevaEngine.Core
 
 			_camera.OrthographicSize = (dim, dim);
 
-			_camera.Draw(MaterialProfile.Shadows, scene, gameTime, ShadowMap);
+			_camera.Draw(scene, gameTime, ShadowMap);
 
 			ShevaGame.Instance.GraphicsDevice.SetRenderTarget(null);
 		}

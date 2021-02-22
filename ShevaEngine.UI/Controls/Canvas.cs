@@ -65,7 +65,7 @@ namespace ShevaEngine.UI
 		{
 			lock (_lock)
 			{
-				Camera?.Draw(MaterialProfile.Default, Scene, gameTime, _renderTarget, _depthTarget);
+				Camera?.Draw(Scene, gameTime, _renderTarget, _depthTarget);
 				
 				spriteBatch.Draw(_renderTarget,
 					LocationSize,

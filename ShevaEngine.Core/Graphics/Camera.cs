@@ -95,7 +95,7 @@ namespace ShevaEngine.Core
 		}
 
 		public Color ClearColor { get; set; } = Color.Black;
-		private readonly RenderingPipeline _pipeline = new RenderingPipeline("Camera pipeline");
+        private readonly RenderingPipeline _pipeline;
 
 		public Vector3 Position { get; set; }
 		public Vector3 Target { get; set; }
@@ -142,7 +142,7 @@ namespace ShevaEngine.Core
 		/// <summary>
 		/// Constructor.
 		/// </summary>
-		public Camera(string name)
+		public Camera(string name, MaterialProfile matProfile = MaterialProfile.Default)
 			: base()
 		{
 			ViewMatrix = Matrix.Identity;
@@ -154,7 +154,11 @@ namespace ShevaEngine.Core
 #endif
 
 			_spriteBatch = new SpriteBatch(ShevaGame.Instance.GraphicsDevice);
-		}
+            _pipeline = new RenderingPipeline("Camera pipeline")
+            {
+                Profile = matProfile,
+            };
+        }
 		
 		/// <summary>
 		/// Look at.
@@ -187,7 +191,7 @@ namespace ShevaEngine.Core
 		/// <summary>
 		/// Draw.
 		/// </summary>
-		public void Draw(MaterialProfile profile, IScene scene, GameTime gameTime, RenderTarget2D renderTarget, RenderTarget2D depthTarget = null)
+		public void Draw(IScene scene, GameTime gameTime, RenderTarget2D renderTarget, RenderTarget2D depthTarget = null)
 		{
 			// Get visible objects.
 			_pipeline.Clear();
@@ -197,7 +201,7 @@ namespace ShevaEngine.Core
 			scene.GetVisibleObjects(_pipeline);
 
 			// Update shadows.
-			if (profile == MaterialProfile.Default)
+			if (_pipeline.Profile == MaterialProfile.Default)
 				foreach (Light light in _pipeline.Lights)
 					light.Shadow?.Update(gameTime, scene, light, this);
 
@@ -222,7 +226,7 @@ namespace ShevaEngine.Core
 			}			
 			
 			// Render scene.
-			_pipeline.Draw(profile);
+			_pipeline.Draw();
 
 			ShevaGame.Instance.GraphicsDevice.SetRenderTarget(null);
 
