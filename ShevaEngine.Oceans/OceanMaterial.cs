@@ -95,7 +95,7 @@ namespace ShevaEngine.Oceans
 			UpdateGerstnerWaves(0.1f);
 
             OceanColor = Color.FromNonPremultiplied(new Vector4(0.4f, 0.35f, 0.06f, 1));
-            SkyColor = Color.FromNonPremultiplied(new Vector4(0.6f, 0.47f, 0.26f, 1));
+            SkyColor = Color.FromNonPremultiplied(new Vector4(0.5490f, 0.6019f, 0.7f, 1));
             //OceanColor = Color.FromNonPremultiplied(new Vector4(0.13f, 0.44f, 0.47f, 1));	
             //SkyColor = Color.FromNonPremultiplied(new Vector4(0.8490f, 0.9019f, 1.0f, 1));
             DepthFactor = 0.5f;
