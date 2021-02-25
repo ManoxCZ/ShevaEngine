@@ -219,7 +219,7 @@ namespace ShevaEngine.Core
 				ShevaGame.Instance.GraphicsDevice.SetRenderTarget(depthTarget);
 			
 				ShevaGame.Instance.GraphicsDevice.Clear(
-					ClearOptions.Target, new Color(0,0,0,0), 1, 0);
+					ClearOptions.Target, new Vector4(float.MaxValue, 0.0f, 0.0f, 0.0f), 1, 0);
 
 				ShevaGame.Instance.GraphicsDevice.SetRenderTargets(new[]
 				{

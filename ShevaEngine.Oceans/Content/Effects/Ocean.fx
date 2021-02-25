@@ -114,7 +114,7 @@ float4 MainPSPN(VertexShaderOutputPNTWD input) : COLOR
 	
 	float3 refr = OceanColor.xyz;	
 
-	if (input.Depth.x < depth + 0.5)		
+	if (input.Depth.x < (depth + 0.5))		
 	{
 		refr = tex2D(RefractionTextureSampler, refrUV).xyz;			
 
