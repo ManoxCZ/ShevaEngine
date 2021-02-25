@@ -13,147 +13,147 @@
 
 #---------------------------------- Content ---------------------------------#
 
-#begin Effects/BleachBypass.fx
+#begin Effects/PostProcesses/BleachBypass.fx
 /importer:EffectImporter
 /processor:EffectProcessor
 /processorParam:DebugMode=Auto
-/build:Effects/BleachBypass.fx
+/build:Effects/PostProcesses/BleachBypass.fx
 
-#begin Effects/Bloom.fx
+#begin Effects/PostProcesses/Bloom.fx
 /importer:EffectImporter
 /processor:EffectProcessor
 /processorParam:DebugMode=Auto
-/build:Effects/Bloom.fx
+/build:Effects/PostProcesses/Bloom.fx
 
-#begin Effects/Blur.fx
+#begin Effects/PostProcesses/Blur.fx
 /importer:EffectImporter
 /processor:EffectProcessor
 /processorParam:DebugMode=Auto
-/build:Effects/Blur.fx
+/build:Effects/PostProcesses/Blur.fx
 
-#begin Effects/BrightPass.fx
+#begin Effects/PostProcesses/BrightPass.fx
 /importer:EffectImporter
 /processor:EffectProcessor
 /processorParam:DebugMode=Auto
-/build:Effects/BrightPass.fx
+/build:Effects/PostProcesses/BrightPass.fx
 
-#begin Effects/BumpMapDistort.fx
+#begin Effects/PostProcesses/BumpMapDistort.fx
 /importer:EffectImporter
 /processor:EffectProcessor
 /processorParam:DebugMode=Auto
-/build:Effects/BumpMapDistort.fx
+/build:Effects/PostProcesses/BumpMapDistort.fx
 
-#begin Effects/ColorFilter.fx
+#begin Effects/PostProcesses/ColorFilter.fx
 /importer:EffectImporter
 /processor:EffectProcessor
 /processorParam:DebugMode=Auto
-/build:Effects/ColorFilter.fx
+/build:Effects/PostProcesses/ColorFilter.fx
 
-#begin Effects/DepthOfField.fx
+#begin Effects/PostProcesses/DepthOfField.fx
 /importer:EffectImporter
 /processor:EffectProcessor
 /processorParam:DebugMode=Auto
-/build:Effects/DepthOfField.fx
+/build:Effects/PostProcesses/DepthOfField.fx
 
-#begin Effects/DeRezed.fx
+#begin Effects/PostProcesses/DeRezed.fx
 /importer:EffectImporter
 /processor:EffectProcessor
 /processorParam:DebugMode=Auto
-/build:Effects/DeRezed.fx
+/build:Effects/PostProcesses/DeRezed.fx
 
-#begin Effects/Fog.fx
+#begin Effects/PostProcesses/Fog.fx
 /importer:EffectImporter
 /processor:EffectProcessor
 /processorParam:DebugMode=Auto
-/build:Effects/Fog.fx
+/build:Effects/PostProcesses/Fog.fx
 
-#begin Effects/FXAA.fx
+#begin Effects/PostProcesses/FXAA.fx
 /importer:EffectImporter
 /processor:EffectProcessor
 /processorParam:DebugMode=Auto
-/build:Effects/FXAA.fx
+/build:Effects/PostProcesses/FXAA.fx
 
-#begin Effects/GaussianBlur.fx
+#begin Effects/PostProcesses/GaussianBlur.fx
 /importer:EffectImporter
 /processor:EffectProcessor
 /processorParam:DebugMode=Auto
-/build:Effects/GaussianBlur.fx
+/build:Effects/PostProcesses/GaussianBlur.fx
 
-#begin Effects/GreyScale.fx
+#begin Effects/PostProcesses/GreyScale.fx
 /importer:EffectImporter
 /processor:EffectProcessor
 /processorParam:DebugMode=Auto
-/build:Effects/GreyScale.fx
+/build:Effects/PostProcesses/GreyScale.fx
 
-#begin Effects/InvertColor.fx
+#begin Effects/PostProcesses/InvertColor.fx
 /importer:EffectImporter
 /processor:EffectProcessor
 /processorParam:DebugMode=Auto
-/build:Effects/InvertColor.fx
+/build:Effects/PostProcesses/InvertColor.fx
 
-#begin Effects/LightSceneMask.fx
+#begin Effects/PostProcesses/LightSceneMask.fx
 /importer:EffectImporter
 /processor:EffectProcessor
 /processorParam:DebugMode=Auto
-/build:Effects/LightSceneMask.fx
+/build:Effects/PostProcesses/LightSceneMask.fx
 
-#begin Effects/LightSourceMask.fx
+#begin Effects/PostProcesses/LightSourceMask.fx
 /importer:EffectImporter
 /processor:EffectProcessor
 /processorParam:DebugMode=Auto
-/build:Effects/LightSourceMask.fx
+/build:Effects/PostProcesses/LightSourceMask.fx
 
-#begin Effects/LigthRays.fx
+#begin Effects/PostProcesses/LigthRays.fx
 /importer:EffectImporter
 /processor:EffectProcessor
 /processorParam:DebugMode=Auto
-/build:Effects/LigthRays.fx
+/build:Effects/PostProcesses/LigthRays.fx
 
-#begin Effects/PoissonDiscBlur.fx
+#begin Effects/PostProcesses/PoissonDiscBlur.fx
 /importer:EffectImporter
 /processor:EffectProcessor
 /processorParam:DebugMode=Auto
-/build:Effects/PoissonDiscBlur.fx
+/build:Effects/PostProcesses/PoissonDiscBlur.fx
 
-#begin Effects/RadialBlur.fx
+#begin Effects/PostProcesses/RadialBlur.fx
 /importer:EffectImporter
 /processor:EffectProcessor
 /processorParam:DebugMode=Auto
-/build:Effects/RadialBlur.fx
+/build:Effects/PostProcesses/RadialBlur.fx
 
-#begin Effects/Ripple.fx
+#begin Effects/PostProcesses/Ripple.fx
 /importer:EffectImporter
 /processor:EffectProcessor
 /processorParam:DebugMode=Auto
-/build:Effects/Ripple.fx
+/build:Effects/PostProcesses/Ripple.fx
 
-#begin Effects/Scanlines.fx
+#begin Effects/PostProcesses/Scanlines.fx
 /importer:EffectImporter
 /processor:EffectProcessor
 /processorParam:DebugMode=Auto
-/build:Effects/Scanlines.fx
+/build:Effects/PostProcesses/Scanlines.fx
 
-#begin Effects/SceneBlend.fx
+#begin Effects/PostProcesses/SceneBlend.fx
 /importer:EffectImporter
 /processor:EffectProcessor
 /processorParam:DebugMode=Auto
-/build:Effects/SceneBlend.fx
+/build:Effects/PostProcesses/SceneBlend.fx
 
-#begin Effects/Sepia.fx
+#begin Effects/PostProcesses/Sepia.fx
 /importer:EffectImporter
 /processor:EffectProcessor
 /processorParam:DebugMode=Auto
-/build:Effects/Sepia.fx
+/build:Effects/PostProcesses/Sepia.fx
 
-#begin Effects/Sun.fx
+#begin Effects/PostProcesses/Sun.fx
 /importer:EffectImporter
 /processor:EffectProcessor
 /processorParam:DebugMode=Auto
-/build:Effects/Sun.fx
+/build:Effects/PostProcesses/Sun.fx
 
-#begin Effects/Vignette.fx
+#begin Effects/PostProcesses/Vignette.fx
 /importer:EffectImporter
 /processor:EffectProcessor
 /processorParam:DebugMode=Auto
-/build:Effects/Vignette.fx
+/build:Effects/PostProcesses/Vignette.fx
 

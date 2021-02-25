@@ -32,7 +32,7 @@ namespace ShevaEngine.PostProcesses
         /// <summary>
 		/// Apply post process.
 		/// </summary>				
-		public override void Apply(Camera camera, GameTime time, Scene scene)
+		public override void Apply(Camera camera, GameTime time, IScene scene)
         {
             if (Enabled)
             {
@@ -56,9 +56,9 @@ namespace ShevaEngine.PostProcesses
         /// <summary>
         /// Prepare effect.
         /// </summary>
-        protected virtual void PrepareEffect(Camera camera, GameTime time, Scene scene)
+        protected virtual void PrepareEffect(Camera camera, GameTime time, IScene scene)
         {
-
+            
         }
     }
 }

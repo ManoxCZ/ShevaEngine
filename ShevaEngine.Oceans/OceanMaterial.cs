@@ -65,13 +65,13 @@ namespace ShevaEngine.Oceans
 		{
 			get => _lightFactorParameter.GetValueSingle();
 			set => _lightFactorParameter?.SetValue(value);
-		}
+		}        
 
-		
-		/// <summary>
-		/// Ocean material.
-		/// </summary>
-		protected OceanMaterial(Effect effect, Ocean ocean)
+
+        /// <summary>
+        /// Ocean material.
+        /// </summary>
+        protected OceanMaterial(Effect effect, Ocean ocean)
 			: base(effect)
 		{
 			_ocean = ocean;
@@ -92,14 +92,14 @@ namespace ShevaEngine.Oceans
 			_depthFactorParameter = GetParameter("DepthFactor");
 			_lightFactorParameter = GetParameter("LightFactor");
 			
-			UpdateGerstnerWaves(0.1f);
+			UpdateGerstnerWaves(1.0f);
 
             OceanColor = Color.FromNonPremultiplied(new Vector4(0.4f, 0.35f, 0.06f, 1));
-            SkyColor = Color.FromNonPremultiplied(new Vector4(0.5490f, 0.6019f, 0.7f, 1));
+            SkyColor = Color.FromNonPremultiplied(new Vector4(0.6f, 0.47f, 0.26f, 1));
             //OceanColor = Color.FromNonPremultiplied(new Vector4(0.13f, 0.44f, 0.47f, 1));	
             //SkyColor = Color.FromNonPremultiplied(new Vector4(0.8490f, 0.9019f, 1.0f, 1));
-            DepthFactor = 0.5f;
-			LightFactor = 2.0f;
+            DepthFactor = 0.1f;
+			LightFactor = 1.0f;
 		}
 
 		

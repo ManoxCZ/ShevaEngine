@@ -13,7 +13,7 @@ namespace ShevaEngine.Core
     /// <summary>
     /// Engine base class.
     /// </summary>
-    public class ShevaGame : Game
+    public class ShevaGame : Microsoft.Xna.Framework.Game
     {		
         public static ShevaGame Instance { get; set; }
 

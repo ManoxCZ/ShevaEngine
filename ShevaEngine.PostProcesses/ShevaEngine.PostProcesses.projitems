@@ -9,34 +9,9 @@
     <Import_RootNamespace>ShevaEngine.PostProcesses</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="$(MSBuildThisFileDirectory)BasePostProcess.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)BleachByPass.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Bloom.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)BrightPass.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)BumpmapDistort.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)ColorFilter.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)DepthOfField.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)DeRezed.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Fog.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)FXAA.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)GaussBlurH.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)GaussBlurV.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)GreyScale.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)InvertColor.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)LightRay.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)LightSceneMask.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)LightSourceMask.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)PoissonDiscBlur.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)RadialBlur.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Ripple.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)ScanLines.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)SceneBlend.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Sepia.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Sun.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Vignette.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)**\*.cs" />    
   </ItemGroup>
   <ItemGroup>
-    <MonoGameContentReference Include="$(MSBuildThisFileDirectory)Content\Content.mgcb" />
-    <None Include="$(MSBuildThisFileDirectory)Content\Content.mgcb" />
+    <MonoGameContentReference Include="$(MSBuildThisFileDirectory)Content\Content.mgcb" />    
   </ItemGroup>
  </Project>

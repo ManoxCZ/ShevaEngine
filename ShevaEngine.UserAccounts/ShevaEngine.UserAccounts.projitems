@@ -8,9 +8,7 @@
   <PropertyGroup Label="Configuration">
     <Import_RootNamespace>ShevaEngine.UserAccounts</Import_RootNamespace>
   </PropertyGroup>
-  <ItemGroup>
-    <Compile Include="$(MSBuildThisFileDirectory)Local\LocalUser.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)User.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)UserData.cs" />
+<ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)**\*.cs" />    
   </ItemGroup>
 </Project>

@@ -198,7 +198,10 @@ namespace ShevaEngine.Core
 			_pipeline.GameTime = gameTime;
 			_pipeline.SetCamera(this);
 
-			scene.GetVisibleObjects(_pipeline);
+            foreach (Light light in scene.GetLights())
+                _pipeline.AddLight(light);
+
+            scene.GetVisibleObjects(_pipeline);
 
 			// Update shadows.
 			if (_pipeline.Profile == MaterialProfile.Default)

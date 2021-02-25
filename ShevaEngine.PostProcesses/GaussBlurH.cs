@@ -37,7 +37,7 @@ namespace ShevaEngine.PostProcesses
         /// <summary>
         /// Prepare effect.
         /// </summary>
-        protected override void PrepareEffect(Camera camera, GameTime time, Scene scene)
+        protected override void PrepareEffect(Camera camera, GameTime time, IScene scene)
         {
             if (_blurRadiusChanged)
             {

@@ -8,36 +8,7 @@
   <PropertyGroup Label="Configuration">
     <Import_RootNamespace>ShevaEngine.UI</Import_RootNamespace>
   </PropertyGroup>
-  <ItemGroup>
-    <Compile Include="$(MSBuildThisFileDirectory)Animations\Animation.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Animations\ChangeTextAnimation.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Animations\ChangeColorAnimation.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Animations\ControlAnimations.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Animations\IAnimation.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Animations\PulseColorAnimation.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Brushes\Brush.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Brushes\EffectBrush.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Brushes\ImageBrush.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Control.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)ControlFlag.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Controls\Button.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Controls\Canvas.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Controls\Checkbox.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Controls\Grid.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Controls\GridColumnDefinition.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Controls\GridRowDefinition.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Controls\Image.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Controls\Label.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Controls\Slider.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Controls\SliderInt.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Controls\SliderFloat.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)DragDrop\DragDropInfo.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Enums\HorizontalAlignment.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Enums\Stretch.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Enums\Units.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Enums\VerticalAlignment.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)EventContext.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Layer.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Margin.cs" />
+ <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)**\*.cs" />    
   </ItemGroup>
 </Project>

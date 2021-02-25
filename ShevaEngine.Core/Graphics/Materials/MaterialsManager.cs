@@ -92,17 +92,27 @@ namespace ShevaEngine.Core
 			}
 		}
 
-		/// <summary>
+        /// <summary>
 		/// Update vertex declaration tag.
 		/// </summary>		
-		internal static void UpdateVertexDeclarationTag(VertexDeclaration vertexDeclaration)
-		{
-			vertexDeclaration.Name = string.Empty;
+		public static string GetVertexDeclarationName(VertexDeclaration vertexDeclaration)
+        {
+            string name = string.Empty;
 
-			foreach (VertexElement element in vertexDeclaration.GetVertexElements())			
-				vertexDeclaration.Name += element.VertexElementUsage.ToString()[0];			
+            foreach (VertexElement element in vertexDeclaration.GetVertexElements())
+                name += element.VertexElementUsage.ToString()[0];
 
-			vertexDeclaration.Name += vertexDeclaration.VertexStride.ToString();			
-		}
+            name += vertexDeclaration.VertexStride.ToString();
+
+            return name;
+        }
+
+        /// <summary>
+        /// Update vertex declaration tag.
+        /// </summary>		
+        internal static void UpdateVertexDeclarationTag(VertexDeclaration vertexDeclaration)
+        {
+            vertexDeclaration.Name = GetVertexDeclarationName(vertexDeclaration);
+        }
 	}
 }

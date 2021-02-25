@@ -15,7 +15,7 @@ namespace ShevaEngine.PostProcesses
         /// <summary>
         /// Prepare effect.
         /// </summary>
-        protected override void PrepareEffect(Camera camera, GameTime time, Scene scene)
+        protected override void PrepareEffect(Camera camera, GameTime time, IScene scene)
         {
             Effect.Parameters["DepthTexture"].SetValue(DepthTexture);
             Effect.Parameters["DoFParams"].SetValue(new Vector4(FocusDistance, FocusRange, camera.NearPlane, camera.FarPlane / (camera.FarPlane - camera.NearPlane)));

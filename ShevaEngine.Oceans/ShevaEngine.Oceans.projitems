@@ -14,10 +14,7 @@
   <ItemGroup>
     <MonoGameContentReference Include="$(MSBuildThisFileDirectory)Content\Content.mgcb" />
   </ItemGroup>
-  <ItemGroup>
-    <Compile Include="$(MSBuildThisFileDirectory)GerstnerWave.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Ocean.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)OceanMaterial.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)OceanPostProcess.cs" />
+ <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)**\*.cs" />    
   </ItemGroup>
 </Project>

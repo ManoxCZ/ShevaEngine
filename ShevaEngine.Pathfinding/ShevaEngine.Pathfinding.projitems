@@ -9,12 +9,6 @@
     <Import_RootNamespace>ShevaEngine.Pathfinding</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="$(MSBuildThisFileDirectory)Heuristics\DistanceHeuristic.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Heuristics\Heuristic.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)NavigationGraph.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)NavigationGraphConnection.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)NavigationGraphNode.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)NavigationGraphNodeRecord.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)NavigationPath.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)**\*.cs" />    
   </ItemGroup>
 </Project>

@@ -127,8 +127,8 @@ float4 MainPSPN(VertexShaderOutputPNTWD input) : COLOR
 		depth = tex2D(DepthTextureSampler, input.TextureCoordinates0).x;
 
 		refr = lerp(refr, OceanColor.xyz, min(1, abs(depth - input.Depth.x) * DepthFactor));		
-	}	 	
-	
+	}	 		
+
 	return float4(saturate(AmbientLight + light) * lerp(refr, refl, 0 + fres) + saturate(specular), 1);	
 }
 

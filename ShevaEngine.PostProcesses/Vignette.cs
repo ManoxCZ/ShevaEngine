@@ -27,7 +27,7 @@ namespace ShevaEngine.PostProcesses
         /// <summary>
         /// Prepare effect.
         /// </summary>
-        protected override void PrepareEffect(Camera camera, GameTime time, Scene scene)
+        protected override void PrepareEffect(Camera camera, GameTime time, IScene scene)
         {
             Effect.Parameters["ScreenSize"]?.SetValue(new Vector2(InputTexture.Width, InputTexture.Height));
             Effect.Parameters["PixelSize"]?.SetValue(new Vector2(1.0f / InputTexture.Width, 1.0f / InputTexture.Height));
