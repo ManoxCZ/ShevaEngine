@@ -125,7 +125,7 @@ namespace ShevaEngine.UI
 		/// </summary>		
 		public override bool IsPointCollide(int x, int y)
 		{
-			if (BackColor.Value == Color.Transparent && Background.Value == null)
+			if (Background.Value == null)
 				return false;
 
 			return true;

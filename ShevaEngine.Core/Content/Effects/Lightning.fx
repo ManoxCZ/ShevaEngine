@@ -1,4 +1,4 @@
-float3 AmbientLight = float3(0.20, 0.20, 0.20);
+float3 AmbientLight = float3(0.5, 0.5, 0.5);
 float DepthBias = 0.05;
 
 #define MAX_LIGHTS 4
@@ -12,9 +12,9 @@ Texture2D Light1ShadowMap;
 sampler2D Light1ShadowMapSampler = sampler_state
 {
  	Texture = <Light1ShadowMap>;
-	MinFilter = point;
-    MagFilter = point;
-    MipFilter = point;
+	MinFilter = linear;
+    MagFilter = linear;
+    MipFilter = linear;
     AddressU = clamp;
     AddressV = clamp;
 };
@@ -25,27 +25,28 @@ sampler2D Light1ShadowMapSampler = sampler_state
 // Calculates the shadow term using PCF
 float CalcShadowTermPCF(float light_space_depth, float ndotl, float2 shadow_coord, float2 lightShadowMapSize, sampler2D shadowTextureSampler)
 {
-   float shadow_term = 0;
-
-    //float2 v_lerps = frac(ShadowMapSize * shadow_coord);
-
-    float variableBias =clamp(0.0005 * tan(acos(ndotl)), 0.00001, DepthBias);
+    float variableBias = clamp(0.0005 * tan(acos(ndotl)), 0.00001, DepthBias);
 
     //safe to assume it's a square
     float size = 1.0f / lightShadowMapSize.x;
-    	
-    float samples[5];
-    samples[0] = (light_space_depth - variableBias < 1 - tex2D(shadowTextureSampler, shadow_coord).r);
-    samples[1] = (light_space_depth - variableBias < 1 - tex2D(shadowTextureSampler, shadow_coord + float2(size, 0)).r) * frac(shadow_coord.x * lightShadowMapSize.x);
-    samples[2] = (light_space_depth - variableBias < 1 - tex2D(shadowTextureSampler, shadow_coord + float2(0, size)).r) * frac(shadow_coord.y * lightShadowMapSize.x);
-    samples[3] = (light_space_depth - variableBias < 1 - tex2D(shadowTextureSampler, shadow_coord - float2(size, 0)).r) * (1-frac(shadow_coord.x * lightShadowMapSize.x));
-    samples[4] = (light_space_depth - variableBias < 1 - tex2D(shadowTextureSampler, shadow_coord - float2(0, size)).r) * (1 - frac(shadow_coord.y * lightShadowMapSize.x));
+    	    
+	float samples = 0;
+    if ((light_space_depth - variableBias) < tex2D(shadowTextureSampler, shadow_coord).r)
+		samples += 1;
 
+    if ((light_space_depth - variableBias) < tex2D(shadowTextureSampler, shadow_coord + float2(size, 0)).r)
+		samples += 1;
+    
+	if ((light_space_depth - variableBias) < tex2D(shadowTextureSampler, shadow_coord + float2(0, size)).r)
+		samples += 1;
+    
+	if ((light_space_depth - variableBias) < tex2D(shadowTextureSampler, shadow_coord - float2(size, 0)).r)
+		samples += 1;
+    
+	if ((light_space_depth - variableBias) < tex2D(shadowTextureSampler, shadow_coord - float2(0, size)).r)
+		samples += 1;
 
-    shadow_term = (samples[0] + samples[1] + samples[2] + samples[3] + samples[4]) / 5.0;
-    //shadow_term = lerp(lerp(samples[0],samples[1],v_lerps.x),lerp(samples[2],samples[3],v_lerps.x),v_lerps.y);
-
-    return 1 - shadow_term;
+	return samples /5.0f;    
 }
 
 float GetShadowContribution(float4 worldPosition, float3 normal, matrix lightViewProj, float3 lightDirection,float2 lightShadowMapSize, sampler2D shadowTextureSampler)

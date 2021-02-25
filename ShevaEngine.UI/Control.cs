@@ -16,7 +16,7 @@ namespace ShevaEngine.UI
 		protected readonly Log Log;
 		protected ControlFlag Flags { get; set; }
 		protected List<IDisposable> Disposables { get; }
-        public BehaviorSubject<Color> BackColor { get; }
+        //public BehaviorSubject<Color> BackColor { get; }
         public BehaviorSubject<Brush> Background { get; }
         //public string BackgroundImage { get; set; }
         //public Stretch BackgroundStretch { get; set; }
@@ -72,7 +72,7 @@ namespace ShevaEngine.UI
 
 			Flags = ControlFlag.Default;
 			Disposables = new List<IDisposable>();
-			BackColor = CreateMember(Color.Transparent);
+			//BackColor = CreateMember(Color.Transparent);
             Background = CreateMember<Brush>(null);
 			//BackgroundImage = null;
 			//BackgroundStretch = Stretch.Uniform;
@@ -131,10 +131,7 @@ namespace ShevaEngine.UI
             Disposables.Add(Background.Subscribe(item =>
             {
                 item?.LoadContent(contentManager);
-            }));
-
-			//if (!string.IsNullOrEmpty(BackgroundImage))
-   //             _backgroundTexture = contentManager.Load<Texture2D>(BackgroundImage);					    
+            }));			
 
             foreach (Control child in Children)
                 child.LoadContent(contentManager);
@@ -288,8 +285,8 @@ namespace ShevaEngine.UI
 					Animations[flag].Update(gameTime);
 
 			
-            if (BackColor.Value != Color.Transparent)
-                DrawRectangle(spriteBatch, LocationSize, BackColor.Value);
+            //if (BackColor.Value != Color.Transparent)
+            //    DrawRectangle(spriteBatch, LocationSize, BackColor.Value);
 
             Background.Value?.Draw(spriteBatch, LocationSize);
 			

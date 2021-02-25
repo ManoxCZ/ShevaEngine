@@ -94,7 +94,12 @@ namespace ShevaEngine.Core
 			}
 		}
 
-		public Color ClearColor { get; set; } = Color.Black;
+        public Color ClearColor
+        {
+            get => Color.FromNonPremultiplied(ClearValue);
+            set => ClearValue = value.ToVector4();
+        }
+        public Vector4 ClearValue { get; set; } = new Vector4(0, 0, 0, 0);
         private readonly RenderingPipeline _pipeline;
 
 		public Vector3 Position { get; set; }
@@ -212,7 +217,7 @@ namespace ShevaEngine.Core
 			ShevaGame.Instance.GraphicsDevice.SetRenderTarget(renderTarget);
 			
 			ShevaGame.Instance.GraphicsDevice.Clear(
-				ClearOptions.Target | ClearOptions.DepthBuffer, ClearColor, 1, 0);
+				ClearOptions.Target | ClearOptions.DepthBuffer, ClearValue, 1, 0);
 
 			if (depthTarget != null)
 			{

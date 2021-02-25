@@ -1,4 +1,5 @@
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Reactive.Subjects;
@@ -10,7 +11,7 @@ namespace ShevaEngine.UI
 	/// </summary>	
 	public abstract class Slider<T> : Control
 	{
-        public BehaviorSubject<Color> ForeColor { get; set; }
+        public BehaviorSubject<Brush> Foreground { get; }
         public BehaviorSubject<T> Value { get; set; }
         public BehaviorSubject<T> Min { get; set; }
         public BehaviorSubject<T> Max { get; set; }
@@ -23,8 +24,8 @@ namespace ShevaEngine.UI
 		{
             IsSelectAble = true;
 
-			ForeColor = new BehaviorSubject<Color>(Color.Black);
-			Disposables.Add(ForeColor);
+            Foreground = new BehaviorSubject<Brush>(null);
+			Disposables.Add(Foreground);
 
             Value = new BehaviorSubject<T>(default(T));
 			Disposables.Add(Value);
@@ -41,21 +42,26 @@ namespace ShevaEngine.UI
             }));
 		}
 
+        public override void LoadContent(ContentManager contentManager)
+        {
+            base.LoadContent(contentManager);
+
+            Disposables.Add(Foreground.Subscribe(item =>
+            {
+                item?.LoadContent(contentManager);
+            }));
+        }
+
         /// <summary>
         /// Draw method.
         /// </summary>
         public override void Draw(SpriteBatch spriteBatch, GameTime gameTime)
         {
-            if (BackColor.Value != Color.Transparent)
-				DrawRectangle(spriteBatch, LocationSize, BackColor.Value);
-
-            if (ForeColor.Value != Color.Transparent)
-				DrawRectangle(spriteBatch, 
-                    new Rectangle(
-                        LocationSize.X, 
-                        LocationSize.Y, 
+            Foreground.Value?.Draw(spriteBatch, new Rectangle(
+                        LocationSize.X,
+                        LocationSize.Y,
                         (int)(LocationSize.Width * GetRatio()),
-                        LocationSize.Height), ForeColor.Value);
+                        LocationSize.Height));            
         }
 
         /// <summary>
