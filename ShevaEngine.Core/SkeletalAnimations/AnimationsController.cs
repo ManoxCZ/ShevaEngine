@@ -1,11 +1,13 @@
 ﻿using Microsoft.Xna.Framework;
+using System;
+using System.Reactive.Subjects;
 
 namespace ShevaEngine.Core
 {
 	/// <summary>
 	/// Animations controller.
 	/// </summary>
-	public class AnimationsController
+	public class AnimationsController : IDisposable
 	{
 		private readonly Log _log = new Log(typeof(Animations));
 		private readonly Animations _animations;
@@ -13,6 +15,8 @@ namespace ShevaEngine.Core
 		private Matrix[] _boneTransforms;
 		private Matrix[] _worldTransforms;
 		private Matrix[] _animationTransforms;
+        private int _previousFrame;
+        public Subject<AnimationEvent> Events { get; } = new Subject<AnimationEvent>();
 
 		/// <summary>
 		/// Constructor.
@@ -25,6 +29,14 @@ namespace ShevaEngine.Core
 			_worldTransforms = new Matrix[_animations.BindPose.Count];
 			_animationTransforms = new Matrix[_animations.BindPose.Count];
 		}
+
+        /// <summary>
+        /// Dispose.
+        /// </summary>
+        public void Dispose()
+        {
+            Events?.Dispose();
+        }
 
 		/// <summary>
 		/// Set clip.
@@ -58,12 +70,28 @@ namespace ShevaEngine.Core
 			_animations.BindPose.CopyTo(_boneTransforms, 0);
 		}
 
-		/// <summary>
+        /// <summary>
 		/// Get transforms.
 		/// </summary>
-		public Matrix[] GetTransforms(GameTime time)
+		public void UpdateEvents(GameTime time)
+        {
+            double currentTime = time.TotalGameTime.TotalSeconds % CurrentClip.Duration;
+
+            int frame = (int)(currentTime * 30);
+            
+            foreach (AnimationEvent animEvent in CurrentClip.Events)
+                if (animEvent.KeyFrameId > _previousFrame && animEvent.KeyFrameId <= frame)
+                    Events.OnNext(animEvent);
+
+            _previousFrame = frame;            
+        }
+
+        /// <summary>
+        /// Get transforms.
+        /// </summary>
+        public Matrix[] GetTransforms(GameTime time)
 		{
-			double currentTime = time.TotalGameTime.TotalSeconds % CurrentClip.Duration;
+			double currentTime = time.TotalGameTime.TotalSeconds % CurrentClip.Duration;            
 
 			int frame = (int)(currentTime * 30) % CurrentClip.Keyframes.Length;
 
@@ -75,7 +103,7 @@ namespace ShevaEngine.Core
 				_worldTransforms[bone] = Matrix.Multiply(_boneTransforms[bone], _worldTransforms[_animations.SkeletonHierarchy[bone]]);
 
 			for (int bone = 0; bone < _animationTransforms.Length; bone++)
-				_animationTransforms[bone] = Matrix.Multiply(_animations.InvBindPose[bone], _worldTransforms[bone]);
+				_animationTransforms[bone] = Matrix.Multiply(_animations.InvBindPose[bone], _worldTransforms[bone]);            
 
 			return _animationTransforms;
 		}
