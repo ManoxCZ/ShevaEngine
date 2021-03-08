@@ -86,7 +86,8 @@ namespace AnimationImporters
 				case TargetPlatform.WindowsStoreApp:
 				case TargetPlatform.Android:
 				case TargetPlatform.DesktopGL:
-					return "ShevaEngine.Core.Animations, ArcticSurvivor";					
+                case TargetPlatform.MacOSX:
+                    return "ShevaEngine.Core.Animations, ArcticSurvivor";					
 			}
 
 			throw new NotImplementedException("Can't find Runtime type");
@@ -100,7 +101,8 @@ namespace AnimationImporters
 				case TargetPlatform.WindowsStoreApp:
 				case TargetPlatform.Android:
 				case TargetPlatform.DesktopGL:
-					return "ShevaEngine.Core.AnimationsReader, ArcticSurvivor";
+                case TargetPlatform.MacOSX:
+                    return "ShevaEngine.Core.AnimationsReader, ArcticSurvivor";
 			}
 
 			throw new NotImplementedException("Can't find Runtime type");			

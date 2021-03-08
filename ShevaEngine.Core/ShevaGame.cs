@@ -41,14 +41,14 @@ namespace ShevaEngine.Core
             : base()
         {
             Instance = this;
-
+            
 #if WINDOWS || DESKTOPGL
-            string dataPath = Path.Combine(
+            string dataPath = System.IO.Path.Combine(
 				Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
                 System.Reflection.Assembly.GetEntryAssembly().GetName().Name);
 
-			if (!Directory.Exists(dataPath))
-				Directory.CreateDirectory(dataPath);
+			if (!System.IO.Directory.Exists(dataPath))
+				System.IO.Directory.CreateDirectory(dataPath);
 #endif
 
             _logReceiver = new TextFileLogReceiver("game.log");

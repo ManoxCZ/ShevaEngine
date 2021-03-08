@@ -36,39 +36,48 @@ namespace ShevaEngine.Core
 		/// </summary>
 		public override T Load<T>(string assetName)
 		{
-			lock (_lock)
-			{
-				_log.Info($"Loading: {assetName}, type: {typeof(T)}");
+            try
+            {
+                lock (_lock)
+                {
+                    _log.Info($"Loading: {assetName}, type: {typeof(T)}");
 
-				if (typeof(T) == typeof(Font))
-				{
-					if (!_fonts.ContainsKey(assetName))
-					{
-						Font newFont = new Font(assetName);
-						newFont.LoadContent(this);
+                    if (typeof(T) == typeof(Font))
+                    {
+                        if (!_fonts.ContainsKey(assetName))
+                        {
+                            Font newFont = new Font(assetName);
+                            newFont.LoadContent(this);
 
-						_fonts.Add(assetName, newFont);
-					}
+                            _fonts.Add(assetName, newFont);
+                        }
 
-					return (T)(object)_fonts[assetName];
-				}
-								
-				T output = base.Load<T>(assetName);
-				
-				if ((object)output is Model model)
-				{
-					_log.Info($"Updating materials");
-					
-					MaterialsManager.UpdateMaterials(model);
-				}
+                        return (T)(object)_fonts[assetName];
+                    }
 
-				if (output == null)
-					_log.Warning($"Can't load");
+                    T output = base.Load<T>(assetName);
 
-				_log.Info($"Successfully loaded");
+                    if ((object)output is Model model)
+                    {
+                        _log.Info($"Updating materials");
 
-				return output;				
-			}
+                        MaterialsManager.UpdateMaterials(model);
+                    }
+
+                    if (output == null)
+                        _log.Warning($"Can't load");
+
+                    _log.Info($"Successfully loaded");
+
+                    return output;
+                }
+            }
+            catch (Exception ex)
+            {
+                _log.Error($"Can't load content item: {assetName}", ex);
+            }
+
+            return default;
 		}
 	}
 }
