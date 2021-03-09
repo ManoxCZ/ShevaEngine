@@ -42,7 +42,7 @@ namespace ShevaEngine.Core
 					NearPlane = camera.NearPlane,
 					FarPlane = camera.FarPlane,
 					FieldOfView = camera.FieldOfView,
-					RasterizerState = RasterizerState.CullCounterClockwise
+					RasterizerState = RasterizerState.CullClockwise
 				};                
 			}
 
