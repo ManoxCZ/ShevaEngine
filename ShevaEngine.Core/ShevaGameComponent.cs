@@ -20,6 +20,7 @@ namespace ShevaEngine.Core
 		protected List<IDisposable> Disposables { get; } = new List<IDisposable>();
 		private MouseState _previousMouseState;		
 		private IDisposable _inputObserver;
+        private IDisposable _keyDownPressed;
 
 
 		/// <summary>
@@ -84,7 +85,9 @@ namespace ShevaEngine.Core
 			});
 
             foreach (Layer layer in Layers)
-                layer.OnWindowResize(game.Settings.Resolution.Value.Width, game.Settings.Resolution.Value.Height);            
+                layer.OnWindowResize(game.Settings.Resolution.Value.Width, game.Settings.Resolution.Value.Height);
+
+            ActivateInput(game);
         }
 
 		/// <summary>
@@ -92,7 +95,9 @@ namespace ShevaEngine.Core
 		/// </summary>
         public virtual void Deactivate(ShevaGame game)
 		{
-			_spriteBatch.Dispose();
+            DeactivateInput(game);
+
+            _spriteBatch.Dispose();
 			_spriteBatch = null;
 
 			_inputObserver?.Dispose();
@@ -166,5 +171,37 @@ namespace ShevaEngine.Core
 
 			_spriteBatch.End();
 		}	
+
+        /// <summary>
+        /// Activate input.
+        /// </summary>
+        private void ActivateInput(ShevaGame game)
+        {
+            _keyDownPressed = game.Input.OnKeyPressed(Keys.Down).Subscribe(item =>
+            {
+                FindNewSelectedControl(-Vector2.UnitY);
+            });
+        }
+
+        /// <summary>
+        /// Deactivate input.
+        /// </summary>
+        private void DeactivateInput(ShevaGame game)
+        {
+            _keyDownPressed?.Dispose();
+            _keyDownPressed = null;
+        }
+
+        /// <summary>
+        /// Find new selected control.
+        /// </summary>        
+        private void FindNewSelectedControl(Vector2 direction)
+        {
+            for (int i = Layers.Count - 1; i >= 0; i--)
+            {
+                if (Layers[i].IsActive.Value && Layers[i].Selection.FindNextSelectedControl(direction))
+                    return;
+            }
+        }
 	}
 }

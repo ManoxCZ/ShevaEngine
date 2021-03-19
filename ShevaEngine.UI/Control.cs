@@ -294,6 +294,18 @@ namespace ShevaEngine.UI
 		public void DrawRectangle(SpriteBatch spriteBatch, Rectangle locationSize, Color color)
 		{		
 			spriteBatch.Draw(TextureUtils.WhiteTexture, locationSize, null, color);
-		}				
+		}			
+        
+        /// <summary>
+        /// Get selectable controls.
+        /// </summary>        
+        internal void GetSelectableControls(List<Control> controls)
+        {
+            if (IsSelectAble)
+                controls.Add(this);
+
+            foreach (Control control in Children)            
+                control.GetSelectableControls(controls);            
+        }
 	}    
 }

@@ -17,7 +17,8 @@ namespace ShevaEngine.UI
 		public BehaviorSubject<bool> IsActive { get; }		
 		public ReplaySubject<(InputState InputState, EventContext Context)> MouseMove { get; }
 		public List<IDisposable> Disposables { get; private set; }
-		public BehaviorSubject<bool> IsEventBlocking { get; }	 
+		public BehaviorSubject<bool> IsEventBlocking { get; }
+        public LayerSelection Selection { get; }
 
 
 		/// <summary>
@@ -30,6 +31,8 @@ namespace ShevaEngine.UI
 			IsActive = new BehaviorSubject<bool>(false);
 			MouseMove = new ReplaySubject<(InputState InputState, EventContext Context)>();
 			IsEventBlocking = new BehaviorSubject<bool>(false);
+            Selection = new LayerSelection(this);
+
 
 			Disposables.Add(
 				MouseMove.CombineLatest(IsActive, (input, isActive) => (input, isActive))
@@ -53,7 +56,7 @@ namespace ShevaEngine.UI
 		{
 			IsActive?.Dispose();
 			MouseMove?.Dispose();
-			IsEventBlocking?.Dispose();
+			IsEventBlocking?.Dispose();            
 
 			foreach (IDisposable disposable in Disposables)			
 				disposable.Dispose();			
@@ -64,7 +67,7 @@ namespace ShevaEngine.UI
         /// </summary>        
         public void LoadContent(ShevaGame game)
         {
-            Control?.LoadContent(game.Content);
+            Control?.LoadContent(game.Content);            
         }
 
 		/// <summary>
@@ -121,6 +124,17 @@ namespace ShevaEngine.UI
 		public void Draw(SpriteBatch spriteBatch, GameTime gameTime)
         {
             Control?.Draw(spriteBatch, gameTime);
-        }        				
+        }        	
+        
+        /// <summary>
+        /// Get selectable controls.
+        /// </summary>
+        /// <returns></returns>
+        public void GetSelectableControls(List<Control> controls)
+        {
+            controls.Clear();
+
+            Control?.GetSelectableControls(controls);
+        }
     }
 }

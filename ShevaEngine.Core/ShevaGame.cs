@@ -24,10 +24,11 @@ namespace ShevaEngine.Core
 		public GameSettings Settings { get; }		
 		private Type[] _initialComponentTypes;
 		public GraphicsDeviceManager GraphicsDeviceManager { get; private set; }        
+        public Input Input { get; private set; }
         public ReplaySubject<InputState> InputState { get; private set; } = new ReplaySubject<InputState>();
 		private Stack<ShevaGameComponent> _gameComponents;
 		private object _componentsLock = new object();
-        public User User { get; private set; }
+        public User User { get; private set; }        
         private bool _showDebugUI = false;
         public DebugUI DebugUI { get; private set; }
         
@@ -108,13 +109,16 @@ namespace ShevaEngine.Core
         {
 			_log.Info("Initialization started");
 
-            if (Environment.GetCommandLineArgs().Any(item => item == "debug"))
-				_showDebugUI = true;
+            Input = new Input();
 
-#if DEBUG
-            _showDebugUI = true;
+#if !DEBUG
+            if (Environment.GetCommandLineArgs().Any(item => item == "debug"))
 #endif
-            
+            Input.OnKeyPressed(Microsoft.Xna.Framework.Input.Keys.F1).Subscribe(item =>
+            {
+                _showDebugUI = !_showDebugUI;
+            });
+
             DebugUI = new DebugUI(this);
 
             base.Initialize();			
@@ -141,7 +145,7 @@ namespace ShevaEngine.Core
 
 			IsFixedTimeStep = false;			
 
-			Settings.MusicVolume.Subscribe(item => MediaPlayer.Volume = item);
+			Settings.MusicVolume.Subscribe(item => MediaPlayer.Volume = item);            
 
 			_log.Info("Initialization ended");						
 		}
@@ -204,7 +208,8 @@ namespace ShevaEngine.Core
 
 			InputState.Dispose();
 			User.Dispose();		
-			Settings.Dispose();	
+			Settings.Dispose();
+            Input.Dispose();
 
 			base.OnExiting(sender, args);
 		}
@@ -225,7 +230,9 @@ namespace ShevaEngine.Core
 		protected override void Update(GameTime time)
 		{
 			base.Update(time);
-			
+
+            Input.Update();
+
 			InputState.OnNext(new InputState(time, Window));
 
 			lock (_gameComponents)
