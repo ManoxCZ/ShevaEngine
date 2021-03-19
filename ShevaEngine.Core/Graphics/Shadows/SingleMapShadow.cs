@@ -34,6 +34,8 @@ namespace ShevaEngine.Core
 				ShadowMap = new RenderTarget2D(ShevaGame.Instance.GraphicsDevice,
 					Size.Width, Size.Height, false, SurfaceFormat.Single, DepthFormat.Depth16);
 
+                _camera?.Dispose();
+
                 _camera = new Camera("ShadowMap", MaterialProfile.Shadows)
                 {
                     CameraType = CameraType.Orthographic,

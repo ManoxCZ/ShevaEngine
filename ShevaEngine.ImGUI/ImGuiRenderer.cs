@@ -1,20 +1,19 @@
-#if DEBUG_UI
+﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Input;
+using ShevaEngine.Core;
 using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework.Input;
-using ImGuiNET;
 
-namespace ShevaEngine.Core
+namespace ImGuiNET
 {
     /// <summary>
     /// ImGui renderer for use with XNA-likes (FNA & MonoGame)
     /// </summary>
-    internal class ImGuiRenderer
+    public class ImGuiRenderer
     {
-        private Microsoft.Xna.Framework.Game _game;
+        private ShevaGame _game;
 
         // Graphics
         private GraphicsDevice _graphicsDevice;
@@ -41,7 +40,7 @@ namespace ShevaEngine.Core
 
         private List<int> _keys = new List<int>();
 
-        public ImGuiRenderer(Microsoft.Xna.Framework.Game game)
+        public ImGuiRenderer(ShevaGame game)
         {
             var context = ImGui.CreateContext();
             ImGui.SetCurrentContext(context);
@@ -62,8 +61,6 @@ namespace ShevaEngine.Core
             };
 
             SetupInput();
-
-            _effect = new BasicEffect(_graphicsDevice);
         }
 
         #region ImGuiRenderer
@@ -162,6 +159,7 @@ namespace ShevaEngine.Core
             _keys.Add(io.KeyMap[(int)ImGuiKey.Backspace] = (int)Keys.Back);
             _keys.Add(io.KeyMap[(int)ImGuiKey.Enter] = (int)Keys.Enter);
             _keys.Add(io.KeyMap[(int)ImGuiKey.Escape] = (int)Keys.Escape);
+            _keys.Add(io.KeyMap[(int)ImGuiKey.Space] = (int)Keys.Space);
             _keys.Add(io.KeyMap[(int)ImGuiKey.A] = (int)Keys.A);
             _keys.Add(io.KeyMap[(int)ImGuiKey.C] = (int)Keys.C);
             _keys.Add(io.KeyMap[(int)ImGuiKey.V] = (int)Keys.V);
@@ -193,13 +191,15 @@ namespace ShevaEngine.Core
         /// <summary>
         /// Updates the <see cref="Effect" /> to the current matrices and texture
         /// </summary>
-        protected Effect UpdateEffect(Texture2D texture)
+        protected virtual Effect UpdateEffect(Texture2D texture)
         {
+            _effect = _effect ?? new BasicEffect(_graphicsDevice);
+
             var io = ImGui.GetIO();
 
             _effect.World = Matrix.Identity;
             _effect.View = Matrix.Identity;
-            _effect.Projection = Matrix.CreateOrthographicOffCenter(0, io.DisplaySize.X, io.DisplaySize.Y, 0, -1f, 1f);
+            _effect.Projection = Matrix.CreateOrthographicOffCenter(0f, io.DisplaySize.X, io.DisplaySize.Y, 0f, -1f, 1f);
             _effect.TextureEnabled = true;
             _effect.Texture = texture;
             _effect.VertexColorEnabled = true;
@@ -210,7 +210,7 @@ namespace ShevaEngine.Core
         /// <summary>
         /// Sends XNA input state to ImGui
         /// </summary>
-        protected void UpdateInput()
+        protected virtual void UpdateInput()
         {
             var io = ImGui.GetIO();
 
@@ -380,4 +380,3 @@ namespace ShevaEngine.Core
         #endregion Internals
     }
 }
-#endif

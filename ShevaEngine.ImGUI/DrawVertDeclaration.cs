@@ -1,7 +1,6 @@
-﻿#if DEBUG_UI
-using Microsoft.Xna.Framework.Graphics;
+﻿using Microsoft.Xna.Framework.Graphics;
 
-namespace ShevaEngine.Core
+namespace ImGuiNET
 {
     public static class DrawVertDeclaration
     {
@@ -11,7 +10,7 @@ namespace ShevaEngine.Core
 
         static DrawVertDeclaration()
         {
-            unsafe { Size = sizeof(ImGuiNET.ImDrawVert); }
+            unsafe { Size = sizeof(ImDrawVert); }
 
             Declaration = new VertexDeclaration(
                 Size,
@@ -28,4 +27,3 @@ namespace ShevaEngine.Core
         }
     }
 }
-#endif

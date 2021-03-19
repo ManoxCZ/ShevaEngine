@@ -118,7 +118,6 @@ namespace ShevaEngine.Oceans
 			_oceanMaterial.DepthTexture = null;
 		}
 
-#if DEBUG_UI
 		/// <summary>
         /// DebugUI.
         /// </summary>
@@ -140,6 +139,5 @@ namespace ShevaEngine.Oceans
 			ImGuiNET.ImGui.SliderFloat("Light factor", ref tempSingle, 0.00f, 1.0f);
 			_oceanMaterial.LightFactor = tempSingle;
 		}
-#endif
 	}
 }

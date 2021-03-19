@@ -4,6 +4,7 @@ using Microsoft.Xna.Framework.Media;
 using ShevaEngine.UserAccounts;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Threading.Tasks;
@@ -25,14 +26,11 @@ namespace ShevaEngine.Core
 		public GraphicsDeviceManager GraphicsDeviceManager { get; private set; }        
         public ReplaySubject<InputState> InputState { get; private set; } = new ReplaySubject<InputState>();
 		private Stack<ShevaGameComponent> _gameComponents;
-		private object _componentsLock = new object();		
-		public ReplaySubject<User> User { get; private set; } = new ReplaySubject<User>();
-#if DEBUG_UI
+		private object _componentsLock = new object();
+        public User User { get; private set; }
         private bool _showDebugUI = false;
         public DebugUI DebugUI { get; private set; }
-#endif
-
-
+        
 
         /// <summary>
         /// Constructor.
@@ -110,16 +108,14 @@ namespace ShevaEngine.Core
         {
 			_log.Info("Initialization started");
 
-#if DEBUG_UI && DEBUG
-            if (System.Environment.GetCommandLineArgs().Any(item => item == "debug"))
+            if (Environment.GetCommandLineArgs().Any(item => item == "debug"))
 				_showDebugUI = true;
 
-			_showDebugUI = true;
+#if DEBUG
+            _showDebugUI = true;
 #endif
-
-#if DEBUG_UI
+            
             DebugUI = new DebugUI(this);
-#endif
 
             base.Initialize();			
 
@@ -187,9 +183,9 @@ namespace ShevaEngine.Core
 				{
 					_log.Info($"Invalid component type");
 				}
-			}
+			}            
 
-			User.OnNext(new LocalUser());
+            User = new User();
 
 			_log.Info("All game components initialized");
 		}
@@ -259,10 +255,8 @@ namespace ShevaEngine.Core
 				else
 					GraphicsDevice.Clear(Color.Black);
 
-#if DEBUG_UI
 			if (_showDebugUI)
 				DebugUI?.Draw(gameTime);
-#endif
         }
 
         /// <summary>

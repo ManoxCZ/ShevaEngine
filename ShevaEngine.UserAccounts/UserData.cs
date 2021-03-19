@@ -3,7 +3,8 @@
 	/// <summary>
 	/// User data.
 	/// </summary>
-	public abstract class UserData
+	public class UserData
 	{
+        public string Name { get; internal set; }
 	}
 }

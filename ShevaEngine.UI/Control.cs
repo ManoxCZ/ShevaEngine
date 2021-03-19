@@ -16,10 +16,7 @@ namespace ShevaEngine.UI
 		protected readonly Log Log;
 		protected ControlFlag Flags { get; set; }
 		protected List<IDisposable> Disposables { get; }
-        //public BehaviorSubject<Color> BackColor { get; }
         public BehaviorSubject<Brush> Background { get; }
-        //public string BackgroundImage { get; set; }
-        //public Stretch BackgroundStretch { get; set; }
         public HorizontalAlignment HorizontalAlignment { get; set; }
         public VerticalAlignment VerticalAlignment { get; set; }
         public List<Control> Children { get; set; }        
@@ -51,9 +48,7 @@ namespace ShevaEngine.UI
         public bool Visible { get; set; }
 		public Margin Margin { get; set; }        
         public int GridRow { get; set; } = 0;
-        public int GridColumn { get; set; } = 0;
-		private Texture2D _whiteTexture;
-		//private Texture2D _backgroundTexture;		
+        public int GridColumn { get; set; } = 0;		
 		public Subject<(InputState InputState, int X, int Y)> Click { get; }
 		public Subject<(InputState InputState, int X, int Y)> MouseMove { get; }
 		public Subject<(InputState InputState, int Wheel)> MouseWheel { get; }		 
@@ -126,8 +121,6 @@ namespace ShevaEngine.UI
 		/// </summary>        
 		public virtual void LoadContent(ContentManager contentManager)
         {
-            _whiteTexture = TextureUtils.WhiteTexture;
-
             Disposables.Add(Background.Subscribe(item =>
             {
                 item?.LoadContent(contentManager);
@@ -300,7 +293,7 @@ namespace ShevaEngine.UI
 		/// </summary>
 		public void DrawRectangle(SpriteBatch spriteBatch, Rectangle locationSize, Color color)
 		{		
-			spriteBatch.Draw(_whiteTexture, locationSize, null, color);
+			spriteBatch.Draw(TextureUtils.WhiteTexture, locationSize, null, color);
 		}				
 	}    
 }

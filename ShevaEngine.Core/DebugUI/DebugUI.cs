@@ -1,4 +1,3 @@
-#if DEBUG_UI
 using ImGuiNET;
 using Microsoft.Xna.Framework;
 using System.Collections.Generic;
@@ -19,7 +18,7 @@ namespace ShevaEngine.Core
         /// <summary>
         /// Constructor.
         /// </summary>        
-        public DebugUI(Microsoft.Xna.Framework.Game game)
+        public DebugUI(ShevaGame game)
         {
             _renderer = new ImGuiRenderer(game);
             _renderer.RebuildFontAtlas();            
@@ -94,4 +93,3 @@ namespace ShevaEngine.Core
         }
     }
 }
-#endif

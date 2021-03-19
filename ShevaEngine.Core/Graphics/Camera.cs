@@ -17,10 +17,7 @@ namespace ShevaEngine.Core
 	/// <summary>
 	/// Camera.
 	/// </summary> 
-	public class Camera
-#if DEBUG_UI
-        : IDebugUIPage
-#endif
+	public class Camera : IDebugUIPage, IDisposable
 	{
 		private readonly Log _log = new Log(typeof(Camera));
 		public string DebugUIPageName { get; private set; }
@@ -153,16 +150,22 @@ namespace ShevaEngine.Core
 			ViewMatrix = Matrix.Identity;
 			CameraType = CameraType.Perspective;
 
-#if DEBUG_UI
 			DebugUIPageName = $"Camera: {name}";
 			ShevaGame.Instance.DebugUI.AddDebugPage(this);	
-#endif
 
 			_spriteBatch = new SpriteBatch(ShevaGame.Instance.GraphicsDevice);
             _pipeline = new RenderingPipeline("Camera pipeline")
             {
                 Profile = matProfile,
             };
+        }
+
+        /// <summary>
+        /// Dispose.
+        /// </summary>
+        public void Dispose()
+        {
+            ShevaGame.Instance.DebugUI.RemoveDebugPage(this);
         }
 		
 		/// <summary>
@@ -338,17 +341,16 @@ namespace ShevaEngine.Core
 				target.SaveAsPng(stream, target.Width, target.Height );							
 		}
 
-#if DEBUG_UI
         /// <summary>
         /// DebugUI.
         /// </summary>
         public virtual void DebugUI()
         {		
 			if (ImGuiNET.ImGui.TreeNode($"Settings"))
-            {   				
-				Vector3 temp = ClearColor.ToVector3();				
-				ImGuiNET.ImGui.ColorEdit3("Clear color", ref temp);
-				ClearColor = new Color(temp);
+            {   				                
+				//Vector3 temp = ClearColor.ToVector3();				
+				//ImGuiNET.ImGui.ColorEdit3("Clear color", ref temp);
+				//ClearColor = new Color(temp);
 
 				float tempSingle = FieldOfView;
 				ImGuiNET.ImGui.SliderFloat("Field of view", ref tempSingle, 0.01f, 3.14f);
@@ -387,6 +389,5 @@ namespace ShevaEngine.Core
 				ImGuiNET.ImGui.TreePop();
 			}   				
 		}
-#endif
     }    
 }

@@ -1,3 +1,4 @@
+using ImGuiNET;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ShevaEngine.Core;
@@ -33,7 +34,6 @@ namespace ShevaEngine.PostProcesses
             Effect.Parameters["PixelSize"]?.SetValue(new Vector2(1.0f / InputTexture.Width, 1.0f / InputTexture.Height));
         }
 
-#if DEBUG_UI
         /// <summary>
         /// DebugUI.
         /// </summary>
@@ -42,17 +42,16 @@ namespace ShevaEngine.PostProcesses
             base.DebugUI();
 
             float tempSingle = Slope;
-			ImGuiNET.ImGui.SliderFloat(nameof(Slope), ref tempSingle, 2, 16);
+			ImGui.SliderFloat(nameof(Slope), ref tempSingle, 2, 16);
             Slope = tempSingle;
 
             tempSingle = Radius;
-			ImGuiNET.ImGui.SliderFloat(nameof(Radius), ref tempSingle, -1, 3);
+			ImGui.SliderFloat(nameof(Radius), ref tempSingle, -1, 3);
             Radius = tempSingle;
 
             tempSingle = Amount;
-			ImGuiNET.ImGui.SliderFloat(nameof(Amount), ref tempSingle, -2, 1);
+			ImGui.SliderFloat(nameof(Amount), ref tempSingle, -2, 1);
             Amount = tempSingle;
 		}	 
-#endif
     }
 }

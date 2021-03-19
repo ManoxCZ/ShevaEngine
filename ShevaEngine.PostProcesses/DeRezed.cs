@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using ImGuiNET;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
 namespace ShevaEngine.PostProcesses
@@ -12,7 +13,6 @@ namespace ShevaEngine.PostProcesses
             set => Effect.Parameters[nameof(NumberOfTiles)].SetValue(value);
         }
 
-#if DEBUG_UI
         /// <summary>
         /// DebugUI.
         /// </summary>
@@ -21,9 +21,8 @@ namespace ShevaEngine.PostProcesses
             base.DebugUI();
 
             int tempInt32 = NumberOfTiles;
-			ImGuiNET.ImGui.SliderInt("Number of tiles", ref tempInt32, 1, 2048);
+			ImGui.SliderInt("Number of tiles", ref tempInt32, 1, 2048);
             NumberOfTiles = tempInt32;
 		}	
-#endif
     }
 }

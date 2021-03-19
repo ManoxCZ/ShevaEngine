@@ -30,7 +30,6 @@ namespace ShevaEngine.Core
 
 		}
 
-#if DEBUG_UI
 		/// <summary>
         /// DebugUI.
         /// </summary>
@@ -40,6 +39,5 @@ namespace ShevaEngine.Core
 			ImGuiNET.ImGui.Checkbox("Enabled", ref tempBool);
 			Enabled = tempBool;
 		}	
-#endif
 	}
 }
