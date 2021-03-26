@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Reactive.Subjects;
+using System.Threading.Tasks;
 
 namespace ShevaEngine.UserAccounts
 {
@@ -7,7 +8,7 @@ namespace ShevaEngine.UserAccounts
     /// User.
     /// </summary>
     public class User : IDisposable
-    {
+    {       
 #if WINDOWS_UAP
         private Microsoft.Xbox.Services.System.XboxLiveUser _xboxLiveUser;
 #endif
@@ -19,7 +20,7 @@ namespace ShevaEngine.UserAccounts
         /// </summary>
         public User()
         {
-            ConnectToService();            
+            ConnectToService(true);
         }
 
         /// <summary>
@@ -34,8 +35,10 @@ namespace ShevaEngine.UserAccounts
         /// <summary>
         /// Connect to service.
         /// </summary>
-        public void ConnectToService()
+        public Task<bool> ConnectToService(bool silently = false)
         {
+            TaskCompletionSource<bool> taskSource = new TaskCompletionSource<bool>();
+
 #if WINDOWS_UAP
             Windows.Foundation.IAsyncOperation<System.Collections.Generic.IReadOnlyList<Windows.System.User>> usersTask = Windows.System.User.FindAllAsync();
 
@@ -49,33 +52,112 @@ namespace ShevaEngine.UserAccounts
                     _xboxLiveUser = new Microsoft.Xbox.Services.System.XboxLiveUser(user);
 
                     if (_xboxLiveUser.IsSignedIn)
-                        Data.OnNext(GetUserData(_xboxLiveUser));                                            
+                        GetUserData(_xboxLiveUser).ContinueWith(item => Data.OnNext(item.Result));                                         
                     else
                     {
-                        _xboxLiveUser.SignInSilentlyAsync(dispatcher).Completed +=
-                            (Windows.Foundation.IAsyncOperation<Microsoft.Xbox.Services.System.SignInResult> asyncInfoSignin, Windows.Foundation.AsyncStatus asyncStatusSignin) =>
+                        Data.OnNext(UserData.Connecting);
+
+                        if (silently)
                         {
-                            if (asyncInfoSignin.GetResults().Status == Microsoft.Xbox.Services.System.SignInStatus.Success)
-                                Data.OnNext(GetUserData(_xboxLiveUser));
-                            else
-                                Data.OnNext(null);
-                        };
+                            _xboxLiveUser.SignInSilentlyAsync(dispatcher).Completed +=
+                                (Windows.Foundation.IAsyncOperation<Microsoft.Xbox.Services.System.SignInResult> asyncInfoSignin, Windows.Foundation.AsyncStatus asyncStatusSignin) =>
+                            {
+                                if (asyncInfoSignin.GetResults().Status == Microsoft.Xbox.Services.System.SignInStatus.Success)
+                                {
+                                    GetUserData(_xboxLiveUser).ContinueWith(item => Data.OnNext(item.Result));
+
+                                    taskSource.SetResult(true);
+                                }
+                                else
+                                {
+                                    Data.OnNext(null);
+
+                                    taskSource.SetResult(false);
+                                }
+                            };
+                        }
+                        else
+                        {
+                            _xboxLiveUser.SignInAsync(dispatcher).Completed +=
+                                (Windows.Foundation.IAsyncOperation<Microsoft.Xbox.Services.System.SignInResult> asyncInfoSignin, Windows.Foundation.AsyncStatus asyncStatusSignin) =>
+                                {
+                                    if (asyncInfoSignin.GetResults().Status == Microsoft.Xbox.Services.System.SignInStatus.Success)
+                                    {
+                                        GetUserData(_xboxLiveUser).ContinueWith(item => Data.OnNext(item.Result));
+
+                                        taskSource.SetResult(true);
+                                    }
+                                    else
+                                    {
+                                        Data.OnNext(null);
+
+                                        taskSource.SetResult(false);
+                                    }
+                                };
+                        }
                     }
                 }       
             };
 #endif
+
+            return taskSource.Task;
         }
 
 #if WINDOWS_UAP
         /// <summary>
         /// Get user data.
         /// </summary>
-        private UserData GetUserData(Microsoft.Xbox.Services.System.XboxLiveUser user)
+        private Task<UserData> GetUserData(Microsoft.Xbox.Services.System.XboxLiveUser user)
         {
-            return new UserData()
+            Microsoft.Xbox.Services.XboxLiveContext context = new Microsoft.Xbox.Services.XboxLiveContext(user);
+            Task<Microsoft.Xbox.Services.Social.XboxUserProfile> getUserProfileTask = context.ProfileService.GetUserProfileAsync(user.XboxUserId).AsTask();
+
+            return getUserProfileTask.ContinueWith(userProfileTask => 
             {
-                Name = user.Gamertag,                
-            };
+                Microsoft.Xbox.Services.Social.XboxUserProfile userProfile = userProfileTask.Result;
+
+                GetGamerPicture(user, context, userProfile);
+
+                //Microsoft.Xbox.Services.XboxLiveHttpCall httpCall = Microsoft.Xbox.Services.XboxLiveHttpCall.CreateXboxLiveHttpCall(
+                //    context.Settings, "GET", )
+
+                return new UserData()
+                {
+                    GamerName = userProfile.GameDisplayName,
+                };
+            });                                  
+        }
+
+        private void GetGamerPicture(Microsoft.Xbox.Services.System.XboxLiveUser user,
+            Microsoft.Xbox.Services.XboxLiveContext context, Microsoft.Xbox.Services.Social.XboxUserProfile userProfile)
+        {
+            Uri uri = userProfile.GameDisplayPictureResizeUri;
+
+            Microsoft.Xbox.Services.XboxLiveHttpCall liveHttpCall = Microsoft.Xbox.Services.XboxLiveHttpCall.CreateXboxLiveHttpCall(
+                context.Settings,
+                "GET",
+                $@"{uri.Scheme}://{uri.Host}",
+                uri.Query);                        
+
+            liveHttpCall.GetResponseWithoutAuth(Microsoft.Xbox.Services.HttpCallResponseBodyType.VectorBody)
+                .AsTask()
+                .ContinueWith(responseTask =>
+                {
+                    try
+                    {
+                        Microsoft.Xbox.Services.XboxLiveHttpCallResponse response = responseTask.Result;
+
+                        if (response.ErrorCode != 0)
+                            return;
+
+                        //auto image = response->response_body_vector();
+                        //SetGamerPic(image.data(), image.size());
+                    }
+                    catch (Exception exception)
+                    {
+                        //    OutputDebugString(L"Getting the http_call_response when getting a gamerpic threw an exception\n");
+                    }
+                });
         }
 #endif      
     }

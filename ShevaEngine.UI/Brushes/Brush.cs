@@ -24,7 +24,10 @@ namespace ShevaEngine.UI
         /// <summary>
 		/// Load content.
 		/// </summary>        
-		public abstract void LoadContent(ContentManager contentManager);
+		public virtual void LoadContent(ContentManager contentManager)
+        {
+
+        }
 
         /// <summary>
         /// Draw method.

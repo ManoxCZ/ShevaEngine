@@ -272,7 +272,7 @@ namespace ShevaEngine.UI
         /// Method Draw().
         /// </summary>
         public virtual void Draw(SpriteBatch spriteBatch, GameTime gameTime)
-        {
+        {            
 			foreach (ControlFlag flag in Enum.GetValues(typeof(ControlFlag)))
 				if ((Flags & flag) == flag)
 					Animations[flag].Update(gameTime);
