@@ -189,7 +189,7 @@ namespace ShevaEngine.Core
 				}
 			}            
 
-            User = new User();
+            User = new User(this);
 
 			_log.Info("All game components initialized");
 		}
