@@ -7,7 +7,7 @@ using System.Collections.Generic;
 using System.Reactive.Subjects;
 
 namespace ShevaEngine.UI
-{
+{        
 	/// <summary>
 	/// Control.
 	/// </summary> 	
@@ -47,34 +47,38 @@ namespace ShevaEngine.UI
         public string Name { get; set; }                
         public bool Visible { get; set; }
 		public Margin Margin { get; set; }        
-        public int GridRow { get; set; } = 0;
-        public int GridColumn { get; set; } = 0;		
+        public BehaviorSubject<int> GridRow { get; set; }
+        public BehaviorSubject<int> GridColumn { get; set; }
 		public Subject<(InputState InputState, int X, int Y)> Click { get; }
 		public Subject<(InputState InputState, int X, int Y)> MouseMove { get; }
 		public Subject<(InputState InputState, int Wheel)> MouseWheel { get; }		 
 		private int _previousMouseX = 0;
 		private int _previousMouseY = 0;
 		private int _previousWheel = 0;
-		public SortedDictionary<ControlFlag, ControlAnimations> Animations { get; }		
+		public SortedDictionary<ControlFlag, ControlAnimations> Animations { get; }
+        private SortedDictionary<string, object> _properties;
+        private SortedDictionary<string, Type> _propertyTypes;
 
 
-		/// <summary>
-		/// Constructor.
-		/// </summary>
-		public Control()
+        /// <summary>
+        /// Constructor.
+        /// </summary>
+        public Control()
 		{
 			Log = new Log(GetType());
 
+            _properties = new SortedDictionary<string, object>();
+            _propertyTypes = new SortedDictionary<string, Type>();
+
 			Flags = ControlFlag.Default;
-			Disposables = new List<IDisposable>();
-			//BackColor = CreateMember(Color.Transparent);
-            Background = CreateMember<Brush>(null);
-			//BackgroundImage = null;
-			//BackgroundStretch = Stretch.Uniform;
+			Disposables = new List<IDisposable>();			
+            Background = CreateProperty<Brush>(nameof(Background), null);			
 			Children = new List<Control>();
 			HorizontalAlignment = HorizontalAlignment.Center;
 			VerticalAlignment = VerticalAlignment.Center;
-			Enabled = true;
+            GridColumn = CreateProperty(nameof(GridColumn), 0);
+            GridRow = CreateProperty(nameof(GridRow), 0);
+            Enabled = true;
 			IsSelectAble = false;
 			IsSelected = false;
 			Margin = new Margin();
@@ -92,13 +96,54 @@ namespace ShevaEngine.UI
         /// <summary>
         /// Method creates new member.
         /// </summary>
-        protected BehaviorSubject<T> CreateMember<T>(T value)
+        protected BehaviorSubject<T> CreateProperty<T>(string propertyName, T value)
         {
             BehaviorSubject<T> instance = new BehaviorSubject<T>(value);
+
+            string propertyNameLower = propertyName.ToLower();
+            _properties.Add(propertyNameLower, instance);
+            _propertyTypes.Add(propertyNameLower, typeof(T));
 
             Disposables.Add(instance);
 
             return instance;
+        }
+
+        /// <summary>
+        /// Has property.
+        /// </summary>        
+        public bool HasProperty(string propertyName)
+        {
+            return _properties.ContainsKey(propertyName.ToLower());
+        }        
+
+        /// <summary>
+        /// Set property value.
+        /// </summary>
+        public bool SetPropertyValue<T>(string propertyName, T value)
+        {
+            string propertyNameLower = propertyName.ToLower();
+
+            if (!HasProperty(propertyNameLower))
+                return false;
+
+            if (_properties[propertyNameLower] is BehaviorSubject<T> property)
+                property.OnNext(value);
+
+            return true;
+        }        
+
+        /// <summary>
+        /// Get property type.
+        /// </summary>
+        public Type GetPropertyType(string propertyName)
+        {
+            string propertyNameLower = propertyName.ToLower();
+
+            if (!HasProperty(propertyNameLower))
+                return null;
+
+            return _propertyTypes[propertyNameLower];
         }
 
 		/// <summary>

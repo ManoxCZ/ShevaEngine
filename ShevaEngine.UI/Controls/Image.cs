@@ -20,7 +20,7 @@ namespace ShevaEngine.UI
 		public Image()
 			: base()
 		{			
-            Brush = CreateMember<Brush>(null);
+            Brush = CreateProperty<Brush>(nameof(Brush), null);
 		}
 
 		/// <summary>

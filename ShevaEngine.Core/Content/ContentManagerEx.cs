@@ -1,7 +1,10 @@
 ﻿using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
+using ShevaEngine.UI;
+using ShevaEngine.UI.XamlImporter;
 using System;
 using System.Collections.Generic;
+using System.Xml;
 
 namespace ShevaEngine.Core
 {
@@ -53,6 +56,13 @@ namespace ShevaEngine.Core
                         }
 
                         return (T)(object)_fonts[assetName];
+                    }
+
+                    if (typeof(T) == typeof(Control))
+                    {
+                        string data = base.Load<string>(assetName);
+
+                        return (T)(object)XamlImporter.Import(data);
                     }
 
                     T output = base.Load<T>(assetName);

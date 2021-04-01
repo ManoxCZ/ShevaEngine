@@ -25,15 +25,10 @@ namespace ShevaEngine.UI
 		/// </summary>
 		public Label()
 		{
-			Text = new BehaviorSubject<object>(String.Empty);
-			Disposables.Add(Text);
-
-			FontSize = new BehaviorSubject<FontSize>(ShevaEngine.Core.FontSize.Size12);
-			Disposables.Add(FontSize);
-
-			ForeColor = new BehaviorSubject<Color>(Color.Black);
-			Disposables.Add(ForeColor);
-
+			Text = CreateProperty<object>(nameof(Text), String.Empty);			
+            FontSize = CreateProperty(nameof(FontSize), Core.FontSize.Size12);			
+			ForeColor = CreateProperty(nameof(ForeColor), Color.Black);
+			
 			Disposables.Add(Text.Subscribe(item =>
 			{
 				Resize(LocationSize - Margin);

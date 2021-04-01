@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reactive.Subjects;
 
 namespace ShevaEngine.UI
 {
@@ -9,8 +10,8 @@ namespace ShevaEngine.UI
 	/// </summary>		
 	public class Grid : Control
     {
-        public List<GridRowDefinition> RowDefinitions { get; set; } = new List<GridRowDefinition>();
-        public List<GridColumnDefinition> ColumnDefinitions { get; set; } = new List<GridColumnDefinition>();
+        public BehaviorSubject<IReadOnlyCollection<GridRowDefinition>> RowDefinitions { get; set; }
+        public BehaviorSubject<IReadOnlyCollection<GridColumnDefinition>> ColumnDefinitions { get; set; }
 
 
         /// <summary>
@@ -18,8 +19,11 @@ namespace ShevaEngine.UI
         /// </summary>
         public Grid()
         {
-            RowDefinitions.Add(new GridRowDefinition { Units = Units.Relative, Height = 1 });
-            ColumnDefinitions.Add(new GridColumnDefinition { Units = Units.Relative, Width = 1 });
+            RowDefinitions = CreateProperty<IReadOnlyCollection<GridRowDefinition>>(
+                nameof(RowDefinitions), new List<GridRowDefinition>() { new GridRowDefinition { Units = Units.Relative, Height = 1 } });
+
+            ColumnDefinitions = CreateProperty<IReadOnlyCollection<GridColumnDefinition>>(
+                nameof(ColumnDefinitions), new List<GridColumnDefinition>() { new GridColumnDefinition { Units = Units.Relative, Width = 1 } });            
         }
 
         /// <summary>
@@ -32,10 +36,10 @@ namespace ShevaEngine.UI
 
             foreach (Control child in Children)
                 child.Resize(new Rectangle(
-					locationSize.X + GetX(columnWidths,child.GridColumn),
-					locationSize.Y + GetY(rowHeights, child.GridRow), 
-                    columnWidths[child.GridColumn],
-					rowHeights[child.GridRow]));
+					locationSize.X + GetX(columnWidths,child.GridColumn.Value),
+					locationSize.Y + GetY(rowHeights, child.GridRow.Value), 
+                    columnWidths[child.GridColumn.Value],
+					rowHeights[child.GridRow.Value]));
 
             LocationSize = locationSize;
         }
@@ -48,7 +52,7 @@ namespace ShevaEngine.UI
             double absoluteSum = 0;
             double relativeSum = 0;
 
-            foreach (GridRowDefinition rowDefinition in RowDefinitions)                
+            foreach (GridRowDefinition rowDefinition in RowDefinitions.Value)                
             {
                 if (rowDefinition.Units == Units.Absolute)
                     absoluteSum += rowDefinition.Height;
@@ -58,7 +62,7 @@ namespace ShevaEngine.UI
 
             double heightWithoutAbsolute = parentHeight - absoluteSum;
 
-            return RowDefinitions.Select(item =>
+            return RowDefinitions.Value.Select(item =>
             {
                 if (item.Units == Units.Absolute)
                     return (int)item.Height;
@@ -75,7 +79,7 @@ namespace ShevaEngine.UI
             double absoluteSum = 0;
             double relativeSum = 0;
 
-            foreach (GridColumnDefinition columnDefinition in ColumnDefinitions)                
+            foreach (GridColumnDefinition columnDefinition in ColumnDefinitions.Value)                
             {
                 if (columnDefinition.Units == Units.Absolute)
                     absoluteSum += columnDefinition.Width;
@@ -85,7 +89,7 @@ namespace ShevaEngine.UI
 
             double widthWithoutAbsolute = parentWidth - absoluteSum;
 
-            return ColumnDefinitions.Select(item =>
+            return ColumnDefinitions.Value.Select(item =>
             {
                 if (item.Units == Units.Absolute)
                     return (int)item.Width;
