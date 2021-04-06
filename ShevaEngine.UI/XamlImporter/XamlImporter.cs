@@ -1,39 +1,57 @@
 ﻿using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Xml;
 
-namespace ShevaEngine.UI.XamlImporter
+namespace ShevaEngine.UI
 {
     public class XamlImporter 
     {
+
+        private static Dictionary<Type, INodeImporter> _importers = CreateImporters();
+
+
+        /// <summary>
+        /// Create importers.
+        /// </summary>        
+        private static Dictionary<Type, INodeImporter> CreateImporters()
+        {
+            return new Dictionary<Type, INodeImporter>
+            {
+                { typeof(ColumnDefinition), new ColumnDefinitionImporter() },
+                { typeof(RowDefinition), new RowDefinitionImporter() }
+            };
+        }
+
         /// <summary>
         /// Import layer.
         /// </summary>
-        public static Control Import(string data)
+        public static Control Import(IUIStyleGenerator styleGenerator, string data)
         {
             XmlDocument document = new XmlDocument();
             document.LoadXml(data);
 
-            return ImportXaml(document);            
+            return ImportXaml(styleGenerator, document);            
         }
 
         /// <summary>
         /// Import xaml.
         /// </summary>        
-        private static Control ImportXaml(XmlDocument document)
+        private static Control ImportXaml(IUIStyleGenerator styleGenerator, XmlDocument document)
         {
-            return ImportXamlNode(document.FirstChild.FirstChild);
+            return ImportXamlNode(styleGenerator, document.FirstChild.FirstChild);
         }
 
         /// <summary>
         /// Import xaml node.
         /// </summary>        
-        private static Control ImportXamlNode(XmlNode node)
+        private static Control ImportXamlNode(IUIStyleGenerator styleGenerator, XmlNode node)
         {
-            Control control = CreateControl(node);
+            Control control = CreateControl(styleGenerator, node);
 
             if (control != null)
             {
-                SetAttributes(control, node);
+                SetAttributes(styleGenerator, control, node);
 
                 foreach (XmlNode child in node.ChildNodes)
                 {
@@ -47,7 +65,7 @@ namespace ShevaEngine.UI.XamlImporter
                             SetAttribute(control, attributeName, child);
                     }
                     else
-                        control.Children.Add(ImportXamlNode(child));
+                        control.Children.Add(ImportXamlNode(styleGenerator, child));
                 }
             }
             
@@ -57,69 +75,27 @@ namespace ShevaEngine.UI.XamlImporter
         /// <summary>
         /// Create control.
         /// </summary>
-        private static Control CreateControl(XmlNode node)
+        private static Control CreateControl(IUIStyleGenerator styleGenerator, XmlNode node)
         {
             switch (node.Name.ToLowerInvariant())
-            {
-                case "usercontrol":
-                    return CreateUserControl(node);
+            {                
                 case "grid":
-                    return CreateGrid(node);
+                    return styleGenerator.Create<Grid>();                                    
                 case "button":
-                    return CreateButton(node);
-                case "stackpanel":
-                    break;
+                    return styleGenerator.Create<Button>();
                 case "textblock":
-                    return CreateLabel(node);
+                    return styleGenerator.Create<Label>();
                 case "image":
-                    break;
+                    return styleGenerator.Create<Image>();
                 default:
                     throw new NotImplementedException();
-            }
-
-            return null;
-        }
-
-        /// <summary>
-        /// Create user control.
-        /// </summary>
-        /// <returns></returns>
-        private static Control CreateUserControl(XmlNode node)
-        {
-            return new Grid();
-        }
-
-        /// <summary>
-        /// Create grid control.
-        /// </summary>
-        /// <returns></returns>
-        private static Control CreateGrid(XmlNode node)
-        {
-            return new Grid();
-        }
-
-        /// <summary>
-        /// Create button control.
-        /// </summary>
-        /// <returns></returns>
-        private static Button CreateButton(XmlNode node)
-        {
-            return new Button();
-        }
-
-        /// <summary>
-        /// Create label control.
-        /// </summary>
-        /// <returns></returns>
-        private static Label CreateLabel(XmlNode node)
-        {           
-            return new Label();
-        }
+            }           
+        }        
 
         /// <summary>
         /// Set attributes.
         /// </summary>
-        private static void SetAttributes(Control control, XmlNode node)
+        private static void SetAttributes(IUIStyleGenerator styleGenerator, Control control, XmlNode node)
         {
             foreach (XmlAttribute attribute in node.Attributes)
             {
@@ -127,6 +103,17 @@ namespace ShevaEngine.UI.XamlImporter
 
                 if (control.HasProperty(attributeName))
                     SetAttribute(control, attributeName, attribute.Value);
+                else if (attributeName == "content")
+                {
+                    Label newLabel = styleGenerator.Create<Label>();
+                    newLabel.Text.OnNext(attribute.Value);
+
+                    control.Children.Add(newLabel);
+                }
+                else
+                {
+
+                }
             }
         }
 
@@ -137,8 +124,8 @@ namespace ShevaEngine.UI.XamlImporter
         {
             Type propertyType = control.GetPropertyType(propertyName);
 
-            if (propertyType == typeof(Int32))
-                control.SetPropertyValue<Int32>(propertyName, int.Parse(value));
+            if (propertyType == typeof(int))
+                control.SetPropertyValue(propertyName, int.Parse(value));
             else
                 control.SetPropertyValue(propertyName, value);
         }
@@ -148,7 +135,20 @@ namespace ShevaEngine.UI.XamlImporter
         /// </summary>
         private static void SetAttribute(Control control, string propertyName, XmlNode node)
         {
-            Type propertyType = control.GetPropertyType(propertyName);            
+            Type propertyType = control.GetPropertyType(propertyName);
+           
+            if (propertyType.IsGenericType && propertyType.GenericTypeArguments.Length > 0)
+            {
+                Type itemType = propertyType.GenericTypeArguments[0];
+                Type containerType = typeof(List<>).MakeGenericType(itemType);                               
+                IList container = (IList)Activator.CreateInstance(containerType);
+
+                if (_importers.ContainsKey(itemType) && _importers.TryGetValue(itemType, out INodeImporter importer))
+                    foreach (XmlNode child in node.ChildNodes)
+                        container.Add(importer.Import(child));
+
+                control.SetPropertyValue(propertyName, container);
+            }
         }
 
         /// <summary>
@@ -156,7 +156,7 @@ namespace ShevaEngine.UI.XamlImporter
         /// </summary>
         private static string FixAttributeName(string attributeName)
         {
-            return attributeName.Replace(".", "");
+            return attributeName.ToLower().Replace(".", "");
         }
 
         

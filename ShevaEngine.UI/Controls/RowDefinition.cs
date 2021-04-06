@@ -3,9 +3,9 @@ namespace ShevaEngine.UI
     /// <summary>
     /// Grid row definition.
     /// </summary>
-    public class GridRowDefinition
+    public class RowDefinition
     {
         public Units Units { get; set; }
-        public double Height { get; set; }
+        public double Value { get; set; }
     }
 }

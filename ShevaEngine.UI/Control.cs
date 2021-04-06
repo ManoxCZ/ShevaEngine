@@ -7,18 +7,18 @@ using System.Collections.Generic;
 using System.Reactive.Subjects;
 
 namespace ShevaEngine.UI
-{        
-	/// <summary>
-	/// Control.
-	/// </summary> 	
-	public abstract class Control : IDisposable
+{
+    /// <summary>
+    /// Control.
+    /// </summary> 	
+    public abstract class Control : IDisposable
     {
 		protected readonly Log Log;
 		protected ControlFlag Flags { get; set; }
 		protected List<IDisposable> Disposables { get; }
         public BehaviorSubject<Brush> Background { get; }
-        public HorizontalAlignment HorizontalAlignment { get; set; }
-        public VerticalAlignment VerticalAlignment { get; set; }
+        public BehaviorSubject<HorizontalAlignment> HorizontalAlignment { get; }
+        public BehaviorSubject<VerticalAlignment> VerticalAlignment { get; }
         public List<Control> Children { get; set; }        
         public bool Enabled { get; set; }
 		public bool IsSelectAble
@@ -74,8 +74,8 @@ namespace ShevaEngine.UI
 			Disposables = new List<IDisposable>();			
             Background = CreateProperty<Brush>(nameof(Background), null);			
 			Children = new List<Control>();
-			HorizontalAlignment = HorizontalAlignment.Center;
-			VerticalAlignment = VerticalAlignment.Center;
+			HorizontalAlignment = CreateProperty<HorizontalAlignment>(nameof(HorizontalAlignment), UI.HorizontalAlignment.Center);
+			VerticalAlignment = CreateProperty<VerticalAlignment>(nameof(VerticalAlignment), UI.VerticalAlignment.Center);
             GridColumn = CreateProperty(nameof(GridColumn), 0);
             GridRow = CreateProperty(nameof(GridRow), 0);
             Enabled = true;
@@ -127,9 +127,14 @@ namespace ShevaEngine.UI
             if (!HasProperty(propertyNameLower))
                 return false;
 
-            if (_properties[propertyNameLower] is BehaviorSubject<T> property)
-                property.OnNext(value);
+            Type propertyType = _properties[propertyNameLower].GetType().GenericTypeArguments[0];
 
+            if (propertyType.IsAssignableFrom(value.GetType()))
+            {                
+                object test = _properties[propertyNameLower];
+                test.GetType().GetMethod("OnNext").Invoke(test, new[] { (object)value });                
+            }
+                        
             return true;
         }        
 

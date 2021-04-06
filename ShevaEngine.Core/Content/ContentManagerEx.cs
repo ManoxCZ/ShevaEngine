@@ -1,10 +1,8 @@
 ﻿using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using ShevaEngine.UI;
-using ShevaEngine.UI.XamlImporter;
 using System;
 using System.Collections.Generic;
-using System.Xml;
 
 namespace ShevaEngine.Core
 {
@@ -14,16 +12,18 @@ namespace ShevaEngine.Core
 	public class ContentManagerEx : ContentManager
 	{
 		private readonly Log _log = new Log(typeof(ContentManagerEx));
-		private object _lock = new object();
+        private readonly ShevaGame _game;
+        private object _lock = new object();
 		private SortedDictionary<string,Font> _fonts = new SortedDictionary<string, Font>();
 
 
 		/// <summary>
 		/// Constructor.
 		/// </summary>		
-		public ContentManagerEx(IServiceProvider serviceProvider) 
+		public ContentManagerEx(ShevaGame game, IServiceProvider serviceProvider) 
 			: base(serviceProvider)
 		{
+            _game = game;
 		}
 
 		/// <summary>
@@ -62,7 +62,7 @@ namespace ShevaEngine.Core
                     {
                         string data = base.Load<string>(assetName);
 
-                        return (T)(object)XamlImporter.Import(data);
+                        return (T)(object)XamlImporter.Import(_game.UIStyle, data);
                     }
 
                     T output = base.Load<T>(assetName);

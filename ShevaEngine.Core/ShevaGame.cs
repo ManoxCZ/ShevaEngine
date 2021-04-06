@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Media;
+using ShevaEngine.UI;
 using ShevaEngine.UserAccounts;
 using System;
 using System.Collections.Generic;
@@ -31,6 +32,7 @@ namespace ShevaEngine.Core
         public User User { get; private set; }        
         private bool _showDebugUI = false;
         public DebugUI DebugUI { get; private set; }
+        public IUIStyleGenerator UIStyle { get; protected set; } = new DefaultUIStyleGenerator();
         
 
         /// <summary>
@@ -77,7 +79,7 @@ namespace ShevaEngine.Core
 
             GraphicsDeviceManager.ApplyChanges();
 
-			Content = new ContentManagerEx(Services);
+			Content = new ContentManagerEx(this, Services);
 
 			Window.Title = @"Sheva Engine MG";
 			
@@ -159,7 +161,7 @@ namespace ShevaEngine.Core
 
             base.LoadContent();
 
-            TextureUtils.Prepare(GraphicsDevice);
+            TextureUtils.Prepare(GraphicsDevice);            
 
 			_log.Info("Loading content finished");
 

@@ -1,13 +1,9 @@
-﻿using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Input;
-using ShevaEngine.Core;
-
-namespace ShevaEngine.UI
+﻿namespace ShevaEngine.UI
 {
-	/// <summary>
-	/// Button class.
-	/// </summary>	
-	public class Button : Control
+    /// <summary>
+    /// Button class.
+    /// </summary>	
+    public class Button : Control
 	{
 
 		/// <summary>
@@ -16,7 +12,7 @@ namespace ShevaEngine.UI
 		public Button()
 			: base()
 		{
-			IsSelectAble = true;
+			IsSelectAble = true;            
 		}
 	}
 }

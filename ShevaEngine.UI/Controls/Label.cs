@@ -73,30 +73,30 @@ namespace ShevaEngine.UI
             int newX = locationSize.X + Margin.Left;
             int newY = locationSize.Y + Margin.Bottom;
 
-            switch (HorizontalAlignment)
+            switch (HorizontalAlignment.Value)
             {
-                case HorizontalAlignment.Left:
+                case ShevaEngine.UI.HorizontalAlignment.Left:
                     newX = locationSize.X + Margin.Left;
                     break;
-                case HorizontalAlignment.Center:
-                case HorizontalAlignment.Stretch:
+                case ShevaEngine.UI.HorizontalAlignment.Center:
+                case ShevaEngine.UI.HorizontalAlignment.Stretch:
                     newX = (int)(locationSize.X + Margin.Left + (locationSize.Width - size.X - Margin.Left - Margin.Right) / 2);
                     break;
-                case HorizontalAlignment.Right:
+                case ShevaEngine.UI.HorizontalAlignment.Right:
                     newX = (int)(locationSize.X + Margin.Left + (locationSize.Width - size.X - Margin.Left - Margin.Right));
                     break;
             }
 
-            switch (VerticalAlignment)
+            switch (VerticalAlignment.Value)
             {
-                case VerticalAlignment.Top:
+                case ShevaEngine.UI.VerticalAlignment.Top:
                     newY = locationSize.Y + Margin.Bottom;
                     break;
-                case VerticalAlignment.Center:
-                case VerticalAlignment.Stretch:
+                case ShevaEngine.UI.VerticalAlignment.Center:
+                case ShevaEngine.UI.VerticalAlignment.Stretch:
                     newY = (int)(locationSize.Y + Margin.Bottom + (locationSize.Height - size.Y - Margin.Bottom - Margin.Top) / 2);
                     break;
-                case VerticalAlignment.Bottom:
+                case ShevaEngine.UI.VerticalAlignment.Bottom:
                     newY = (int)(locationSize.Y + Margin.Bottom + (locationSize.Height - size.Y - Margin.Bottom - Margin.Top));
                     break;
             }

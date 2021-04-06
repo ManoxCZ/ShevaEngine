@@ -28,11 +28,11 @@ namespace ShevaEngine.Core
                 grid.Background.OnNext(new ImageBrush(@"Content/Graphics/LoadingScreen", Stretch.UniformToFill));
 
                 grid.RowDefinitions.OnNext(new[] {
-                    new GridRowDefinition { Units = Units.Absolute, Height = logosSize },
-                    new GridRowDefinition { Units = Units.Relative, Height = 2 },
-                    new GridRowDefinition { Units = Units.Relative, Height = 2 },
-                    new GridRowDefinition { Units = Units.Relative, Height = 3 },
-                    new GridRowDefinition { Units = Units.Absolute, Height = logosSize }});
+                    new RowDefinition { Units = Units.Absolute, Value = logosSize },
+                    new RowDefinition { Units = Units.Relative, Value = 2 },
+                    new RowDefinition { Units = Units.Relative, Value = 2 },
+                    new RowDefinition { Units = Units.Relative, Value = 3 },
+                    new RowDefinition { Units = Units.Absolute, Value = logosSize }});
 
 
                 Image splashLogo = new Image();
@@ -52,8 +52,8 @@ namespace ShevaEngine.Core
                 loadingLabel.FontSize.OnNext(FontSize.Size20);
                 loadingLabel.GridRow.OnNext(3);
                 loadingLabel.ForeColor.OnNext(Color.White);
-                loadingLabel.HorizontalAlignment = HorizontalAlignment.Center;
-                loadingLabel.VerticalAlignment = VerticalAlignment.Bottom;
+                loadingLabel.HorizontalAlignment.OnNext(HorizontalAlignment.Center);
+                loadingLabel.VerticalAlignment.OnNext(VerticalAlignment.Bottom);
                 loadingLabel.Margin = new Margin()
                 {
                     Left = 4,
@@ -74,9 +74,9 @@ namespace ShevaEngine.Core
                 Grid bottomGrid = new Grid();
                 bottomGrid.GridRow.OnNext(4);
                 bottomGrid.ColumnDefinitions.OnNext(new[] {
-                    new GridColumnDefinition { Units = Units.Absolute, Width = logosSize },
-                    new GridColumnDefinition { Units = Units.Relative, Width = 1 },
-                    new GridColumnDefinition { Units = Units.Absolute, Width = 256 }});
+                    new ColumnDefinition { Units = Units.Absolute, Value = logosSize },
+                    new ColumnDefinition { Units = Units.Relative, Value = 1 },
+                    new ColumnDefinition { Units = Units.Absolute, Value = 256 }});
 
                 Image monogameLogo = new Image();
                 monogameLogo.Brush.OnNext(new ImageBrush(@"Content/Graphics/Monogame"));
@@ -94,8 +94,8 @@ namespace ShevaEngine.Core
                 Label versionLabel = new Label();
                 versionLabel.GridColumn.OnNext(2);
                 versionLabel.ForeColor.OnNext(Color.White);
-                versionLabel.HorizontalAlignment = HorizontalAlignment.Right;
-                versionLabel.VerticalAlignment = VerticalAlignment.Bottom;
+                versionLabel.HorizontalAlignment.OnNext(HorizontalAlignment.Right);
+                versionLabel.VerticalAlignment.OnNext(VerticalAlignment.Bottom);
                 versionLabel.Margin = new Margin()
                 {
                     Left = 4,

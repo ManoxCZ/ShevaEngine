@@ -10,8 +10,8 @@ namespace ShevaEngine.UI
 	/// </summary>		
 	public class Grid : Control
     {
-        public BehaviorSubject<IReadOnlyCollection<GridRowDefinition>> RowDefinitions { get; set; }
-        public BehaviorSubject<IReadOnlyCollection<GridColumnDefinition>> ColumnDefinitions { get; set; }
+        public BehaviorSubject<IReadOnlyCollection<RowDefinition>> RowDefinitions { get; set; }
+        public BehaviorSubject<IReadOnlyCollection<ColumnDefinition>> ColumnDefinitions { get; set; }
 
 
         /// <summary>
@@ -19,11 +19,11 @@ namespace ShevaEngine.UI
         /// </summary>
         public Grid()
         {
-            RowDefinitions = CreateProperty<IReadOnlyCollection<GridRowDefinition>>(
-                nameof(RowDefinitions), new List<GridRowDefinition>() { new GridRowDefinition { Units = Units.Relative, Height = 1 } });
+            RowDefinitions = CreateProperty<IReadOnlyCollection<RowDefinition>>(
+                nameof(RowDefinitions), new List<RowDefinition>() { new RowDefinition { Units = Units.Relative, Value = 1 } });
 
-            ColumnDefinitions = CreateProperty<IReadOnlyCollection<GridColumnDefinition>>(
-                nameof(ColumnDefinitions), new List<GridColumnDefinition>() { new GridColumnDefinition { Units = Units.Relative, Width = 1 } });            
+            ColumnDefinitions = CreateProperty<IReadOnlyCollection<ColumnDefinition>>(
+                nameof(ColumnDefinitions), new List<ColumnDefinition>() { new ColumnDefinition { Units = Units.Relative, Value = 1 } });            
         }
 
         /// <summary>
@@ -52,12 +52,12 @@ namespace ShevaEngine.UI
             double absoluteSum = 0;
             double relativeSum = 0;
 
-            foreach (GridRowDefinition rowDefinition in RowDefinitions.Value)                
+            foreach (RowDefinition rowDefinition in RowDefinitions.Value)                
             {
                 if (rowDefinition.Units == Units.Absolute)
-                    absoluteSum += rowDefinition.Height;
+                    absoluteSum += rowDefinition.Value;
                 else
-                    relativeSum += rowDefinition.Height;
+                    relativeSum += rowDefinition.Value;
             }
 
             double heightWithoutAbsolute = parentHeight - absoluteSum;
@@ -65,9 +65,9 @@ namespace ShevaEngine.UI
             return RowDefinitions.Value.Select(item =>
             {
                 if (item.Units == Units.Absolute)
-                    return (int)item.Height;
+                    return (int)item.Value;
                 else
-                    return (int)(item.Height / relativeSum * heightWithoutAbsolute);
+                    return (int)(item.Value / relativeSum * heightWithoutAbsolute);
             }).ToArray();
         }
 
@@ -79,12 +79,12 @@ namespace ShevaEngine.UI
             double absoluteSum = 0;
             double relativeSum = 0;
 
-            foreach (GridColumnDefinition columnDefinition in ColumnDefinitions.Value)                
+            foreach (ColumnDefinition columnDefinition in ColumnDefinitions.Value)                
             {
                 if (columnDefinition.Units == Units.Absolute)
-                    absoluteSum += columnDefinition.Width;
+                    absoluteSum += columnDefinition.Value;
                 else
-                    relativeSum += columnDefinition.Width;
+                    relativeSum += columnDefinition.Value;
             }
 
             double widthWithoutAbsolute = parentWidth - absoluteSum;
@@ -92,9 +92,9 @@ namespace ShevaEngine.UI
             return ColumnDefinitions.Value.Select(item =>
             {
                 if (item.Units == Units.Absolute)
-                    return (int)item.Width;
+                    return (int)item.Value;
                 else
-                    return (int)(item.Width / relativeSum * widthWithoutAbsolute);
+                    return (int)(item.Value / relativeSum * widthWithoutAbsolute);
             }).ToArray();
         }
 

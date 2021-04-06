@@ -1,11 +1,11 @@
 namespace ShevaEngine.UI
 {
     /// <summary>
-    /// Grid row definition.
+    /// Grid column definition.
     /// </summary>
-    public class GridColumnDefinition
+    public class ColumnDefinition
     {
         public Units Units { get; set; }
-        public double Width { get; set; }
+        public double Value { get; set; }        
     }
 }
