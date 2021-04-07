@@ -1,5 +1,4 @@
 ﻿using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using ShevaEngine.Core;
 
@@ -12,7 +11,6 @@ namespace ShevaEngine.UI
     {
         protected readonly Log _log;
 
-
         /// <summary>
         /// Constructor.
         /// </summary>
@@ -20,15 +18,7 @@ namespace ShevaEngine.UI
         {
             _log = new Log(GetType());
         }
-
-        /// <summary>
-		/// Load content.
-		/// </summary>        
-		public virtual void LoadContent(ContentManager contentManager)
-        {
-
-        }
-
+        
         /// <summary>
         /// Draw method.
         /// </summary>

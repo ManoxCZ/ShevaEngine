@@ -1,9 +1,10 @@
 ﻿using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using ShevaEngine.Core;
+using ShevaEngine.UI.Brushes;
 using System;
 using System.Collections.Generic;
+using System.Reactive.Linq;
 using System.Reactive.Subjects;
 
 namespace ShevaEngine.UI
@@ -15,8 +16,10 @@ namespace ShevaEngine.UI
     {
 		protected readonly Log Log;
 		protected ControlFlag Flags { get; set; }
+        public BehaviorSubject<ModelView> DataContext { get; }
 		protected List<IDisposable> Disposables { get; }
         public BehaviorSubject<Brush> Background { get; }
+        public BehaviorSubject<Brush> Foreground { get; }
         public BehaviorSubject<HorizontalAlignment> HorizontalAlignment { get; }
         public BehaviorSubject<VerticalAlignment> VerticalAlignment { get; }
         public List<Control> Children { get; set; }        
@@ -46,7 +49,7 @@ namespace ShevaEngine.UI
 		public Rectangle LocationSize { get; set; }        
         public string Name { get; set; }                
         public bool Visible { get; set; }
-		public Margin Margin { get; set; }        
+		public BehaviorSubject<Margin> Margin { get; }        
         public BehaviorSubject<int> GridRow { get; set; }
         public BehaviorSubject<int> GridColumn { get; set; }
 		public Subject<(InputState InputState, int X, int Y)> Click { get; }
@@ -58,6 +61,8 @@ namespace ShevaEngine.UI
 		public SortedDictionary<ControlFlag, ControlAnimations> Animations { get; }
         private SortedDictionary<string, object> _properties;
         private SortedDictionary<string, Type> _propertyTypes;
+        private readonly SortedDictionary<string, BehaviorSubject<string>> _bindings;
+        private readonly SortedDictionary<string, IDisposable[]> _bindingSources;
 
 
         /// <summary>
@@ -69,19 +74,23 @@ namespace ShevaEngine.UI
 
             _properties = new SortedDictionary<string, object>();
             _propertyTypes = new SortedDictionary<string, Type>();
+            _bindings = new SortedDictionary<string, BehaviorSubject<string>>();
+            _bindingSources = new SortedDictionary<string, IDisposable[]>();
 
 			Flags = ControlFlag.Default;
-			Disposables = new List<IDisposable>();			
-            Background = CreateProperty<Brush>(nameof(Background), null);			
-			Children = new List<Control>();
-			HorizontalAlignment = CreateProperty<HorizontalAlignment>(nameof(HorizontalAlignment), UI.HorizontalAlignment.Center);
-			VerticalAlignment = CreateProperty<VerticalAlignment>(nameof(VerticalAlignment), UI.VerticalAlignment.Center);
+			Disposables = new List<IDisposable>();
+            DataContext = CreateProperty<ModelView>(nameof(DataContext), null);
+            Background = CreateProperty<Brush>(nameof(Background), null);
+            Foreground = CreateProperty<Brush>(nameof(Foreground), new SolidColorBrush(Color.Black));
+            Children = new List<Control>();
+			HorizontalAlignment = CreateProperty(nameof(HorizontalAlignment), UI.HorizontalAlignment.Left);
+			VerticalAlignment = CreateProperty(nameof(VerticalAlignment), UI.VerticalAlignment.Center);
             GridColumn = CreateProperty(nameof(GridColumn), 0);
             GridRow = CreateProperty(nameof(GridRow), 0);
             Enabled = true;
 			IsSelectAble = false;
 			IsSelected = false;
-			Margin = new Margin();
+			Margin = CreateProperty(nameof(Margin), new Margin());
 			Name = GetType().Name;
 			Visible = true;			
 			Click = new Subject<(InputState InputState, int X, int Y)>();
@@ -91,6 +100,14 @@ namespace ShevaEngine.UI
 
 			foreach (ControlFlag flag in Enum.GetValues(typeof(ControlFlag)))
 				Animations.Add(flag, new ControlAnimations());
+
+            Disposables.Add(DataContext.Subscribe(item =>
+            {
+                foreach (Control child in Children)
+                {
+                    child.DataContext.OnNext(item);
+                }
+            }));            
 		}
 
         /// <summary>
@@ -136,7 +153,50 @@ namespace ShevaEngine.UI
             }
                         
             return true;
-        }        
+        }
+
+        /// <summary>
+        /// Set property value.
+        /// </summary>
+        public bool SetPropertyBinding<T>(string propertyName, Binding binding)
+        {
+            string propertyNameLower = propertyName.ToLower();
+            string bindingPropertyNameLower = binding.PropertyName.ToLower();
+
+            if (!HasProperty(propertyNameLower))
+                return false;
+
+            if (_bindings.ContainsKey(propertyNameLower))
+                _bindings[propertyNameLower].OnNext(bindingPropertyNameLower);
+            else
+            {
+                _bindings.Add(propertyNameLower, new BehaviorSubject<string>(bindingPropertyNameLower));
+                _bindingSources.Add(propertyNameLower, new IDisposable[3]);
+
+                _bindingSources[propertyNameLower][0] = DataContext.CombineLatest(_bindings[propertyNameLower], (context, bindingProperty) => (context, bindingProperty))
+                    .Where(item => item.context != null && item.context.HasProperty(item.bindingProperty))
+                    .Select(item => (item.context, item.context.GetPropertyValue<T>(item.bindingProperty)))
+                    .DistinctUntilChanged()
+                    .Subscribe(item =>
+                    {
+                        _bindingSources[propertyNameLower][1]?.Dispose();
+
+                        _bindingSources[propertyNameLower][1] = item.Item2.DistinctUntilChanged().Subscribe(value =>
+                        {
+                            SetPropertyValue(propertyNameLower, value);
+                        });
+
+                        _bindingSources[propertyNameLower][2]?.Dispose();
+
+                        _bindingSources[propertyNameLower][2] = ((BehaviorSubject<T>)_properties[propertyNameLower]).DistinctUntilChanged().Subscribe(newValue =>
+                        {
+                            item.context.SetPropertyValue(bindingPropertyNameLower, newValue);
+                        });
+                    });
+            }
+
+            return true;
+        }
 
         /// <summary>
         /// Get property type.
@@ -156,6 +216,15 @@ namespace ShevaEngine.UI
 		/// </summary>
 		public void Dispose()
 		{
+            foreach (KeyValuePair<string, IDisposable[]> bindingSourcesItem in _bindingSources)
+            {
+                bindingSourcesItem.Value[0]?.Dispose();
+                bindingSourcesItem.Value[1]?.Dispose();
+            }
+
+            _bindingSources.Clear();
+            _bindings.Clear();
+
 			foreach (IDisposable item in Disposables)
 				item.Dispose();
 
@@ -166,30 +235,27 @@ namespace ShevaEngine.UI
 			MouseWheel.Dispose();					
 		}
 
-		/// <summary>
-		/// Load content.
-		/// </summary>        
-		public virtual void LoadContent(ContentManager contentManager)
+        /// <summary>
+        /// Initialize component.
+        /// </summary>
+        public void InitializeComponent()
         {
-            Disposables.Add(Background.Subscribe(item =>
-            {
-                item?.LoadContent(contentManager);
-            }));			
-
             foreach (Control child in Children)
-                child.LoadContent(contentManager);
-        }        
+                child.InitializeComponent();
+        }		
 
         /// <summary>
         /// Method resize control.
         /// </summary>
         public virtual void Resize(Rectangle locationSize)
         {
+            Margin margin = Margin.Value;
+
             LocationSize = new Rectangle(
-				locationSize.X + Margin.Left,
-				locationSize.Y + Margin.Bottom,
-				locationSize.Width - (Margin.Left + Margin.Right),
-				locationSize.Height - (Margin.Top + Margin.Bottom));
+				locationSize.X + margin.Left,
+				locationSize.Y + margin.Bottom,
+				locationSize.Width - (margin.Left + margin.Right),
+				locationSize.Height - (margin.Top + margin.Bottom));
 
             foreach (Control child in Children)
                 child.Resize(LocationSize);

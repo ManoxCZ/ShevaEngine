@@ -1,13 +1,17 @@
-﻿using System;
+﻿using Microsoft.Xna.Framework;
+using ShevaEngine.Core;
+using ShevaEngine.UI.Brushes;
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
 using System.Xml;
 
 namespace ShevaEngine.UI
 {
     public class XamlImporter 
     {
-
+        private readonly static Log _log = new Log(typeof(XamlImporter));
         private static Dictionary<Type, INodeImporter> _importers = CreateImporters();
 
 
@@ -26,12 +30,34 @@ namespace ShevaEngine.UI
         /// <summary>
         /// Import layer.
         /// </summary>
-        public static Control Import(IUIStyleGenerator styleGenerator, string data)
+        public static T Import<T>(IUIStyleGenerator styleGenerator, string data)
         {
             XmlDocument document = new XmlDocument();
             document.LoadXml(data);
 
-            return ImportXaml(styleGenerator, document);            
+            if (typeof(T) == typeof(Control))
+            {
+                Control control = ImportXaml(styleGenerator, document);
+                control.InitializeComponent();
+
+                return (T)(object)control;
+            }
+            else if (typeof(T) == typeof(Layer))
+            {
+                Control control = ImportXaml(styleGenerator, document);
+                control.InitializeComponent();
+
+                return (T)(object)new Layer()
+                {
+                    Control = control
+                };
+            }
+            else
+            {
+                _log.Error($"Can't import {typeof(T)}");
+
+                return default;
+            }
         }
 
         /// <summary>
@@ -46,7 +72,7 @@ namespace ShevaEngine.UI
         /// Import xaml node.
         /// </summary>        
         private static Control ImportXamlNode(IUIStyleGenerator styleGenerator, XmlNode node)
-        {
+        {            
             Control control = CreateControl(styleGenerator, node);
 
             if (control != null)
@@ -83,10 +109,12 @@ namespace ShevaEngine.UI
                     return styleGenerator.Create<Grid>();                                    
                 case "button":
                     return styleGenerator.Create<Button>();
-                case "textblock":
+                case "textblock":                
                     return styleGenerator.Create<Label>();
                 case "image":
                     return styleGenerator.Create<Image>();
+                case "checkbox":
+                    return styleGenerator.Create<Checkbox>();                    
                 default:
                     throw new NotImplementedException();
             }           
@@ -105,8 +133,8 @@ namespace ShevaEngine.UI
                     SetAttribute(control, attributeName, attribute.Value);
                 else if (attributeName == "content")
                 {
-                    Label newLabel = styleGenerator.Create<Label>();
-                    newLabel.Text.OnNext(attribute.Value);
+                    Label newLabel = styleGenerator.Create<Label>();                    
+                    SetAttribute(newLabel, "text", attribute.Value);
 
                     control.Children.Add(newLabel);
                 }
@@ -124,10 +152,62 @@ namespace ShevaEngine.UI
         {
             Type propertyType = control.GetPropertyType(propertyName);
 
-            if (propertyType == typeof(int))
-                control.SetPropertyValue(propertyName, int.Parse(value));
+            Regex r = new Regex(@"{\s*Binding\s+(?<name>.+)\s*}");
+            Match match = r.Match(value);
+
+            if (match.Success)
+            {
+                if (propertyType == typeof(ICommand))
+                {
+                    control.SetPropertyBinding<ICommand>(propertyName, new Binding()
+                    {
+                        PropertyName = match.Groups[1].Value
+                    });
+                }
+                else
+                {
+                    if (propertyType == typeof(bool))
+                        control.SetPropertyBinding<bool>(propertyName, new Binding()
+                        {
+                            PropertyName = match.Groups[1].Value
+                        });
+                    else if (propertyType == typeof(string))
+                        control.SetPropertyBinding<string>(propertyName, new Binding()
+                        {
+                            PropertyName = match.Groups[1].Value
+                        });
+                    else if (propertyType == typeof(object))
+                        control.SetPropertyBinding<object>(propertyName, new Binding()
+                        {
+                            PropertyName = match.Groups[1].Value
+                        });
+                    else
+                        throw new NotImplementedException();
+                }
+            }
             else
-                control.SetPropertyValue(propertyName, value);
+            {
+                if (propertyType == typeof(int))
+                    control.SetPropertyValue(propertyName, int.Parse(value));
+                else if (propertyType == typeof(Margin))
+                    control.SetPropertyValue(propertyName, new Margin(value));
+                else if (propertyType == typeof(Brush))
+                    control.SetPropertyValue(propertyName, CreateBrush(value));
+                else if (propertyType == typeof(FontSize))
+                    control.SetPropertyValue(propertyName, CreateFontSize(value));
+                else if (propertyType == typeof(HorizontalAlignment))
+                {
+                    if (Enum.TryParse(value, true, out HorizontalAlignment alignment))
+                        control.SetPropertyValue(propertyName, alignment);
+                }
+                else if (propertyType == typeof(VerticalAlignment))
+                {
+                    if (Enum.TryParse(value, true, out VerticalAlignment alignment))
+                        control.SetPropertyValue(propertyName, alignment);
+                }
+                else
+                    control.SetPropertyValue(propertyName, value);
+            }
         }
 
         /// <summary>
@@ -159,6 +239,30 @@ namespace ShevaEngine.UI
             return attributeName.ToLower().Replace(".", "");
         }
 
-        
+        /// <summary>
+        /// Create brush.
+        /// </summary>
+        private static Brush CreateBrush(string value)
+        {
+            Type colorType = typeof(Color);
+
+            System.Reflection.PropertyInfo property = typeof(Color).GetProperty(value);
+
+            if (property != null)
+                return new SolidColorBrush((Color)property.GetValue(null));
+
+            return null;
+        }
+
+        /// <summary>
+        /// Create font size.
+        /// </summary>
+        private static FontSize CreateFontSize(string value)
+        {
+            if (Enum.TryParse<FontSize>($"Size{value}", out FontSize size))
+                return size;
+
+            return FontSize.Size12;
+        }
     }
 }

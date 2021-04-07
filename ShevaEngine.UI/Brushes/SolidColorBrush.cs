@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ShevaEngine.Core;
+using System.Reactive.Subjects;
 
 namespace ShevaEngine.UI.Brushes
 {
@@ -9,15 +10,15 @@ namespace ShevaEngine.UI.Brushes
     /// </summary>
     public class SolidColorBrush : Brush
     {
-        private Color _color;
-        
+        public BehaviorSubject<Color> Color { get; }
+
 
         /// <summary>
         /// Constructor.
         /// </summary>        
         public SolidColorBrush(Color color)            
         {
-            _color = color;
+            Color = new BehaviorSubject<Color>(color);
         }
         
         /// <summary>
@@ -25,7 +26,7 @@ namespace ShevaEngine.UI.Brushes
         /// </summary>
         public override void Draw(SpriteBatch spriteBatch, Rectangle locationSize)
         {
-            spriteBatch.Draw(TextureUtils.WhiteTexture, locationSize, null, _color);
+            spriteBatch.Draw(TextureUtils.WhiteTexture, locationSize, null, Color.Value);
         }
     }
 }

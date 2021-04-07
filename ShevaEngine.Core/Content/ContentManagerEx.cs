@@ -58,12 +58,9 @@ namespace ShevaEngine.Core
                         return (T)(object)_fonts[assetName];
                     }
 
-                    if (typeof(T) == typeof(Control))
-                    {
-                        string data = base.Load<string>(assetName);
-
-                        return (T)(object)XamlImporter.Import(_game.UIStyle, data);
-                    }
+                    if (typeof(T) == typeof(Control) ||
+                        typeof(T) == typeof(Layer))                        
+                        return XamlImporter.Import<T>(_game.UIStyle, base.Load<string>(assetName));
 
                     T output = base.Load<T>(assetName);
 
@@ -88,6 +85,6 @@ namespace ShevaEngine.Core
             }
 
             return default;
-		}
+		}        
 	}
 }

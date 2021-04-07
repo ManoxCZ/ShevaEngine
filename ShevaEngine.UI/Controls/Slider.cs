@@ -40,17 +40,7 @@ namespace ShevaEngine.UI
             {
                 SetRatio(item.X / (float)LocationSize.Width);
             }));
-		}
-
-        public override void LoadContent(ContentManager contentManager)
-        {
-            base.LoadContent(contentManager);
-
-            Disposables.Add(Foreground.Subscribe(item =>
-            {
-                item?.LoadContent(contentManager);
-            }));
-        }
+		}        
 
         /// <summary>
         /// Draw method.

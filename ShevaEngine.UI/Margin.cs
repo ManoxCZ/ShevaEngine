@@ -40,6 +40,47 @@ namespace ShevaEngine.UI
             Bottom = bottom;
         }
 
+        /// <summary>
+        /// Constructor.
+        /// </summary>        
+        public Margin(string value)
+        {
+            string[] parts = value.Split(',');
+
+            switch (parts.Length)
+            {
+                case 1:
+                    {
+                        int margin = int.Parse(parts[0]);
+
+                        Left = margin;
+                        Right = margin;
+                        Top = margin;
+                        Bottom = margin;
+                    }
+                    break;
+                case 2:
+                    {
+                        int horizontalMargin = int.Parse(parts[0]);
+                        int verticalMargin = int.Parse(parts[1]);
+
+                        Left = horizontalMargin;
+                        Right = horizontalMargin;
+                        Top = verticalMargin;
+                        Bottom = verticalMargin;
+                    }
+                    break;
+                case 4:
+                    {
+                        Left = int.Parse(parts[0]);
+                        Right = int.Parse(parts[2]);
+                        Top = int.Parse(parts[1]);
+                        Bottom = int.Parse(parts[3]);
+                    }
+                    break;
+            }
+        }
+
         public static Rectangle operator -(Rectangle locationSize, Margin margin)
         {
             return new Rectangle(locationSize.X + margin.Left, locationSize.Y + margin.Top, 

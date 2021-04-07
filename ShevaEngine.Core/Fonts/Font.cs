@@ -1,4 +1,3 @@
-using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using System;
@@ -11,6 +10,9 @@ namespace ShevaEngine.Core
     /// </summary>
     public class Font
     {
+        public static string DefaultFontName = @"Content\Fonts\Poppins-Italic";
+        public static Font Default { get; private set; } = ShevaGame.Instance.Content.Load<Font>(DefaultFontName);
+
         public string Name { get; }
         public SpriteFont[] _sprites;
 

@@ -19,6 +19,7 @@ namespace ShevaEngine.UI
 		public List<IDisposable> Disposables { get; private set; }
 		public BehaviorSubject<bool> IsEventBlocking { get; }
         public LayerSelection Selection { get; }
+        public BehaviorSubject<ModelView> DataContext => Control?.DataContext;
 
 
 		/// <summary>
@@ -61,23 +62,7 @@ namespace ShevaEngine.UI
 			foreach (IDisposable disposable in Disposables)			
 				disposable.Dispose();			
 		}
-
-        /// <summary>
-        /// Load content.
-        /// </summary>        
-        public void LoadContent(ShevaGame game)
-        {
-            Control?.LoadContent(game.Content);            
-        }
-
-		/// <summary>
-		/// Unload content.
-		/// </summary>        
-		public void UnloadContent()
-		{
-			
-		}
-
+        
 		/// <summary>
 		/// Resize.
 		/// </summary>        

@@ -8,7 +8,7 @@ namespace ShevaEngine.UI
 	/// </summary>
 	public class Checkbox : Button
 	{
-		public Subject<bool> IsChecked { get; private set; }
+		public BehaviorSubject<bool> IsChecked { get; private set; }
 
 
 		/// <summary>
@@ -16,9 +16,8 @@ namespace ShevaEngine.UI
 		/// </summary>
 		public Checkbox()
 		{
-			IsChecked = new Subject<bool>();
-			Disposables.Add(IsChecked);
-
+            IsChecked = CreateProperty(nameof(IsChecked), false);
+			
 			Disposables.Add(Click.Subscribe(item =>
 			{
 				bool isChecked = (Flags & ControlFlag.Checked) == ControlFlag.Checked;

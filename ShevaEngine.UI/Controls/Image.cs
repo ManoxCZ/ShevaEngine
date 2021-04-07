@@ -1,7 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
-using System;
 using System.Reactive.Subjects;
 
 namespace ShevaEngine.UI
@@ -20,20 +18,7 @@ namespace ShevaEngine.UI
 		public Image()
 			: base()
 		{			
-            Brush = CreateProperty<Brush>(nameof(Brush), null);
-		}
-
-		/// <summary>
-		/// Load content.
-		/// </summary>        
-		public override void LoadContent(ContentManager contentManager)
-		{
-			base.LoadContent(contentManager);
-
-            Disposables.Add(Brush.Subscribe(item =>
-            {
-                item?.LoadContent(contentManager);
-            }));            
+            Brush = CreateProperty<Brush>(nameof(Brush), null);	            
 		}
 
 		/// <summary>
@@ -41,7 +26,7 @@ namespace ShevaEngine.UI
 		/// </summary>
 		public override void Draw(SpriteBatch spriteBatch, GameTime gameTime)
 		{
-            Brush.Value?.Draw(spriteBatch, LocationSize - Margin);
+            Brush.Value?.Draw(spriteBatch, LocationSize - Margin.Value);
 
 			base.Draw(spriteBatch, gameTime);
 		}

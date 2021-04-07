@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
+using ShevaEngine.Core;
 
 namespace ShevaEngine.UI
 {
@@ -8,8 +9,7 @@ namespace ShevaEngine.UI
     /// Image brush.
     /// </summary>
     public class ImageBrush : Brush
-    {
-        private string _imageFilename;
+    {        
         private Stretch _stretch;
         private Color _colorTint;
         private Texture2D _texture;
@@ -37,10 +37,12 @@ namespace ShevaEngine.UI
         /// Constructor.
         /// </summary>        
         public ImageBrush(string imageFilename, Stretch stretch, Color colorTint)
-        {
-            _imageFilename = imageFilename;
+        {            
             _stretch = stretch;
             _colorTint = colorTint;
+
+            if (_texture == null && !string.IsNullOrEmpty(imageFilename))
+                _texture = ShevaGame.Instance.Content.Load<Texture2D>(imageFilename);
         }
 
         /// <summary>
@@ -69,16 +71,7 @@ namespace ShevaEngine.UI
             _texture = texture;
             _stretch = stretch;
             _colorTint = colorTint;
-        }
-
-        /// <summary>
-        /// Load content.
-        /// </summary>        
-        public override void LoadContent(ContentManager contentManager)
-        {
-            if (_texture == null && !string.IsNullOrEmpty(_imageFilename))
-                _texture = contentManager.Load<Texture2D>(_imageFilename);
-        }
+        }       
 
         /// <summary>
         /// Draw method.

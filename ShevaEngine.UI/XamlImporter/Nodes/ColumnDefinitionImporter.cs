@@ -1,4 +1,5 @@
-﻿using System.Xml;
+﻿using System.Globalization;
+using System.Xml;
 
 namespace ShevaEngine.UI
 {
@@ -19,7 +20,7 @@ namespace ShevaEngine.UI
                 string attributeValue = attribute.Value.Trim();
 
                 string[] parts = attributeValue.Split('*');
-                int value = int.Parse(parts[0]);
+                double value = double.Parse(parts[0], CultureInfo.InvariantCulture);
 
                 return new ColumnDefinition()
                 {

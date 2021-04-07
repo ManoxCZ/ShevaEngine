@@ -13,7 +13,6 @@ namespace ShevaEngine.UI
     /// </summary>
     public class EffectBrush : Brush
     {
-        private string _effectFilename;
         protected Effect _effect;
         public BehaviorSubject<Color> ColorTint { get; }
         public Texture2D Texture;
@@ -24,18 +23,8 @@ namespace ShevaEngine.UI
         /// </summary>
         public EffectBrush(string effectFilename)
         {
-            _effectFilename = effectFilename;
-
             ColorTint = new BehaviorSubject<Color>(Color.White);
-        }
-
-        /// <summary>
-        /// Load content.
-        /// </summary>        
-        public override void LoadContent(ContentManager contentManager)
-        {
-            _effect = contentManager.Load<Effect>(_effectFilename);
-
+            _effect = ShevaGame.Instance.Content.Load<Effect>(effectFilename);
             Texture = TextureUtils.WhiteTexture;
         }
 
