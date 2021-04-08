@@ -1,20 +1,17 @@
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
-using System;
 using System.Reactive.Subjects;
 
 namespace ShevaEngine.UI
 {
-	/// <summary>
-	/// Button class.
-	/// </summary>	
-	public abstract class Slider<T> : Control
-	{
-        public BehaviorSubject<Brush> Foreground { get; }
-        public BehaviorSubject<T> Value { get; set; }
-        public BehaviorSubject<T> Min { get; set; }
-        public BehaviorSubject<T> Max { get; set; }
+    /// <summary>
+    /// Slider class.
+    /// </summary>	
+    public class Slider : Control
+	{        
+        public BehaviorSubject<double> Value { get; }
+        public BehaviorSubject<double> Minimum { get; }
+        public BehaviorSubject<double> Maximum { get; }
 
 
         /// <summary>
@@ -24,44 +21,32 @@ namespace ShevaEngine.UI
 		{
             IsSelectAble = true;
 
-            Foreground = new BehaviorSubject<Brush>(null);
-			Disposables.Add(Foreground);
-
-            Value = new BehaviorSubject<T>(default(T));
-			Disposables.Add(Value);
-
-            Min = new BehaviorSubject<T>(default(T));
-			Disposables.Add(Min);
-
-            Max = new BehaviorSubject<T>(default(T));
-			Disposables.Add(Max);
-
-            Disposables.Add(Click.Subscribe(item => 
-            {
-                SetRatio(item.X / (float)LocationSize.Width);
-            }));
-		}        
+            Value = CreateProperty<double>(nameof(Value), 0);
+            Minimum = CreateProperty<double>(nameof(Minimum), 0);
+            Maximum = CreateProperty<double>(nameof(Maximum), 1);                       
+		}
 
         /// <summary>
         /// Draw method.
         /// </summary>
         public override void Draw(SpriteBatch spriteBatch, GameTime gameTime)
         {
-            Foreground.Value?.Draw(spriteBatch, new Rectangle(
-                        LocationSize.X,
-                        LocationSize.Y,
-                        (int)(LocationSize.Width * GetRatio()),
-                        LocationSize.Height));            
+            base.Draw(spriteBatch, gameTime);
+
+            Foreground.Value?.Draw(spriteBatch,
+                new Rectangle(
+                    LocationSize.X,
+                    LocationSize.Y,
+                    (int)(LocationSize.Width * GetRatio()),
+                    LocationSize.Height));
         }
 
         /// <summary>
         /// Get ratio.
         /// </summary>
-        protected abstract float GetRatio();      
-
-        /// <summary>
-        /// Set ratio.
-        /// </summary>
-        protected abstract void SetRatio(float ratio);
-	}
+        private double GetRatio()
+        {
+            return Value.Value / (Maximum.Value - Minimum.Value);
+        }       
+    }
 }

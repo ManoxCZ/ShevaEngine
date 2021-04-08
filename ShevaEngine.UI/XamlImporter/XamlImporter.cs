@@ -117,6 +117,8 @@ namespace ShevaEngine.UI
                     return styleGenerator.Create<Checkbox>();
                 case "combobox":
                     return styleGenerator.Create<Combobox>();
+                case "slider":
+                    return styleGenerator.Create<Slider>();
                 default:
                     throw new NotImplementedException();
             }           
@@ -159,38 +161,17 @@ namespace ShevaEngine.UI
 
             if (match.Success)
             {
-                if (propertyType == typeof(ICommand))
+                control.SetPropertyBinding(propertyName, new Binding()
                 {
-                    control.SetPropertyBinding(propertyName, new Binding()
-                    {
-                        PropertyName = match.Groups[1].Value
-                    });
-                }
-                else
-                {
-                    if (propertyType == typeof(bool))
-                        control.SetPropertyBinding(propertyName, new Binding()
-                        {
-                            PropertyName = match.Groups[1].Value
-                        });
-                    else if (propertyType == typeof(string))
-                        control.SetPropertyBinding(propertyName, new Binding()
-                        {
-                            PropertyName = match.Groups[1].Value
-                        });
-                    else if (propertyType == typeof(object))
-                        control.SetPropertyBinding(propertyName, new Binding()
-                        {
-                            PropertyName = match.Groups[1].Value
-                        });
-                    else
-                        throw new NotImplementedException();
-                }
+                    PropertyName = match.Groups[1].Value
+                });
             }
             else
             {
                 if (propertyType == typeof(int))
                     control.SetPropertyValue(propertyName, int.Parse(value));
+                else if (propertyType == typeof(double))
+                    control.SetPropertyValue(propertyName, double.Parse(value));
                 else if (propertyType == typeof(Margin))
                     control.SetPropertyValue(propertyName, new Margin(value));
                 else if (propertyType == typeof(Brush))

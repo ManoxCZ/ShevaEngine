@@ -24,6 +24,7 @@ namespace ShevaEngine.UI
 
             Disposables.Add(ItemsSource
                 .CombineLatest(SelectedItem, (itemsSource, selectedItem) => (itemsSource, selectedItem))
+                .DistinctUntilChanged()
                 .Subscribe(item =>
                 {
                     if (item.itemsSource == null && item.selectedItem is Enum enumValue)
