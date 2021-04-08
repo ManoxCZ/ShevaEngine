@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ShevaEngine.Core;
+using System;
 using System.Collections.Generic;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
@@ -10,6 +11,7 @@ namespace ShevaEngine.UI
     /// </summary>
     public class PropertiesClass : IDisposable
     {
+        protected readonly Log Log;
         private List<IDisposable> _disposables;
         private SortedDictionary<string, BehaviorSubject<object>> _properties;
         private SortedDictionary<string, Type> _propertyTypes;
@@ -20,6 +22,8 @@ namespace ShevaEngine.UI
         /// </summary>
         public PropertiesClass()
         {
+            Log = new Log(GetType());
+
             _disposables = new List<IDisposable>();
             _properties = new SortedDictionary<string, BehaviorSubject<object>>();
             _propertyTypes = new SortedDictionary<string, Type>();

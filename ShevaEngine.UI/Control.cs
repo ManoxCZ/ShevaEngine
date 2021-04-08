@@ -13,8 +13,7 @@ namespace ShevaEngine.UI
     /// Control.
     /// </summary> 	
     public abstract class Control : PropertiesClass, IDisposable
-    {
-		protected readonly Log Log;
+    {		
 		protected ControlFlag Flags { get; set; }
         public List<IDisposable> Disposables { get; }
         public BehaviorSubject<ModelView> DataContext { get; }		
@@ -22,8 +21,7 @@ namespace ShevaEngine.UI
         public BehaviorSubject<Brush> Foreground { get; }
         public BehaviorSubject<HorizontalAlignment> HorizontalAlignment { get; }
         public BehaviorSubject<VerticalAlignment> VerticalAlignment { get; }
-        public List<Control> Children { get; set; }        
-        public bool Enabled { get; set; }
+        public List<Control> Children { get; set; }                
 		public bool IsSelectAble
 		{
 			get => (Flags & ControlFlag.Selectable) == ControlFlag.Selectable;
@@ -69,9 +67,7 @@ namespace ShevaEngine.UI
         /// </summary>
         public Control()
 		{
-			Log = new Log(GetType());
-            
-            _bindings = new SortedDictionary<string, BehaviorSubject<string>>();
+			_bindings = new SortedDictionary<string, BehaviorSubject<string>>();
             _bindingSources = new SortedDictionary<string, IDisposable[]>();
 
 			Flags = ControlFlag.Default;
@@ -85,8 +81,7 @@ namespace ShevaEngine.UI
             GridColumn = CreateProperty(nameof(GridColumn), 0);
             GridRow = CreateProperty(nameof(GridRow), 0);
             Name = CreateProperty(nameof(Name), GetType().ToString());
-            Visibility = CreateProperty<Visibility>(nameof(Visibility), UI.Visibility.Visible);
-            Enabled = true;
+            Visibility = CreateProperty<Visibility>(nameof(Visibility), UI.Visibility.Visible);            
 			IsSelectAble = false;
 			IsSelected = false;
 			Margin = CreateProperty(nameof(Margin), new Margin());			
@@ -212,7 +207,7 @@ namespace ShevaEngine.UI
 			if (IsPointInside(inputState.MouseState.X, inputState.MouseState.Y))
 			{
 				foreach (Control child in Children)
-					if (child.Enabled)
+					if (child.Visibility.Value == UI.Visibility.Visible)
 					{
 						if (child.OnMouseClick(inputState))
 							return true;
@@ -276,7 +271,7 @@ namespace ShevaEngine.UI
 			if (IsPointInside(inputState.MouseState.X, inputState.MouseState.Y))
 			{
 				foreach (Control child in Children)
-					if (child.Enabled)
+					if (child.Visibility.Value == UI.Visibility.Visible)
 					{
 						if (child.OnMouseWheel(inputState))
 							return true;
@@ -336,7 +331,7 @@ namespace ShevaEngine.UI
             Background.Value?.Draw(spriteBatch, LocationSize);
 			
 			foreach (Control control in Children)
-                if (control.Enabled && control.Visibility.Value == UI.Visibility.Visible)
+                if (control.Visibility.Value == UI.Visibility.Visible)
                     control.Draw(spriteBatch, gameTime);
         }
 
