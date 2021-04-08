@@ -147,7 +147,11 @@ namespace ShevaEngine.Core
 
 			IsFixedTimeStep = false;			
 
-			Settings.MusicVolume.Subscribe(item => MediaPlayer.Volume = item);            
+			Settings.MusicVolume.Subscribe(item =>
+            {
+                MediaPlayer.Volume = item;
+
+            });            
 
 			_log.Info("Initialization ended");						
 		}
