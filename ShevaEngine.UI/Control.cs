@@ -12,12 +12,12 @@ namespace ShevaEngine.UI
     /// <summary>
     /// Control.
     /// </summary> 	
-    public abstract class Control : IDisposable
+    public abstract class Control : PropertiesClass, IDisposable
     {
 		protected readonly Log Log;
 		protected ControlFlag Flags { get; set; }
-        public BehaviorSubject<ModelView> DataContext { get; }
-		protected List<IDisposable> Disposables { get; }
+        protected List<IDisposable> Disposables { get; }
+        public BehaviorSubject<ModelView> DataContext { get; }		
         public BehaviorSubject<Brush> Background { get; }
         public BehaviorSubject<Brush> Foreground { get; }
         public BehaviorSubject<HorizontalAlignment> HorizontalAlignment { get; }
@@ -59,8 +59,7 @@ namespace ShevaEngine.UI
 		private int _previousMouseY = 0;
 		private int _previousWheel = 0;
 		public SortedDictionary<ControlFlag, ControlAnimations> Animations { get; }
-        private SortedDictionary<string, object> _properties;
-        private SortedDictionary<string, Type> _propertyTypes;
+        
         private readonly SortedDictionary<string, BehaviorSubject<string>> _bindings;
         private readonly SortedDictionary<string, IDisposable[]> _bindingSources;
 
@@ -71,9 +70,7 @@ namespace ShevaEngine.UI
         public Control()
 		{
 			Log = new Log(GetType());
-
-            _properties = new SortedDictionary<string, object>();
-            _propertyTypes = new SortedDictionary<string, Type>();
+            
             _bindings = new SortedDictionary<string, BehaviorSubject<string>>();
             _bindingSources = new SortedDictionary<string, IDisposable[]>();
 
@@ -110,68 +107,7 @@ namespace ShevaEngine.UI
             }));            
 		}
 
-        /// <summary>
-        /// Method creates new member.
-        /// </summary>
-        protected BehaviorSubject<T> CreateProperty<T>(string propertyName, T value)
-        {
-            BehaviorSubject<T> instance = new BehaviorSubject<T>(value);            
-
-            string propertyNameLower = propertyName.ToLower();
-            _properties.Add(propertyNameLower, instance);
-            _propertyTypes.Add(propertyNameLower, typeof(T));
-
-            Disposables.Add(instance);
-
-            return instance;
-        }
-
-        /// <summary>
-        /// Has property.
-        /// </summary>        
-        public bool HasProperty(string propertyName)
-        {
-            return _properties.ContainsKey(propertyName.ToLower());
-        }        
-
-        /// <summary>
-        /// Set property value.
-        /// </summary>
-        public bool SetPropertyValue(string propertyName, object value)
-        {
-            string propertyNameLower = propertyName.ToLower();
-
-            if (!HasProperty(propertyNameLower))
-                return false;
-
-            Type propertyType = _propertyTypes[propertyNameLower];
-
-            if (propertyType.IsAssignableFrom(value.GetType()))
-            {                
-                object test = _properties[propertyNameLower];
-
-                test.GetType().GetMethod("OnNext").Invoke(test, new[] { value });                
-            }
-                        
-            return true;
-        }
-
-        /// <summary>
-        /// Subscribe property value.
-        /// </summary>
-        public IDisposable Subscribe(string propertyName, Action<object> function)
-        {
-            string propertyNameLower = propertyName.ToLower();
-
-            if (!HasProperty(propertyNameLower))
-                return default;
-
-            Type propertyType = _propertyTypes[propertyNameLower];
-
-            object test = _properties[propertyNameLower];
-
-            return (IDisposable)test.GetType().GetMethod("Subscribe").Invoke(test, new[] { function });
-        }
+        
 
         /// <summary>
         /// Set property value.
@@ -191,7 +127,7 @@ namespace ShevaEngine.UI
                 _bindings.Add(propertyNameLower, new BehaviorSubject<string>(bindingPropertyNameLower));
                 _bindingSources.Add(propertyNameLower, new IDisposable[3]);
 
-                _bindingSources[propertyNameLower][0] = DataContext.CombineLatest(_bindings[propertyNameLower], (context, bindingProperty) => (context, bindingProperty))
+                _bindingSources[propertyNameLower][0] = DataContext.CombineLatest(_bindings[propertyNameLower].DistinctUntilChanged(), (context, bindingProperty) => (context, bindingProperty))
                     .Where(item => item.context != null && item.context.HasProperty(item.bindingProperty))                    
                     .DistinctUntilChanged()
                     .Subscribe(item =>
@@ -213,25 +149,12 @@ namespace ShevaEngine.UI
             }
 
             return true;
-        }
-
-        /// <summary>
-        /// Get property type.
-        /// </summary>
-        public Type GetPropertyType(string propertyName)
-        {
-            string propertyNameLower = propertyName.ToLower();
-
-            if (!HasProperty(propertyNameLower))
-                return null;
-
-            return _propertyTypes[propertyNameLower];
-        }
+        }      
 
 		/// <summary>
 		/// Dispose.
 		/// </summary>
-		public void Dispose()
+		public override void Dispose()
 		{
             foreach (KeyValuePair<string, IDisposable[]> bindingSourcesItem in _bindingSources)
             {
@@ -249,7 +172,9 @@ namespace ShevaEngine.UI
             
 			Click.Dispose();
 			MouseMove.Dispose();
-			MouseWheel.Dispose();					
+			MouseWheel.Dispose();
+
+            base.Dispose();
 		}
 
         /// <summary>
