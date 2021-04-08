@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Reactive.Linq;
 using System.Reactive.Subjects;
 
 namespace ShevaEngine.Core
@@ -21,12 +22,20 @@ namespace ShevaEngine.Core
 			Log = new Log(GetType());
 
 			Disposables = new List<IDisposable>();
-		}		
+		}
 
-		/// <summary>
-		/// Dispose.
-		/// </summary>
-		public virtual void Dispose()
+        /// <summary>
+        /// Initialize.
+        /// </summary>
+        public virtual void Initialize()
+        {
+
+        }
+
+        /// <summary>
+        /// Dispose.
+        /// </summary>
+        public virtual void Dispose()
 		{
 			foreach	(IDisposable disposable in Disposables)			
 				disposable?.Dispose();			
@@ -41,9 +50,9 @@ namespace ShevaEngine.Core
 		public BehaviorSubject<T> Create<T>(T value)
 		{
 			BehaviorSubject<T> result = new BehaviorSubject<T>(value);
-			Disposables.Add(result);
-			
-			return result;
+			Disposables.Add(result);            
+
+            return result;
 		}
 
         /// <summary>
@@ -70,6 +79,8 @@ namespace ShevaEngine.Core
             try
             {
                 T result = Serializer.Deserialize<T>(fileContent);
+
+                result.Initialize();
 
                 return result;
             }
