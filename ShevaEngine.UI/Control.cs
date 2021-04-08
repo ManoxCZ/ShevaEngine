@@ -115,7 +115,7 @@ namespace ShevaEngine.UI
         /// </summary>
         protected BehaviorSubject<T> CreateProperty<T>(string propertyName, T value)
         {
-            BehaviorSubject<T> instance = new BehaviorSubject<T>(value);
+            BehaviorSubject<T> instance = new BehaviorSubject<T>(value);            
 
             string propertyNameLower = propertyName.ToLower();
             _properties.Add(propertyNameLower, instance);
@@ -137,28 +137,46 @@ namespace ShevaEngine.UI
         /// <summary>
         /// Set property value.
         /// </summary>
-        public bool SetPropertyValue<T>(string propertyName, T value)
+        public bool SetPropertyValue(string propertyName, object value)
         {
             string propertyNameLower = propertyName.ToLower();
 
             if (!HasProperty(propertyNameLower))
                 return false;
 
-            Type propertyType = _properties[propertyNameLower].GetType().GenericTypeArguments[0];
+            Type propertyType = _propertyTypes[propertyNameLower];
 
             if (propertyType.IsAssignableFrom(value.GetType()))
             {                
                 object test = _properties[propertyNameLower];
-                test.GetType().GetMethod("OnNext").Invoke(test, new[] { (object)value });                
+
+                test.GetType().GetMethod("OnNext").Invoke(test, new[] { value });                
             }
                         
             return true;
         }
 
         /// <summary>
+        /// Subscribe property value.
+        /// </summary>
+        public IDisposable Subscribe(string propertyName, Action<object> function)
+        {
+            string propertyNameLower = propertyName.ToLower();
+
+            if (!HasProperty(propertyNameLower))
+                return default;
+
+            Type propertyType = _propertyTypes[propertyNameLower];
+
+            object test = _properties[propertyNameLower];
+
+            return (IDisposable)test.GetType().GetMethod("Subscribe").Invoke(test, new[] { function });
+        }
+
+        /// <summary>
         /// Set property value.
         /// </summary>
-        public bool SetPropertyBinding<T>(string propertyName, Binding binding)
+        public bool SetPropertyBinding(string propertyName, Binding binding)
         {
             string propertyNameLower = propertyName.ToLower();
             string bindingPropertyNameLower = binding.PropertyName.ToLower();
@@ -174,24 +192,23 @@ namespace ShevaEngine.UI
                 _bindingSources.Add(propertyNameLower, new IDisposable[3]);
 
                 _bindingSources[propertyNameLower][0] = DataContext.CombineLatest(_bindings[propertyNameLower], (context, bindingProperty) => (context, bindingProperty))
-                    .Where(item => item.context != null && item.context.HasProperty(item.bindingProperty))
-                    .Select(item => (item.context, item.context.GetPropertyValue<T>(item.bindingProperty)))
+                    .Where(item => item.context != null && item.context.HasProperty(item.bindingProperty))                    
                     .DistinctUntilChanged()
                     .Subscribe(item =>
                     {
                         _bindingSources[propertyNameLower][1]?.Dispose();
 
-                        _bindingSources[propertyNameLower][1] = item.Item2.DistinctUntilChanged().Subscribe(value =>
+                        _bindingSources[propertyNameLower][1] = item.context.Subscribe(item.bindingProperty, newValue =>
                         {
-                            SetPropertyValue(propertyNameLower, value);
+                            SetPropertyValue(propertyNameLower, newValue);
                         });
-
+                        
                         _bindingSources[propertyNameLower][2]?.Dispose();
 
-                        _bindingSources[propertyNameLower][2] = ((BehaviorSubject<T>)_properties[propertyNameLower]).DistinctUntilChanged().Subscribe(newValue =>
+                        _bindingSources[propertyNameLower][2] = Subscribe(propertyNameLower, newValue =>
                         {
-                            item.context.SetPropertyValue(bindingPropertyNameLower, newValue);
-                        });
+                            item.context.SetPropertyValue(item.bindingProperty, newValue);
+                        });                        
                     });
             }
 

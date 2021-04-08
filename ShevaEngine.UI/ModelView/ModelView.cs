@@ -30,7 +30,7 @@ namespace ShevaEngine.UI
         protected BehaviorSubject<T> CreateProperty<T>(string propertyName, T value)
         {
             BehaviorSubject<T> instance = new BehaviorSubject<T>(value);
-
+            
             string propertyNameLower = propertyName.ToLower();
             _properties.Add(propertyNameLower, instance);
             _propertyTypes.Add(propertyNameLower, typeof(T));
@@ -51,35 +51,40 @@ namespace ShevaEngine.UI
         /// <summary>
         /// Set property value.
         /// </summary>
-        public bool SetPropertyValue<T>(string propertyName, T value)
+        public bool SetPropertyValue(string propertyName, object value)
         {
             string propertyNameLower = propertyName.ToLower();
 
             if (!HasProperty(propertyNameLower))
                 return false;
 
-            Type propertyType = _properties[propertyNameLower].GetType().GenericTypeArguments[0];
+            Type propertyType = _propertyTypes[propertyNameLower];
 
             if (propertyType.IsAssignableFrom(value.GetType()))
             {
                 object test = _properties[propertyNameLower];
-                test.GetType().GetMethod("OnNext").Invoke(test, new[] { (object)value });
+                propertyType.GetMethod("OnNext").Invoke(test, new[] { value });
             }
 
             return true;
         }
 
         /// <summary>
-        /// Set property value.
+        /// Subscribe property value.
         /// </summary>
-        public BehaviorSubject<T> GetPropertyValue<T>(string propertyName)
+        public IDisposable Subscribe(string propertyName, Action<object> function)
         {
             string propertyNameLower = propertyName.ToLower();
 
             if (!HasProperty(propertyNameLower))
-                return default;
-
-            return (BehaviorSubject<T>)_properties[propertyNameLower];
+                return default;            
+            
+            return (IDisposable)_propertyTypes[propertyNameLower]
+                .GetMethod("Subscribe")
+                .Invoke(_properties[propertyNameLower], new Action<object>[] { item =>
+            {
+                function(item);
+            } });
         }
 
         /// <summary>

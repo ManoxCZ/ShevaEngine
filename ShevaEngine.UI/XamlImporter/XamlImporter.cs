@@ -114,7 +114,9 @@ namespace ShevaEngine.UI
                 case "image":
                     return styleGenerator.Create<Image>();
                 case "checkbox":
-                    return styleGenerator.Create<Checkbox>();                    
+                    return styleGenerator.Create<Checkbox>();
+                case "combobox":
+                    return styleGenerator.Create<Combobox>();
                 default:
                     throw new NotImplementedException();
             }           
@@ -159,7 +161,7 @@ namespace ShevaEngine.UI
             {
                 if (propertyType == typeof(ICommand))
                 {
-                    control.SetPropertyBinding<ICommand>(propertyName, new Binding()
+                    control.SetPropertyBinding(propertyName, new Binding()
                     {
                         PropertyName = match.Groups[1].Value
                     });
@@ -167,17 +169,17 @@ namespace ShevaEngine.UI
                 else
                 {
                     if (propertyType == typeof(bool))
-                        control.SetPropertyBinding<bool>(propertyName, new Binding()
+                        control.SetPropertyBinding(propertyName, new Binding()
                         {
                             PropertyName = match.Groups[1].Value
                         });
                     else if (propertyType == typeof(string))
-                        control.SetPropertyBinding<string>(propertyName, new Binding()
+                        control.SetPropertyBinding(propertyName, new Binding()
                         {
                             PropertyName = match.Groups[1].Value
                         });
                     else if (propertyType == typeof(object))
-                        control.SetPropertyBinding<object>(propertyName, new Binding()
+                        control.SetPropertyBinding(propertyName, new Binding()
                         {
                             PropertyName = match.Groups[1].Value
                         });

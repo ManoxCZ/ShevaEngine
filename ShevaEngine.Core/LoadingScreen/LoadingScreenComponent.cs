@@ -1,5 +1,6 @@
 using Microsoft.Xna.Framework;
 using ShevaEngine.UI;
+using ShevaEngine.UI.Brushes;
 using System;
 
 
@@ -45,15 +46,16 @@ namespace ShevaEngine.Core
                 Label loadingLabel = new Label();
                 loadingLabel.FontSize.OnNext(FontSize.Size20);
                 loadingLabel.GridRow.OnNext(3);
-                //loadingLabel.ForeColor.OnNext(Color.White);
+                SolidColorBrush brush = new SolidColorBrush(Color.White);
+                loadingLabel.Foreground.OnNext(brush);
                 loadingLabel.HorizontalAlignment.OnNext(HorizontalAlignment.Center);
                 loadingLabel.VerticalAlignment.OnNext(VerticalAlignment.Bottom);
                 loadingLabel.Margin.OnNext(new Margin(4));
 
-                //loadingLabel.Animations[ControlFlag.Default].AddRange(new[]
-                //{
-                //    new PulseColorAnimation(loadingLabel.ForeColor, new Color(0,0,0,255), new Color(200,200,200,255), 5),
-                //});
+                loadingLabel.Animations[ControlFlag.Default].AddRange(new[]
+                {
+                    new PulseColorAnimation(brush.Color, Color.FromNonPremultiplied(0,0,0,255), Color.FromNonPremultiplied(200,200,200,255), 5),
+                });
 
                 loadingLabel.Text.OnNext("Loading ...");
 
@@ -75,7 +77,7 @@ namespace ShevaEngine.Core
 
                 Label versionLabel = new Label();
                 versionLabel.GridColumn.OnNext(2);
-                //versionLabel.ForeColor.OnNext(Color.White);
+                loadingLabel.Foreground.OnNext(new SolidColorBrush(Color.White));
                 versionLabel.HorizontalAlignment.OnNext(HorizontalAlignment.Right);
                 versionLabel.VerticalAlignment.OnNext(VerticalAlignment.Bottom);
                 versionLabel.Margin.OnNext(new Margin(4));
