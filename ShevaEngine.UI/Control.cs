@@ -16,7 +16,7 @@ namespace ShevaEngine.UI
     {
 		protected readonly Log Log;
 		protected ControlFlag Flags { get; set; }
-        protected List<IDisposable> Disposables { get; }
+        public List<IDisposable> Disposables { get; }
         public BehaviorSubject<ModelView> DataContext { get; }		
         public BehaviorSubject<Brush> Background { get; }
         public BehaviorSubject<Brush> Foreground { get; }
@@ -47,8 +47,8 @@ namespace ShevaEngine.UI
 			}
 		}
 		public Rectangle LocationSize { get; set; }        
-        public string Name { get; set; }                
-        public bool Visible { get; set; }
+        public BehaviorSubject<string> Name { get; }                
+        public BehaviorSubject<Visibility> Visibility { get; }
 		public BehaviorSubject<Margin> Margin { get; }        
         public BehaviorSubject<int> GridRow { get; set; }
         public BehaviorSubject<int> GridColumn { get; set; }
@@ -84,12 +84,12 @@ namespace ShevaEngine.UI
 			VerticalAlignment = CreateProperty(nameof(VerticalAlignment), UI.VerticalAlignment.Center);
             GridColumn = CreateProperty(nameof(GridColumn), 0);
             GridRow = CreateProperty(nameof(GridRow), 0);
+            Name = CreateProperty(nameof(Name), GetType().ToString());
+            Visibility = CreateProperty<Visibility>(nameof(Visibility), UI.Visibility.Visible);
             Enabled = true;
 			IsSelectAble = false;
 			IsSelected = false;
-			Margin = CreateProperty(nameof(Margin), new Margin());
-			Name = GetType().Name;
-			Visible = true;			
+			Margin = CreateProperty(nameof(Margin), new Margin());			
 			Click = new Subject<(InputState InputState, int X, int Y)>();
 			MouseMove = new Subject<(InputState InputState, int X, int Y)>();
 			MouseWheel = new Subject<(InputState InputState, int Wheel)>();
@@ -106,8 +106,6 @@ namespace ShevaEngine.UI
                 }
             }));            
 		}
-
-        
 
         /// <summary>
         /// Set property value.
@@ -334,15 +332,11 @@ namespace ShevaEngine.UI
 			foreach (ControlFlag flag in Enum.GetValues(typeof(ControlFlag)))
 				if ((Flags & flag) == flag)
 					Animations[flag].Update(gameTime);
-
-			
-            //if (BackColor.Value != Color.Transparent)
-            //    DrawRectangle(spriteBatch, LocationSize, BackColor.Value);
-
+		            
             Background.Value?.Draw(spriteBatch, LocationSize);
 			
 			foreach (Control control in Children)
-                if (control.Enabled && control.Visible)
+                if (control.Enabled && control.Visibility.Value == UI.Visibility.Visible)
                     control.Draw(spriteBatch, gameTime);
         }
 
@@ -365,5 +359,24 @@ namespace ShevaEngine.UI
             foreach (Control control in Children)            
                 control.GetSelectableControls(controls);            
         }
-	}    
+
+        /// <summary>
+        /// Get control.
+        /// </summary>
+        public Control GetControl(string name)
+        {
+            if (Name.Value == name)
+                return this;
+
+            foreach (Control child in Children)
+            {
+                Control output = child.GetControl(name);
+
+                if (output != null)
+                    return output;
+            }
+
+            return null;
+        }
+    }    
 }

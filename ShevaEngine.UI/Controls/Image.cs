@@ -11,7 +11,7 @@ namespace ShevaEngine.UI
     public class Image : Control
 	{		
 		public BehaviorSubject<Brush> Brush { get; }
-        public BehaviorSubject<string> Source { get; }
+        public BehaviorSubject<Texture2D> Source { get; }
 
 
         /// <summary>
@@ -21,14 +21,14 @@ namespace ShevaEngine.UI
 			: base()
 		{			
             Brush = CreateProperty<Brush>(nameof(Brush), null);
-            Source = CreateProperty<string>(nameof(Source), null);
+            Source = CreateProperty<Texture2D>(nameof(Source), null);
 
             Disposables.Add(Source.Subscribe(item =>
             {
-                if (string.IsNullOrEmpty(item))
+                if (item == null)
                     Brush.OnNext(null);
                 else
-                    Brush.OnNext(new ImageBrush(System.IO.Path.ChangeExtension(item, null)));
+                    Brush.OnNext(new ImageBrush(item));
             }));
 		}
 

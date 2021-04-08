@@ -121,5 +121,13 @@ namespace ShevaEngine.UI
 
             Control?.GetSelectableControls(controls);
         }
+
+        /// <summary>
+        /// Get control.
+        /// </summary>
+        public Control GetControl(string name)
+        {
+            return Control?.GetControl(name);
+        }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using ShevaEngine.Core;
 using ShevaEngine.UI.Brushes;
 using System;
@@ -187,6 +188,12 @@ namespace ShevaEngine.UI
                 {
                     if (Enum.TryParse(value, true, out VerticalAlignment alignment))
                         control.SetPropertyValue(propertyName, alignment);
+                }
+                else if (propertyType == typeof(Texture2D))
+                {
+                    Texture2D texture = ShevaGame.Instance.Content.Load<Texture2D>(System.IO.Path.ChangeExtension(value, null));
+
+                    control.SetPropertyValue(propertyName, texture);
                 }
                 else
                     control.SetPropertyValue(propertyName, value);
