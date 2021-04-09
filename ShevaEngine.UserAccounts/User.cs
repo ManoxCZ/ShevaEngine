@@ -1,8 +1,12 @@
 ﻿using Microsoft.Xna.Framework.Graphics;
 using ShevaEngine.Core;
 using System;
+using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
+using System.Linq;
 using System.Reactive.Subjects;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace ShevaEngine.UserAccounts
@@ -11,12 +15,13 @@ namespace ShevaEngine.UserAccounts
     /// User.
     /// </summary>
     public class User : IDisposable
-    {
+    {        
         private readonly Log _log = new Log(typeof(User));
         private readonly ShevaGame _game;
 
 #if WINDOWS_UAP
         private Microsoft.Xbox.Services.System.XboxLiveUser _xboxLiveUser;
+        private Microsoft.Xbox.Services.Statistics.Manager.StatisticManager _statisticManager => Microsoft.Xbox.Services.Statistics.Manager.StatisticManager.SingletonInstance;
 #endif
         public BehaviorSubject<UserData> Data { get; private set; } = new BehaviorSubject<UserData>(null);
 
@@ -29,13 +34,21 @@ namespace ShevaEngine.UserAccounts
             _game = game;
 
             ConnectToService(true);
-        }
+
+#if WINDOWS_UAP
+            Microsoft.Xbox.Services.System.XboxLiveUser.SignOutCompleted += XboxLiveUser_SignOutCompleted;
+#endif
+        }        
 
         /// <summary>
         /// Dispose.s
         /// </summary>
         public void Dispose()
         {
+#if WINDOWS_UAP
+            Microsoft.Xbox.Services.System.XboxLiveUser.SignOutCompleted -= XboxLiveUser_SignOutCompleted;
+#endif
+
             Data?.Dispose();
             Data = null;
         }
@@ -50,18 +63,18 @@ namespace ShevaEngine.UserAccounts
 #if WINDOWS_UAP
             _log.Info("Xbox Live service");
 
-            Windows.Foundation.IAsyncOperation<System.Collections.Generic.IReadOnlyList<Windows.System.User>> usersTask = Windows.System.User.FindAllAsync();
+            Windows.Foundation.IAsyncOperation<IReadOnlyList<Windows.System.User>> usersTask = Windows.System.User.FindAllAsync();
 
             Windows.UI.Core.CoreDispatcher dispatcher = Windows.ApplicationModel.Core.CoreApplication.GetCurrentView().CoreWindow.Dispatcher;
 
             usersTask.Completed += 
-                (Windows.Foundation.IAsyncOperation<System.Collections.Generic.IReadOnlyList<Windows.System.User>> asyncInfo, Windows.Foundation.AsyncStatus asyncStatus) =>
+                (Windows.Foundation.IAsyncOperation<IReadOnlyList<Windows.System.User>> asyncInfo, Windows.Foundation.AsyncStatus asyncStatus) =>
             {
                 foreach (Windows.System.User user in asyncInfo.GetResults())
                 {
-                    _xboxLiveUser = new Microsoft.Xbox.Services.System.XboxLiveUser(user);
+                    _xboxLiveUser = new Microsoft.Xbox.Services.System.XboxLiveUser(user);                    
 
-                    if (_xboxLiveUser.IsSignedIn)
+                    if (silently && _xboxLiveUser.IsSignedIn)
                         GetUserData(_xboxLiveUser).ContinueWith(item => Data.OnNext(item.Result));                                         
                     else
                     {
@@ -71,20 +84,24 @@ namespace ShevaEngine.UserAccounts
                         {
                             _xboxLiveUser.SignInSilentlyAsync(dispatcher).Completed +=
                                 (Windows.Foundation.IAsyncOperation<Microsoft.Xbox.Services.System.SignInResult> asyncInfoSignin, Windows.Foundation.AsyncStatus asyncStatusSignin) =>
-                            {
-                                if (asyncInfoSignin.GetResults().Status == Microsoft.Xbox.Services.System.SignInStatus.Success)
                                 {
-                                    GetUserData(_xboxLiveUser).ContinueWith(item => Data.OnNext(item.Result));
+                                    if (asyncInfoSignin.GetResults().Status == Microsoft.Xbox.Services.System.SignInStatus.Success)
+                                    {
+                                        AddLocalUser(_xboxLiveUser, CancellationToken.None).ContinueWith(addedToStat =>
+                                        {
+                                            if (addedToStat.Result)
+                                                GetUserData(_xboxLiveUser).ContinueWith(item => Data.OnNext(item.Result));
+                                        });
 
-                                    taskSource.SetResult(true);
-                                }
-                                else
-                                {
-                                    Data.OnNext(null);
+                                        taskSource.SetResult(true);
+                                    }
+                                    else
+                                    {
+                                        Data.OnNext(null);
 
-                                    taskSource.SetResult(false);
-                                }
-                            };
+                                        taskSource.SetResult(false);
+                                    }
+                                };
                         }
                         else
                         {
@@ -93,7 +110,11 @@ namespace ShevaEngine.UserAccounts
                                 {
                                     if (asyncInfoSignin.GetResults().Status == Microsoft.Xbox.Services.System.SignInStatus.Success)
                                     {
-                                        GetUserData(_xboxLiveUser).ContinueWith(item => Data.OnNext(item.Result));
+                                        AddLocalUser(_xboxLiveUser, CancellationToken.None).ContinueWith(addedToStat =>
+                                        {
+                                            if (addedToStat.Result)
+                                                GetUserData(_xboxLiveUser).ContinueWith(item => Data.OnNext(item.Result));
+                                        });
 
                                         taskSource.SetResult(true);
                                     }
@@ -113,7 +134,28 @@ namespace ShevaEngine.UserAccounts
             return taskSource.Task;
         }
 
+        /// <summary>
+        /// Disconnect.
+        /// </summary>        
+        public Task<bool> Disconnect()
+        {
 #if WINDOWS_UAP
+            
+#endif
+            return Task.FromResult(true);
+        }
+
+#if WINDOWS_UAP     
+        /// <summary>
+        /// Xbox Live user signed out.
+        /// </summary>
+        private void XboxLiveUser_SignOutCompleted(object sender, Microsoft.Xbox.Services.System.SignOutCompletedEventArgs e)
+        {
+            RemoveLocalUser(_xboxLiveUser, CancellationToken.None);
+
+            Data.OnNext(null);
+        }
+
         /// <summary>
         /// Get user data.
         /// </summary>
@@ -126,13 +168,14 @@ namespace ShevaEngine.UserAccounts
             {
                 Microsoft.Xbox.Services.Social.XboxUserProfile userProfile = userProfileTask.Result;
 
-                Task<Texture2D> pictureTask = GetGamerPicture(user, context, userProfile);
+                Task<Texture2D> pictureTask = GetGamerPicture(context, userProfile);
                 pictureTask.Wait();
 
                 return new UserData()
                 {
                     GamerName = userProfile.GameDisplayName,
-                    GamerPicture = pictureTask.Result
+                    GamerPicture = pictureTask.Result,
+                    XboxLiveUser = _xboxLiveUser,
                 };
             });                                  
         }
@@ -140,7 +183,26 @@ namespace ShevaEngine.UserAccounts
         /// <summary>
         /// Get gamer picture.
         /// </summary>
-        private Task<Texture2D> GetGamerPicture(Microsoft.Xbox.Services.System.XboxLiveUser user,
+        private Task<Texture2D> GetGamerPicture(string xboxLiveId)
+        {
+            Microsoft.Xbox.Services.XboxLiveContext context = new Microsoft.Xbox.Services.XboxLiveContext(_xboxLiveUser);
+            Task<Microsoft.Xbox.Services.Social.XboxUserProfile> getUserProfileTask = context.ProfileService.GetUserProfileAsync(xboxLiveId).AsTask();
+
+            return getUserProfileTask.ContinueWith(userProfileTask =>
+            {
+                Microsoft.Xbox.Services.Social.XboxUserProfile userProfile = userProfileTask.Result;
+
+                Task<Texture2D> pictureTask = GetGamerPicture(context, userProfile);
+                pictureTask.Wait();
+
+                return pictureTask.Result;
+            });
+        }
+
+        /// <summary>
+        /// Get gamer picture.
+        /// </summary>
+        private Task<Texture2D> GetGamerPicture(
             Microsoft.Xbox.Services.XboxLiveContext context, Microsoft.Xbox.Services.Social.XboxUserProfile userProfile)
         {
             TaskCompletionSource<Texture2D> taskSource = new TaskCompletionSource<Texture2D>();
@@ -196,7 +258,124 @@ namespace ShevaEngine.UserAccounts
             using (MemoryStream stream = new MemoryStream(data))
                 return Texture2D.FromStream(_game.GraphicsDevice, stream);            
         }
-#endif      
+
+        /// <summary>
+        /// Add local user.
+        /// </summary>
+        private Task<bool> AddLocalUser(Microsoft.Xbox.Services.System.XboxLiveUser user, CancellationToken cancellationToken)
+        {           
+            return Task.Run(() =>
+            {
+                try
+                {
+                    _statisticManager.AddLocalUser(user);
+
+                    while (!cancellationToken.IsCancellationRequested)
+                    {
+                        foreach (Microsoft.Xbox.Services.Statistics.Manager.StatisticEvent statEvent in _statisticManager.DoWork())
+                        {
+                            if (statEvent.EventType == Microsoft.Xbox.Services.Statistics.Manager.StatisticEventType.LocalUserAdded)
+                                return statEvent.ErrorCode == 0;
+                        }
+
+                        Task.Delay(500).Wait();
+                    }
+                }
+                catch (Exception exception)
+                {
+                    _log.Error("Can't add local player to statistic manager", exception);
+                }
+
+                return false;
+            });
+        }
+
+        /// <summary>
+        /// Add local user.
+        /// </summary>
+        private Task<bool> RemoveLocalUser(Microsoft.Xbox.Services.System.XboxLiveUser user, CancellationToken cancellationToken)
+        {
+            return Task.Run(() =>
+            {
+                _statisticManager.RemoveLocalUser(user);
+
+                while (!cancellationToken.IsCancellationRequested)
+                {
+                    foreach (Microsoft.Xbox.Services.Statistics.Manager.StatisticEvent statEvent in _statisticManager.DoWork())
+                    {
+                        if (statEvent.EventType == Microsoft.Xbox.Services.Statistics.Manager.StatisticEventType.LocalUserRemoved)
+                            return statEvent.ErrorCode == 0;
+                    }
+
+                    Task.Delay(500).Wait();
+                }
+
+                return false;
+            });
+        }
+
+        /// <summary>
+        /// Get leaderboard.
+        /// </summary>
+        public Task<IEnumerable<LeaderboardItem<T>>> GetLeaderboard<T>(string name)
+        {
+            if (_xboxLiveUser == null)
+                return null;            
+            
+            Microsoft.Xbox.Services.Leaderboard.LeaderboardQuery query = new Microsoft.Xbox.Services.Leaderboard.LeaderboardQuery()
+            {                
+                MaxItems = 10,
+                SkipResultToMe = false,                                                
+            };
+
+            _statisticManager.GetLeaderboard(_xboxLiveUser, name, query);
+            
+            return Task.Run(() =>
+            {
+                while (true)
+                    foreach (Microsoft.Xbox.Services.Statistics.Manager.StatisticEvent statEvent in _statisticManager.DoWork())
+                    {
+                        if (statEvent.EventType == Microsoft.Xbox.Services.Statistics.Manager.StatisticEventType.GetLeaderboardComplete && statEvent.ErrorCode == 0)
+                        {
+                            Microsoft.Xbox.Services.Statistics.Manager.LeaderboardResultEventArgs leaderArgs =
+                                (Microsoft.Xbox.Services.Statistics.Manager.LeaderboardResultEventArgs)statEvent.EventArgs;
+
+                            Microsoft.Xbox.Services.Leaderboard.LeaderboardResult leaderboardResult = leaderArgs.Result;
+
+                            return leaderboardResult.Rows.ToList().Select(item =>
+                            {
+                                return new LeaderboardItem<T>()
+                                {
+                                    GamerName = item.Gamertag,
+                                    Rank = item.Rank,
+                                    Score = GetScore<T>(item.Values[0]),                                    
+                                };
+                            });
+                        }
+                    }
+            });
+        }
+
+        /// <summary>
+        /// Get score.
+        /// </summary>
+        private T GetScore<T>(string value)
+        {
+            if (typeof(T) == typeof(byte) ||
+               typeof(T) == typeof(short) ||
+               typeof(T) == typeof(ushort) ||
+               typeof(T) == typeof(int) ||
+               typeof(T) == typeof(uint) ||
+               typeof(T) == typeof(long) ||
+               typeof(T) == typeof(ulong))
+                return (T)(object)int.Parse(value);
+            else if (typeof(T) == typeof(float) ||
+                     typeof(T) == typeof(double))
+                return (T)(object)double.Parse(value, CultureInfo.InvariantCulture);
+
+            return (T)(object)value;
+        }
+#endif
     }
 }
 
