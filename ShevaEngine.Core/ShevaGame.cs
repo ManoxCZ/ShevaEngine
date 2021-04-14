@@ -196,6 +196,7 @@ namespace ShevaEngine.Core
 			}            
 
             User = new User(this);
+            User.ConnectToService(true);
 
 			_log.Info("All game components initialized");
 		}

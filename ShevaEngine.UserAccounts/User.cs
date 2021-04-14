@@ -16,6 +16,8 @@ namespace ShevaEngine.UserAccounts
     /// </summary>
     public class User : IDisposable
     {        
+        private const int CANCEL_TIMEOUT = 5000;
+
         private readonly Log _log = new Log(typeof(User));
         private readonly ShevaGame _game;
 
@@ -23,7 +25,8 @@ namespace ShevaEngine.UserAccounts
         private Microsoft.Xbox.Services.System.XboxLiveUser _xboxLiveUser;
         private Microsoft.Xbox.Services.Statistics.Manager.StatisticManager _statisticManager => Microsoft.Xbox.Services.Statistics.Manager.StatisticManager.SingletonInstance;
 #endif
-        public BehaviorSubject<UserData> Data { get; private set; } = new BehaviorSubject<UserData>(null);
+        public BehaviorSubject<UserData> Data { get; private set; } 
+        public CancellationTokenSource _cancellationTokenSource;
 
 
         /// <summary>
@@ -32,8 +35,7 @@ namespace ShevaEngine.UserAccounts
         internal User(ShevaGame game)
         {
             _game = game;
-
-            ConnectToService(true);
+            Data = new BehaviorSubject<UserData>(null);            
 
 #if WINDOWS_UAP
             Microsoft.Xbox.Services.System.XboxLiveUser.SignOutCompleted += XboxLiveUser_SignOutCompleted;
@@ -58,6 +60,11 @@ namespace ShevaEngine.UserAccounts
         /// </summary>
         public Task<bool> ConnectToService(bool silently = false)
         {
+            _cancellationTokenSource?.Cancel();
+            
+            _cancellationTokenSource = new CancellationTokenSource();
+            _cancellationTokenSource.CancelAfter(CANCEL_TIMEOUT);
+
             TaskCompletionSource<bool> taskSource = new TaskCompletionSource<bool>();
 
 #if WINDOWS_UAP
@@ -78,7 +85,7 @@ namespace ShevaEngine.UserAccounts
                         GetUserData(_xboxLiveUser).ContinueWith(item => Data.OnNext(item.Result));                                         
                     else
                     {
-                        Data.OnNext(UserData.Connecting);
+                        Data.OnNext(UserData.Connecting);                        
 
                         if (silently)
                         {
@@ -87,18 +94,20 @@ namespace ShevaEngine.UserAccounts
                                 {
                                     if (asyncInfoSignin.GetResults().Status == Microsoft.Xbox.Services.System.SignInStatus.Success)
                                     {
-                                        AddLocalUser(_xboxLiveUser, CancellationToken.None).ContinueWith(addedToStat =>
+                                        AddLocalUser(_xboxLiveUser, _cancellationTokenSource.Token).ContinueWith(addedToStat =>
                                         {
                                             if (addedToStat.Result)
                                                 GetUserData(_xboxLiveUser).ContinueWith(item => Data.OnNext(item.Result));
                                         });
 
+                                        _cancellationTokenSource = null;
                                         taskSource.SetResult(true);
                                     }
                                     else
                                     {
                                         Data.OnNext(null);
 
+                                        _cancellationTokenSource = null;
                                         taskSource.SetResult(false);
                                     }
                                 };
@@ -110,18 +119,20 @@ namespace ShevaEngine.UserAccounts
                                 {
                                     if (asyncInfoSignin.GetResults().Status == Microsoft.Xbox.Services.System.SignInStatus.Success)
                                     {
-                                        AddLocalUser(_xboxLiveUser, CancellationToken.None).ContinueWith(addedToStat =>
+                                        AddLocalUser(_xboxLiveUser, _cancellationTokenSource.Token).ContinueWith(addedToStat =>
                                         {
                                             if (addedToStat.Result)
                                                 GetUserData(_xboxLiveUser).ContinueWith(item => Data.OnNext(item.Result));
                                         });
 
+                                        _cancellationTokenSource = null;
                                         taskSource.SetResult(true);
                                     }
                                     else
                                     {
                                         Data.OnNext(null);
 
+                                        _cancellationTokenSource = null;
                                         taskSource.SetResult(false);
                                     }
                                 };
@@ -319,8 +330,8 @@ namespace ShevaEngine.UserAccounts
         /// </summary>
         public Task<IEnumerable<LeaderboardItem<T>>> GetLeaderboard<T>(string name)
         {
-            if (_xboxLiveUser == null)
-                return null;            
+            if (_xboxLiveUser == null || !_xboxLiveUser.IsSignedIn)
+                return Task.FromResult<IEnumerable<LeaderboardItem<T>>>(null);
             
             Microsoft.Xbox.Services.Leaderboard.LeaderboardQuery query = new Microsoft.Xbox.Services.Leaderboard.LeaderboardQuery()
             {                
@@ -344,11 +355,15 @@ namespace ShevaEngine.UserAccounts
 
                             return leaderboardResult.Rows.ToList().Select(item =>
                             {
+                                Task<Texture2D> pictureTask = GetGamerPicture(item.XboxUserId);
+                                pictureTask.Wait();
+
                                 return new LeaderboardItem<T>()
                                 {
                                     GamerName = item.Gamertag,
                                     Rank = item.Rank,
                                     Score = GetScore<T>(item.Values[0]),                                    
+                                    Picture = pictureTask.Result,
                                 };
                             });
                         }

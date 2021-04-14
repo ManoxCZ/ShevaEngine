@@ -31,17 +31,21 @@ namespace ShevaEngine.UI
         /// </summary>        
         public override void Resize(Rectangle locationSize)
         {
-            int[] columnWidths = GetColumnWidths(locationSize.Width);
-            int[] rowHeights = GetRowHeights(locationSize.Height);
+            LocationSize = new Rectangle(
+                locationSize.X + Margin.Value.Left,
+                locationSize.Y + Margin.Value.Top,
+                locationSize.Width - Margin.Value.Left - Margin.Value.Right,
+                locationSize.Height - Margin.Value.Top - Margin.Value.Bottom);
+
+            int[] columnWidths = GetColumnWidths(LocationSize.Width);
+            int[] rowHeights = GetRowHeights(LocationSize.Height);
 
             foreach (Control child in Children)
                 child.Resize(new Rectangle(
-					locationSize.X + GetX(columnWidths,child.GridColumn.Value),
-					locationSize.Y + GetY(rowHeights, child.GridRow.Value), 
+                    LocationSize.X + GetX(columnWidths,child.GridColumn.Value),
+                    LocationSize.Y + GetY(rowHeights, child.GridRow.Value), 
                     columnWidths[child.GridColumn.Value],
-					rowHeights[child.GridRow.Value]));
-
-            LocationSize = locationSize;
+					rowHeights[child.GridRow.Value]));            
         }
 
         /// <summary>
@@ -51,7 +55,7 @@ namespace ShevaEngine.UI
         {
             double absoluteSum = 0;
             double relativeSum = 0;
-
+            
             foreach (RowDefinition rowDefinition in RowDefinitions.Value)                
             {
                 if (rowDefinition.Units == Units.Absolute)

@@ -5,6 +5,7 @@ using ShevaEngine.UI.Brushes;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Text.RegularExpressions;
 using System.Xml;
 
@@ -233,15 +234,18 @@ namespace ShevaEngine.UI
         /// Create brush.
         /// </summary>
         private static Brush CreateBrush(string value)
-        {
-            Type colorType = typeof(Color);
-
+        {            
             System.Reflection.PropertyInfo property = typeof(Color).GetProperty(value);
 
             if (property != null)
                 return new SolidColorBrush((Color)property.GetValue(null));
+            
+            int a = Int32.Parse(value.Substring(1,2), NumberStyles.HexNumber);
+            int r = Int32.Parse(value.Substring(3, 2), NumberStyles.HexNumber);
+            int g = Int32.Parse(value.Substring(5, 2), NumberStyles.HexNumber);
+            int b = Int32.Parse(value.Substring(7, 2), NumberStyles.HexNumber);
 
-            return null;
+            return new SolidColorBrush(Color.FromNonPremultiplied(r,g,b,a));
         }
 
         /// <summary>
