@@ -1,4 +1,6 @@
-﻿using ImGuiNET;
+﻿#if !WINDOWS_UAP
+using ImGuiNET;
+#endif
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
@@ -28,6 +30,7 @@ namespace ShevaEngine.PostProcesses
 			set => Effect.Parameters[nameof(Color)].SetValue(value.ToVector4());            
         }
 
+#if !WINDOWS_UAP
         /// <summary>
         /// DebugUI.
         /// </summary>
@@ -51,5 +54,6 @@ namespace ShevaEngine.PostProcesses
 			ImGui.ColorEdit3(nameof(Color), ref temp);
 			Color = new Color(temp);
 		}	 
+#endif
     }
 }

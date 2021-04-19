@@ -1,4 +1,6 @@
+#if !WINDOWS_UAP
 using ImGuiNET;
+#endif
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ShevaEngine.Core;
@@ -34,6 +36,7 @@ namespace ShevaEngine.PostProcesses
             Effect.Parameters["PixelSize"]?.SetValue(new Vector2(1.0f / InputTexture.Width, 1.0f / InputTexture.Height));
         }
 
+#if !WINDOWS_UAP
         /// <summary>
         /// DebugUI.
         /// </summary>
@@ -53,5 +56,6 @@ namespace ShevaEngine.PostProcesses
 			ImGui.SliderFloat(nameof(Amount), ref tempSingle, -2, 1);
             Amount = tempSingle;
 		}	 
+#endif
     }
 }

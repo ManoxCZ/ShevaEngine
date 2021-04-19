@@ -17,7 +17,10 @@ namespace ShevaEngine.Core
 	/// <summary>
 	/// Camera.
 	/// </summary> 
-	public class Camera : IDebugUIPage, IDisposable
+	public class Camera : IDisposable
+#if !WINDOWS_UAP
+        , IDebugUIPage
+#endif
 	{
 		private readonly Log _log = new Log(typeof(Camera));
 		public string DebugUIPageName { get; private set; }
@@ -150,8 +153,10 @@ namespace ShevaEngine.Core
 			ViewMatrix = Matrix.Identity;
 			CameraType = CameraType.Perspective;
 
+#if !WINDOWS_UAP
 			DebugUIPageName = $"Camera: {name}";
 			ShevaGame.Instance.DebugUI.AddDebugPage(this);	
+#endif
 
 			_spriteBatch = new SpriteBatch(ShevaGame.Instance.GraphicsDevice);
             _pipeline = new RenderingPipeline("Camera pipeline")
@@ -165,7 +170,9 @@ namespace ShevaEngine.Core
         /// </summary>
         public void Dispose()
         {
+#if !WINDOWS_UAP
             ShevaGame.Instance.DebugUI.RemoveDebugPage(this);
+#endif
         }
 		
 		/// <summary>
@@ -341,6 +348,7 @@ namespace ShevaEngine.Core
 				target.SaveAsPng(stream, target.Width, target.Height );							
 		}
 
+#if !WINDOWS_UAP
         /// <summary>
         /// DebugUI.
         /// </summary>
@@ -389,5 +397,6 @@ namespace ShevaEngine.Core
 				ImGuiNET.ImGui.TreePop();
 			}   				
 		}
+#endif
     }    
 }

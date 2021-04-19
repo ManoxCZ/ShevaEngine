@@ -1,3 +1,4 @@
+#if !WINDOWS_UAP
 using ImGuiNET;
 using Microsoft.Xna.Framework;
 using System.Collections.Generic;
@@ -93,3 +94,4 @@ namespace ShevaEngine.Core
         }
     }
 }
+#endif

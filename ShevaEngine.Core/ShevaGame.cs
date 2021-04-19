@@ -31,7 +31,9 @@ namespace ShevaEngine.Core
 		private object _componentsLock = new object();
         public User User { get; private set; }        
         private bool _showDebugUI = false;
+#if !WINDOWS_UAP
         public DebugUI DebugUI { get; private set; }
+#endif
         public IUIStyleGenerator UIStyle { get; protected set; } = new DefaultUIStyleGenerator();
         
 
@@ -121,7 +123,9 @@ namespace ShevaEngine.Core
                 _showDebugUI = !_showDebugUI;
             });
 
+#if !WINDOWS_UAP
             DebugUI = new DebugUI(this);
+#endif
 
             base.Initialize();			
 
@@ -269,8 +273,10 @@ namespace ShevaEngine.Core
 				else
 					GraphicsDevice.Clear(Color.Black);
 
+#if !WINDOWS_UAP
 			if (_showDebugUI)
 				DebugUI?.Draw(gameTime);
+#endif
         }
 
         /// <summary>

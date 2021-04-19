@@ -77,7 +77,7 @@ namespace ShevaEngine.Core
 
                 Label versionLabel = new Label();
                 versionLabel.GridColumn.OnNext(2);
-                loadingLabel.Foreground.OnNext(new SolidColorBrush(Color.White));
+                versionLabel.Foreground.OnNext(new SolidColorBrush(Color.White));
                 versionLabel.HorizontalAlignment.OnNext(HorizontalAlignment.Right);
                 versionLabel.VerticalAlignment.OnNext(VerticalAlignment.Bottom);
                 versionLabel.Margin.OnNext(new Margin(4));
