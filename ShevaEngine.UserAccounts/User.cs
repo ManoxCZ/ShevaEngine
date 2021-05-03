@@ -390,6 +390,15 @@ namespace ShevaEngine.UserAccounts
 
             return (T)(object)value;
         }
+
+#else
+        /// <summary>
+        /// Get leaderboard.
+        /// </summary>
+        public Task<IEnumerable<LeaderboardItem<T>>> GetLeaderboard<T>(string name)
+        {
+            return Task.FromResult<IEnumerable<LeaderboardItem<T>>>(null);
+        }
 #endif
     }
 }
