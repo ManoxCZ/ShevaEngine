@@ -82,26 +82,39 @@ namespace ShevaEngine.UserAccounts
                     _xboxLiveUser = new Microsoft.Xbox.Services.System.XboxLiveUser(user);                    
 
                     if (silently && _xboxLiveUser.IsSignedIn)
-                        GetUserData(_xboxLiveUser).ContinueWith(item => Data.OnNext(item.Result));                                         
+                        GetUserData(_xboxLiveUser, _cancellationTokenSource.Token).ContinueWith(item => Data.OnNext(item.Result));                                         
                     else
                     {
                         Data.OnNext(UserData.Connecting);                        
 
                         if (silently)
                         {
-                            _xboxLiveUser.SignInSilentlyAsync(dispatcher).Completed +=
-                                (Windows.Foundation.IAsyncOperation<Microsoft.Xbox.Services.System.SignInResult> asyncInfoSignin, Windows.Foundation.AsyncStatus asyncStatusSignin) =>
+                            _xboxLiveUser.SignInSilentlyAsync(dispatcher).AsTask(_cancellationTokenSource.Token).ContinueWith(
+                                item =>                                
                                 {
-                                    if (asyncInfoSignin.GetResults().Status == Microsoft.Xbox.Services.System.SignInStatus.Success)
+                                    if (item.Result.Status == Microsoft.Xbox.Services.System.SignInStatus.Success)
                                     {
-                                        AddLocalUser(_xboxLiveUser, _cancellationTokenSource.Token).ContinueWith(addedToStat =>
+                                        AddLocalUser(_xboxLiveUser).ContinueWith(addedToStat =>
                                         {
                                             if (addedToStat.Result)
-                                                GetUserData(_xboxLiveUser).ContinueWith(item => Data.OnNext(item.Result));
+                                                GetUserData(_xboxLiveUser, _cancellationTokenSource.Token).ContinueWith(
+                                                    userResult =>
+                                                    {
+                                                        Data.OnNext(userResult.Result);
+                                                        
+                                                        _cancellationTokenSource = null;
+                                                        taskSource.SetResult(true);
+                                                    });
+                                            else
+                                            {
+                                                Data.OnNext(null);
+
+                                                _cancellationTokenSource = null;
+                                                taskSource.SetResult(true);
+                                            }
                                         });
 
-                                        _cancellationTokenSource = null;
-                                        taskSource.SetResult(true);
+                                        
                                     }
                                     else
                                     {
@@ -110,23 +123,36 @@ namespace ShevaEngine.UserAccounts
                                         _cancellationTokenSource = null;
                                         taskSource.SetResult(false);
                                     }
-                                };
+                                });
                         }
                         else
                         {
-                            _xboxLiveUser.SignInAsync(dispatcher).Completed +=
-                                (Windows.Foundation.IAsyncOperation<Microsoft.Xbox.Services.System.SignInResult> asyncInfoSignin, Windows.Foundation.AsyncStatus asyncStatusSignin) =>
+                            _xboxLiveUser.SignInAsync(dispatcher).AsTask(_cancellationTokenSource.Token).ContinueWith(
+                                item =>
                                 {
-                                    if (asyncInfoSignin.GetResults().Status == Microsoft.Xbox.Services.System.SignInStatus.Success)
+                                    if (item.Result.Status == Microsoft.Xbox.Services.System.SignInStatus.Success)
                                     {
-                                        AddLocalUser(_xboxLiveUser, _cancellationTokenSource.Token).ContinueWith(addedToStat =>
+                                        AddLocalUser(_xboxLiveUser).ContinueWith(addedToStat =>
                                         {
                                             if (addedToStat.Result)
-                                                GetUserData(_xboxLiveUser).ContinueWith(item => Data.OnNext(item.Result));
+                                                GetUserData(_xboxLiveUser, _cancellationTokenSource.Token).ContinueWith(
+                                                    userResult =>
+                                                    {
+                                                        Data.OnNext(userResult.Result);
+
+                                                        _cancellationTokenSource = null;
+                                                        taskSource.SetResult(true);
+                                                    });
+                                            else
+                                            {
+                                                Data.OnNext(null);
+
+                                                _cancellationTokenSource = null;
+                                                taskSource.SetResult(true);
+                                            }
                                         });
 
-                                        _cancellationTokenSource = null;
-                                        taskSource.SetResult(true);
+
                                     }
                                     else
                                     {
@@ -135,7 +161,7 @@ namespace ShevaEngine.UserAccounts
                                         _cancellationTokenSource = null;
                                         taskSource.SetResult(false);
                                     }
-                                };
+                                });
                         }
                     }
                 }       
@@ -170,10 +196,10 @@ namespace ShevaEngine.UserAccounts
         /// <summary>
         /// Get user data.
         /// </summary>
-        private Task<UserData> GetUserData(Microsoft.Xbox.Services.System.XboxLiveUser user)
+        private Task<UserData> GetUserData(Microsoft.Xbox.Services.System.XboxLiveUser user, CancellationToken cancellationToken)
         {
             Microsoft.Xbox.Services.XboxLiveContext context = new Microsoft.Xbox.Services.XboxLiveContext(user);
-            Task<Microsoft.Xbox.Services.Social.XboxUserProfile> getUserProfileTask = context.ProfileService.GetUserProfileAsync(user.XboxUserId).AsTask();
+            Task<Microsoft.Xbox.Services.Social.XboxUserProfile> getUserProfileTask = context.ProfileService.GetUserProfileAsync(user.XboxUserId).AsTask(cancellationToken);
 
             return getUserProfileTask.ContinueWith(userProfileTask => 
             {
@@ -273,15 +299,18 @@ namespace ShevaEngine.UserAccounts
         /// <summary>
         /// Add local user.
         /// </summary>
-        private Task<bool> AddLocalUser(Microsoft.Xbox.Services.System.XboxLiveUser user, CancellationToken cancellationToken)
+        private Task<bool> AddLocalUser(Microsoft.Xbox.Services.System.XboxLiveUser user)
         {           
             return Task.Run(() =>
             {
                 try
                 {
+                    int time = 0;
+                    const int waitTime = 500;
+
                     _statisticManager.AddLocalUser(user);
 
-                    while (!cancellationToken.IsCancellationRequested)
+                    while (time <= CANCEL_TIMEOUT)
                     {
                         foreach (Microsoft.Xbox.Services.Statistics.Manager.StatisticEvent statEvent in _statisticManager.DoWork())
                         {
@@ -289,7 +318,8 @@ namespace ShevaEngine.UserAccounts
                                 return statEvent.ErrorCode == 0;
                         }
 
-                        Task.Delay(500).Wait();
+                        time += waitTime;
+                        Task.Delay(waitTime).Wait();
                     }
                 }
                 catch (Exception exception)
