@@ -1,5 +1,6 @@
 ﻿using Microsoft.Xna.Framework.Graphics;
 using System;
+using System.Threading.Tasks;
 
 namespace ShevaEngine.UserAccounts
 {
@@ -19,33 +20,38 @@ namespace ShevaEngine.UserAccounts
         /// <summary>
         /// Update score.
         /// </summary>
-        public void UpdateScore<T>(string name, T value)
+        public Task<bool> UpdateScore<T>(string name, T value)
         {
 #if WINDOWS_UAP
-            if (typeof(T) == typeof(byte) ||
-                typeof(T) == typeof(short) ||
-                typeof(T) == typeof(ushort) ||
-                typeof(T) == typeof(int) ||
-                typeof(T) == typeof(uint) ||
-                typeof(T) == typeof(long) ||
-                typeof(T) == typeof(ulong))
-                Microsoft.Xbox.Services.Statistics.Manager.StatisticManager.SingletonInstance.SetStatisticIntegerData(XboxLiveUser, name, Convert.ToInt64(value));
-            else if (typeof(T) == typeof(float) ||
-                     typeof(T) == typeof(double))
-                Microsoft.Xbox.Services.Statistics.Manager.StatisticManager.SingletonInstance.SetStatisticNumberData(XboxLiveUser, name, Convert.ToDouble(value));
-            else if (typeof(T) == typeof(string))
-                Microsoft.Xbox.Services.Statistics.Manager.StatisticManager.SingletonInstance.SetStatisticStringData(XboxLiveUser, name, Convert.ToString(value));
-
-            Microsoft.Xbox.Services.Statistics.Manager.StatisticManager.SingletonInstance.RequestFlushToService(XboxLiveUser);
-
-            while (true)
+            return Task.Run(() =>
             {
-                foreach (var statEvent in Microsoft.Xbox.Services.Statistics.Manager.StatisticManager.SingletonInstance.DoWork())
+                if (typeof(T) == typeof(byte) ||
+                    typeof(T) == typeof(short) ||
+                    typeof(T) == typeof(ushort) ||
+                    typeof(T) == typeof(int) ||
+                    typeof(T) == typeof(uint) ||
+                    typeof(T) == typeof(long) ||
+                    typeof(T) == typeof(ulong))
+                    Microsoft.Xbox.Services.Statistics.Manager.StatisticManager.SingletonInstance.SetStatisticIntegerData(XboxLiveUser, name, Convert.ToInt64(value));
+                else if (typeof(T) == typeof(float) ||
+                         typeof(T) == typeof(double))
+                    Microsoft.Xbox.Services.Statistics.Manager.StatisticManager.SingletonInstance.SetStatisticNumberData(XboxLiveUser, name, Convert.ToDouble(value));
+                else if (typeof(T) == typeof(string))
+                    Microsoft.Xbox.Services.Statistics.Manager.StatisticManager.SingletonInstance.SetStatisticStringData(XboxLiveUser, name, Convert.ToString(value));
+
+                Microsoft.Xbox.Services.Statistics.Manager.StatisticManager.SingletonInstance.RequestFlushToService(XboxLiveUser);
+
+                System.Threading.Thread.Sleep(10000);
+
+                while (true)
                 {
-                    if (statEvent.EventType == Microsoft.Xbox.Services.Statistics.Manager.StatisticEventType.StatisticUpdateComplete)
-                        return;
+                    foreach (var statEvent in Microsoft.Xbox.Services.Statistics.Manager.StatisticManager.SingletonInstance.DoWork())
+                    {
+                        if (statEvent.EventType == Microsoft.Xbox.Services.Statistics.Manager.StatisticEventType.StatisticUpdateComplete)
+                            return true;
+                    }
                 }
-            }
+            });
 #endif
         }
     }
