@@ -12,6 +12,6 @@
     <MonoGameContentReference Include="$(MSBuildThisFileDirectory)Content\Content.mgcb" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="$(MSBuildThisFileDirectory)**\*.cs" />    
+    <Compile Include="$(MSBuildThisFileDirectory)**\*.cs" />
   </ItemGroup>
 </Project>
