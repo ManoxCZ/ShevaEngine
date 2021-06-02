@@ -54,7 +54,7 @@ namespace ShevaEngine.Core
 
                 loadingLabel.Animations[ControlFlag.Default].AddRange(new[]
                 {
-                    new PulseColorAnimation(brush.Color, Color.FromNonPremultiplied(0,0,0,255), Color.FromNonPremultiplied(200,200,200,255), 5),
+                    new PulseColorAnimation(brush.Color, Color.FromNonPremultiplied(100,100,100,255), Color.FromNonPremultiplied(200,200,200,255), 5),
                 });
 
                 loadingLabel.Text.OnNext("Loading ...");
