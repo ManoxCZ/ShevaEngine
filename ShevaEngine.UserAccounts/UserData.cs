@@ -39,9 +39,7 @@ namespace ShevaEngine.UserAccounts
                 else if (typeof(T) == typeof(string))
                     Microsoft.Xbox.Services.Statistics.Manager.StatisticManager.SingletonInstance.SetStatisticStringData(XboxLiveUser, name, Convert.ToString(value));
 
-                Microsoft.Xbox.Services.Statistics.Manager.StatisticManager.SingletonInstance.RequestFlushToService(XboxLiveUser);
-
-                System.Threading.Thread.Sleep(10000);
+                Microsoft.Xbox.Services.Statistics.Manager.StatisticManager.SingletonInstance.RequestFlushToService(XboxLiveUser);                
 
                 while (true)
                 {
