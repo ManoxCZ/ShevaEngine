@@ -27,6 +27,8 @@ namespace ShevaEngine.UserAccounts
 #endif
         public BehaviorSubject<UserData> Data { get; private set; } 
         public CancellationTokenSource _cancellationTokenSource;
+        public readonly object _picturesLock = new object();
+        public readonly SortedDictionary<string, Texture2D> _picturesCache = new SortedDictionary<string, Texture2D>();
 
 
         /// <summary>
@@ -222,6 +224,12 @@ namespace ShevaEngine.UserAccounts
         /// </summary>
         private Task<Texture2D> GetGamerPicture(string xboxLiveId)
         {
+            lock (_picturesLock)
+            {
+                if (_picturesCache.ContainsKey(xboxLiveId))
+                    return Task.FromResult(_picturesCache[xboxLiveId]);
+            }
+
             Microsoft.Xbox.Services.XboxLiveContext context = new Microsoft.Xbox.Services.XboxLiveContext(_xboxLiveUser);
             Task<Microsoft.Xbox.Services.Social.XboxUserProfile> getUserProfileTask = context.ProfileService.GetUserProfileAsync(xboxLiveId).AsTask();
 
@@ -231,6 +239,10 @@ namespace ShevaEngine.UserAccounts
 
                 Task<Texture2D> pictureTask = GetGamerPicture(context, userProfile);
                 pictureTask.Wait();
+
+                lock (_picturesCache)
+                    if (!_picturesCache.ContainsKey(xboxLiveId))
+                        _picturesCache.Add(xboxLiveId, pictureTask.Result);
 
                 return pictureTask.Result;
             });
