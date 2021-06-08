@@ -101,9 +101,9 @@ VertexShaderOutputPNTWD MainVSPBBNTAnimated(VertexShaderInputPBBNT input, matrix
 	return output;
 }
 
-VertexShaderOutputPNTWD MainVSPBBNTTBAnimated(VertexShaderInputPBBNTTB input, matrix transform : COLOR0)
+VertexShaderOutputPNTWTBD MainVSPBBNTTBAnimated(VertexShaderInputPBBNTTB input, matrix transform : COLOR0)
 {
-	VertexShaderOutputPNTWD output;
+	VertexShaderOutputPNTWTBD output;
 	
 	matrix transformTrans = transpose(transform);
 
@@ -113,6 +113,8 @@ VertexShaderOutputPNTWD MainVSPBBNTTBAnimated(VertexShaderInputPBBNTTB input, ma
 	output.Position = mul(mul(mul(input.Position, transformTrans), ViewMatrix), ProjMatrix);
 	output.Normal = mul(input.Normal, (float3x3)transformTrans);	
 	output.Depth = output.Position.zw;
+	output.Tangent = mul(input.Tangent, (float3x3)transformTrans);
+	output.Binormal = mul(input.Binormal, (float3x3)transformTrans);
 	output.TextureCoordinates0 = input.TextureCoordinates0;	
 
 	return output;
@@ -132,8 +134,27 @@ OutputWithDepth MainPSPNT(VertexShaderOutputPNTWD input)
 		normalize(CameraPosition - input.WorldPosition.xyz), input.WorldPosition);	
 
 	result.RenderTarget1 = float4(saturate(AmbientLight + light) * Color.rgb * texColor.rgb + saturate(specular), texColor.w);		
-
 	result.RenderTarget2 = float4(input.Depth.x,1.0f,1.0f,1.0f);	
+
+	return result;
+}
+
+OutputWithDepth MainPSPNTTB(VertexShaderOutputPNTWTBD input)
+{
+	OutputWithDepth result;
+
+	float4 texColor = tex2D(TextureSampler, input.TextureCoordinates0);
+
+	clip(texColor.a - 0.5f);
+
+	float3 light = ComputeDiffuseLighting(normalize(input.Normal), input.WorldPosition);
+
+	float3 specular = ComputeSpecularLighting(normalize(input.Normal),
+		normalize(CameraPosition - input.WorldPosition.xyz), input.WorldPosition);
+
+	result.RenderTarget1 = float4(saturate(AmbientLight + light) * Color.rgb * texColor.rgb + saturate(specular), texColor.w);
+	result.RenderTarget1 = float4(input.Tangent, 1.0);
+	result.RenderTarget2 = float4(input.Depth.x, 1.0f, 1.0f, 1.0f);
 
 	return result;
 }
@@ -180,7 +201,7 @@ technique Default
 	pass PBBNTTB76Animated
 	{
 		VertexShader = compile VS_SHADERMODEL MainVSPBBNTTBAnimated();
-		PixelShader = compile PS_SHADERMODEL MainPSPNT();
+		PixelShader = compile PS_SHADERMODEL MainPSPNTTB();
 	}
 };
 

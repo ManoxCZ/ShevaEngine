@@ -158,15 +158,17 @@ struct VertexShaderOutputPNTWTBD
 	float2 Depth : COLOR;
 };
 
+//position, blendindices, blendweight, normal, texture, tangent, binormal
 struct VertexShaderInputPBBNTTB
 {
 	float3 Position : POSITION0;
-	float3 Normal : NORMAL0;	
+	uint4 BlendIndices : BLENDINDICES0;
+	float4 BlendWeight : BLENDWEIGHT0;
+	float3 Normal : NORMAL0;
 	float2 TextureCoordinates0 : TEXCOORD0;
 	float3 Tangent : TANGENT;
-	float3 Binormal : BINORMAL;	
-	uint4 BlendIndices : BLENDINDICES0;
-    float4 BlendWeight : BLENDWEIGHT0;	
+	float3 Binormal : BINORMAL;
+
 };
 
 struct VertexShaderInputPNTTT

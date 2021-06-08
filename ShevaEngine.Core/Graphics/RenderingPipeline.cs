@@ -120,7 +120,7 @@ namespace ShevaEngine.Core
                 if (Profile == MaterialProfile.Shadows && !material.CastShadows)
                     return;
 
-				if (material.Animated)
+				if (material.Animated && controller != null)
 					material.Bones = controller.GetTransforms(GameTime);					
 				
 				if (material.Transparent)
