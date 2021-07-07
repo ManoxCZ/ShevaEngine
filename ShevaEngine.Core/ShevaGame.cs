@@ -1,11 +1,9 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Media;
-using ShevaEngine.UI;
 using ShevaEngine.UserAccounts;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Threading.Tasks;
@@ -33,8 +31,8 @@ namespace ShevaEngine.Core
         private bool _showDebugUI = false;
 #if !WINDOWS_UAP
         public DebugUI DebugUI { get; private set; }
-#endif
-        public IUIStyleGenerator UIStyle { get; protected set; } = new DefaultUIStyleGenerator();
+#endif        
+        public NoesisUI.NoesisUIWrapper UISystem { get; }
         
 
         /// <summary>
@@ -88,7 +86,8 @@ namespace ShevaEngine.Core
 			Window.AllowUserResizing = true;
 			IsMouseVisible = true;
 			
-			_gameComponents = new Stack<ShevaGameComponent>();				
+			_gameComponents = new Stack<ShevaGameComponent>();
+            UISystem = new NoesisUI.NoesisUIWrapper();
         }        
 
 		/// <summary>
@@ -126,6 +125,8 @@ namespace ShevaEngine.Core
 #if !WINDOWS_UAP
             DebugUI = new DebugUI(this);
 #endif
+
+            UISystem.Initialize(this);
 
             base.Initialize();			
 
@@ -200,7 +201,7 @@ namespace ShevaEngine.Core
 			}            
 
             User = new User(this);
-            User.ConnectToService(true);
+            User.ConnectToService(true);            
 
 			_log.Info("All game components initialized");
 		}
@@ -244,11 +245,12 @@ namespace ShevaEngine.Core
 
             Input.Update();
 
-			InputState.OnNext(new InputState(time, Window));
+            InputState inputState = new InputState(time, Window);
+            InputState.OnNext(inputState);
 
 			lock (_gameComponents)
 				if (_gameComponents.Count > 0)
-					_gameComponents.Peek().Update(time);
+					_gameComponents.Peek().Update(time, inputState);
 		}
 
         /// <summary>

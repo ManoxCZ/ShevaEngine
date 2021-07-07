@@ -1,15 +1,14 @@
 ﻿using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
-using ShevaEngine.UI;
 using System;
 using System.Collections.Generic;
 
 namespace ShevaEngine.Core
 {
-	/// <summary>
-	/// Content manager extended.
-	/// </summary>
-	public class ContentManagerEx : ContentManager
+    /// <summary>
+    /// Content manager extended.
+    /// </summary>
+    public class ContentManagerEx : ContentManager
 	{
 		private readonly Log _log = new Log(typeof(ContentManagerEx));
         private readonly ShevaGame _game;
@@ -56,11 +55,7 @@ namespace ShevaEngine.Core
                         }
 
                         return (T)(object)_fonts[assetName];
-                    }
-
-                    if (typeof(T) == typeof(Control) ||
-                        typeof(T) == typeof(Layer))                        
-                        return XamlImporter.Import<T>(_game.UIStyle, base.Load<string>(assetName));
+                    }                    
 
                     T output = base.Load<T>(assetName);
 
