@@ -10,6 +10,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)Converters\EnumToListConverter.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Converters\Texture2DToImageSource.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)FontProvider.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ModelView.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)NoesisUIWrapper.cs" />

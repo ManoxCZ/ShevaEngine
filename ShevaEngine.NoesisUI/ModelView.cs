@@ -9,9 +9,7 @@ namespace ShevaEngine.NoesisUI
         public event PropertyChangedEventHandler PropertyChanged;
         protected void OnPropertyChanged(string name)
         {
-            Windows.UI.Core.CoreDispatcher dispatcher = Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher;
-
-            dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () =>
+            NoesisUIWrapper.RunOnUIThread(() =>
             {
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
             });

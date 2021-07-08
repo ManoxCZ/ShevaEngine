@@ -28,11 +28,8 @@ namespace ShevaEngine.Core
 		private Stack<ShevaGameComponent> _gameComponents;
 		private object _componentsLock = new object();
         public User User { get; private set; }        
-        private bool _showDebugUI = false;
-#if !WINDOWS_UAP
-        public DebugUI DebugUI { get; private set; }
-#endif        
         public NoesisUI.NoesisUIWrapper UISystem { get; }
+        public string LoadingLayerFilename { get; set; }
         
 
         /// <summary>
@@ -113,20 +110,6 @@ namespace ShevaEngine.Core
 			_log.Info("Initialization started");
 
             Input = new Input();
-
-#if !DEBUG
-            if (Environment.GetCommandLineArgs().Any(item => item == "debug"))
-#endif
-            Input.OnKeyPressed(Microsoft.Xna.Framework.Input.Keys.F1).Subscribe(item =>
-            {
-                _showDebugUI = !_showDebugUI;
-            });
-
-#if !WINDOWS_UAP
-            DebugUI = new DebugUI(this);
-#endif
-
-            UISystem.Initialize(this);
 
             base.Initialize();			
 
@@ -231,8 +214,11 @@ namespace ShevaEngine.Core
 		/// </summary>
 		private void CreateLoadingScreen()
 		{
-			LoadingScreenComponent component = new LoadingScreenComponent();
-
+            LoadingScreenComponent component = new LoadingScreenComponent()
+            { 
+                XamlFilename = LoadingLayerFilename
+            };
+            
 			PushGameComponent(component);
 		}
 

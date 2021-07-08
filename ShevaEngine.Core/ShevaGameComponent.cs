@@ -86,11 +86,21 @@ namespace ShevaEngine.Core
 		/// </summary>		
 		public virtual void Update(GameTime time, InputState inputState)
 		{
-            foreach (Layer layer in Layers)
+            bool eventHandled = false;
+
+            for (int i = Layers.Count - 1; i >= 0; i--)
             {
+                Layer layer = Layers[i];
+
                 if (layer.IsActive)
                 {
-                    layer.UpdateInput(inputState);
+                    if (!eventHandled)
+                        eventHandled = eventHandled || layer.UpdateInput(inputState);
+                    else
+                    {
+
+                    }
+
                     layer.Update(time);
                 }
             }

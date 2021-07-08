@@ -69,27 +69,26 @@ namespace ShevaEngine.NoesisUI
             Noesis.GUI.SetFontDefaultProperties(15.0f, Noesis.FontWeight.Normal, Noesis.FontStretch.Normal, Noesis.FontStyle.Normal);
             
             Noesis.GUI.LoadApplicationResources(@"Content\Themes\Theme.xaml");
-        }     
+        }
 
         /// <summary>
-        /// Initialize.
-        /// </summary>        
-        public void Initialize(ShevaGame game)
+        /// Get layer.
+        /// </summary>
+        public static Task<Noesis.FrameworkElement> GetFrameworkElement(string xamlFilename)
         {
-            
+            return RunFuncOnUIThread(() =>
+            {                
+                return (Noesis.FrameworkElement)Noesis.GUI.LoadXaml(xamlFilename);                
+            });            
         }
-        
+
         /// <summary>
         /// Get layer.
         /// </summary>
         public static Task<Layer> GetLayer(string xamlFilename)
         {
-            TaskCompletionSource<Layer> taskSource = new TaskCompletionSource<Layer>();
-
-            Windows.UI.Core.CoreDispatcher dispatcher = Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher;
-
-            dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () =>
-            {
+            return RunFuncOnUIThread(() =>
+            { 
                 Noesis.FrameworkElement frameworkElement = (Noesis.FrameworkElement)Noesis.GUI.LoadXaml(xamlFilename);
 
                 Noesis.View view = Noesis.GUI.CreateView(frameworkElement);
@@ -101,10 +100,46 @@ namespace ShevaEngine.NoesisUI
                 view.Renderer.Init(device);
                 view.SetFlags(Noesis.RenderFlags.LCD | Noesis.RenderFlags.PPAA);
 
-                taskSource.SetResult(new Layer(view));
+                return new Layer(view);
             });
-            
-            return taskSource.Task;
+        }
+
+        /// <summary>
+        /// Run on UI thread.
+        /// </summary>        
+        public static void RunOnUIThread(Action action)
+        {
+            Windows.UI.Core.CoreDispatcher dispatcher = Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher;
+
+            if (dispatcher.HasThreadAccess)
+                action();
+            else
+                dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () =>
+                {
+                    action();
+                }).AsTask();
+        }
+
+        /// <summary>
+        /// Run on UI thread.
+        /// </summary>        
+        public static Task<T> RunFuncOnUIThread<T>(Func<T> function)
+        {
+            Windows.UI.Core.CoreDispatcher dispatcher = Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher;
+
+            if (dispatcher.HasThreadAccess)
+                return Task.FromResult(function());
+            else
+            {
+                TaskCompletionSource<T> taskSource = new TaskCompletionSource<T>();
+
+                dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () =>
+                {
+                    taskSource.SetResult(function());
+                }).AsTask();                    
+
+                return taskSource.Task;
+            }
         }
     }
 }

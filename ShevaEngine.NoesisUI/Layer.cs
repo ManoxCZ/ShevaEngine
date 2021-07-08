@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework.Input;
 using Noesis;
 using ShevaEngine.Core;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace ShevaEngine.NoesisUI
 {
@@ -18,9 +19,7 @@ namespace ShevaEngine.NoesisUI
             {
                 _dataContext = value;
 
-                Windows.UI.Core.CoreDispatcher dispatcher = Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher;
-
-                dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () =>
+                NoesisUIWrapper.RunOnUIThread(() =>                 
                 {
                     if (View.Content != null)
                         View.Content.DataContext = DataContext;
@@ -35,7 +34,7 @@ namespace ShevaEngine.NoesisUI
         /// </summary>        
         public Layer(View view)
         {
-            View = view;            
+            View = view;                             
         }
 
 
@@ -83,9 +82,7 @@ namespace ShevaEngine.NoesisUI
 		/// </summary>        
 		public void OnWindowResize(int width, int height)
         {
-            Windows.UI.Core.CoreDispatcher dispatcher = Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher;
-
-            dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () =>
+            NoesisUIWrapper.RunOnUIThread(() =>
             {
                 View.SetSize(width, height);
             });
@@ -94,30 +91,65 @@ namespace ShevaEngine.NoesisUI
         /// <summary>
         /// Update input.
         /// </summary>        
-        public void UpdateInput(InputState state)
+        public bool UpdateInput(InputState state)
         {
+            bool eventHandled = false;
+
             if (_previousInputState == null)
                 _previousInputState = state;
 
-            UpdateMouse(state);
+            eventHandled = eventHandled || UpdateMouse(state);
 
             _previousInputState = state;
+
+            return eventHandled;
         }
 
         /// <summary>
         /// Update mouse.
         /// </summary>        
-        private void UpdateMouse(InputState state)
+        private bool UpdateMouse(InputState state)
         {
+            bool eventHandled = false;
+
             if (_previousInputState.MouseState.LeftButton == ButtonState.Released &&
                 state.MouseState.LeftButton == ButtonState.Pressed)
-                View.MouseButtonDown(state.MouseState.X, state.MouseState.Y, MouseButton.Left);
+                eventHandled = eventHandled || View.MouseButtonDown(state.MouseState.X, state.MouseState.Y, MouseButton.Left);
 
             if (_previousInputState.MouseState.LeftButton == ButtonState.Pressed &&
                 state.MouseState.LeftButton == ButtonState.Released)
-                View.MouseButtonUp(state.MouseState.X, state.MouseState.Y, MouseButton.Left);
+                eventHandled = eventHandled || View.MouseButtonUp(state.MouseState.X, state.MouseState.Y, MouseButton.Left);
 
-            View.MouseMove(state.MouseState.X, state.MouseState.Y);            
+            if (_previousInputState.MouseState.RightButton == ButtonState.Released &&
+                state.MouseState.RightButton == ButtonState.Pressed)
+                eventHandled = eventHandled || View.MouseButtonDown(state.MouseState.X, state.MouseState.Y, MouseButton.Right);
+
+            if (_previousInputState.MouseState.RightButton == ButtonState.Pressed &&
+                state.MouseState.RightButton == ButtonState.Released)
+                eventHandled = eventHandled || View.MouseButtonUp(state.MouseState.X, state.MouseState.Y, MouseButton.Right);
+
+            if (state.MouseState.ScrollWheelValue != _previousInputState.MouseState.ScrollWheelValue)
+                eventHandled = eventHandled || View.MouseWheel(state.MouseState.X, state.MouseState.Y, state.MouseState.ScrollWheelValue - _previousInputState.MouseState.ScrollWheelValue);
+
+            if (state.MouseState.HorizontalScrollWheelValue != _previousInputState.MouseState.HorizontalScrollWheelValue)
+                eventHandled = eventHandled || View.MouseHWheel(state.MouseState.X, state.MouseState.Y, state.MouseState.HorizontalScrollWheelValue - _previousInputState.MouseState.HorizontalScrollWheelValue);
+
+            if (state.MouseState.X != _previousInputState.MouseState.X ||
+                state.MouseState.Y != _previousInputState.MouseState.Y)
+                eventHandled = eventHandled || View.MouseMove(state.MouseState.X, state.MouseState.Y);
+
+            return eventHandled;
+        }
+
+        /// <summary>
+        /// Get element.
+        /// </summary>
+        public Task<FrameworkElement> GetElement(string name)
+        {
+            return NoesisUIWrapper.RunFuncOnUIThread(() =>
+            {             
+                return View?.Content?.FindName(name) as FrameworkElement;
+            });           
         }
     }
 }
