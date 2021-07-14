@@ -13,7 +13,7 @@ namespace ShevaEngine.Core
 		private readonly Log _log = new Log(typeof(ContentManagerEx));
         private readonly ShevaGame _game;
         private object _lock = new object();
-		private SortedDictionary<string,Font> _fonts = new SortedDictionary<string, Font>();
+		//private SortedDictionary<string,Font> _fonts = new SortedDictionary<string, Font>();
 
 
 		/// <summary>
@@ -44,18 +44,18 @@ namespace ShevaEngine.Core
                 {
                     _log.Info($"Loading: {assetName}, type: {typeof(T)}");
 
-                    if (typeof(T) == typeof(Font))
-                    {
-                        if (!_fonts.ContainsKey(assetName))
-                        {
-                            Font newFont = new Font(assetName);
-                            newFont.LoadContent(this);
+                    //if (typeof(T) == typeof(Font))
+                    //{
+                    //    if (!_fonts.ContainsKey(assetName))
+                    //    {
+                    //        Font newFont = new Font(assetName);
+                    //        newFont.LoadContent(this);
 
-                            _fonts.Add(assetName, newFont);
-                        }
+                    //        _fonts.Add(assetName, newFont);
+                    //    }
 
-                        return (T)(object)_fonts[assetName];
-                    }                    
+                    //    return (T)(object)_fonts[assetName];
+                    //}                    
 
                     T output = base.Load<T>(assetName);
 

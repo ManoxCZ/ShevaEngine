@@ -9,8 +9,8 @@
     <Import_RootNamespace>ShevaEngine.ParticleSystems</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="$(MSBuildThisFileDirectory)ParticleMaterial.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)ParticleSystem.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)**\*.cs" />   
+    <None Include="$(MSBuildThisFileDirectory)**\*.fx" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="$(MSBuildThisFileDirectory)Content\" />

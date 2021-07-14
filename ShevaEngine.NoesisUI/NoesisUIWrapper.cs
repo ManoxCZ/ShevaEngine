@@ -6,8 +6,8 @@ namespace ShevaEngine.NoesisUI
 {
     public class NoesisUIWrapper
     {
-        public const string LICENSE_NAME = "";
-        public const string LICENSE_KEY = "";
+        public static string LICENSE_NAME = "";
+        public static string LICENSE_KEY = "";
         
 
         /// <summary>
