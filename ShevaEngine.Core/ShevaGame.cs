@@ -30,6 +30,7 @@ namespace ShevaEngine.Core
         public User User { get; private set; }        
         public NoesisUI.NoesisUIWrapper UISystem { get; }
         public string LoadingLayerFilename { get; set; }
+		public TasksManager TasksManager { get; } = new TasksManager();
         
 
         /// <summary>
@@ -76,7 +77,7 @@ namespace ShevaEngine.Core
 
             GraphicsDeviceManager.ApplyChanges();
 
-			Content = new ContentManagerEx(this, Services);
+			Content = new ContentManagerEx(Services);
 
 			Window.Title = @"Sheva Engine MG";
 			
@@ -84,7 +85,7 @@ namespace ShevaEngine.Core
 			IsMouseVisible = true;
 			
 			_gameComponents = new Stack<ShevaGameComponent>();
-            UISystem = new NoesisUI.NoesisUIWrapper();
+            UISystem = new NoesisUI.NoesisUIWrapper(this);
         }        
 
 		/// <summary>
@@ -135,11 +136,11 @@ namespace ShevaEngine.Core
 
 			IsFixedTimeStep = false;			
 
-			Settings.MusicVolume.Subscribe(item =>
-            {
-                MediaPlayer.Volume = item;
+			//Settings.MusicVolume.Subscribe(item =>
+   //         {
+   //             MediaPlayer.Volume = item;
 
-            });            
+   //         });            
 
 			_log.Info("Initialization ended");						
 		}
@@ -229,6 +230,8 @@ namespace ShevaEngine.Core
 		{
 			base.Update(time);
 
+			TasksManager.RunMainThreadTasks();
+
             Input.Update();
 
             InputState inputState = new InputState(time, Window);
@@ -260,11 +263,6 @@ namespace ShevaEngine.Core
 					_gameComponents.Peek().Draw(gameTime);	
 				else
 					GraphicsDevice.Clear(Color.Black);
-
-#if !WINDOWS_UAP
-			if (_showDebugUI)
-				DebugUI?.Draw(gameTime);
-#endif
         }
 
         /// <summary>
@@ -351,5 +349,7 @@ namespace ShevaEngine.Core
 			Settings.Fullscreen.OnNext(fullscreen);
 			ShevaGameSettings.Save(Settings);		
 		}
+
+		
     }        
 }

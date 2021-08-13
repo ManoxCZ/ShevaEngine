@@ -1,3 +1,8 @@
+struct VertexShaderInputP
+{
+    float3 Position : POSITION;  
+};
+
 struct VertexShaderInputPN
 {
 	float3 Position : POSITION;

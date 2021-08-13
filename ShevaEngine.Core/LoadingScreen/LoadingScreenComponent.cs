@@ -17,10 +17,9 @@ namespace ShevaEngine.Core
         {
             base.LoadContent(game);
 
-            Task<Layer> task = NoesisUIWrapper.GetLayer(XamlFilename);
-            task.Wait();
-
-            Layers.Add(task.Result);
+            Task<Layer> task = game.UISystem.GetLayer(XamlFilename);
+            
+            task.ContinueWith(item => Layers.Add(item.Result), TaskContinuationOptions.ExecuteSynchronously);
         }        
     }
 }

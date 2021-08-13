@@ -1,5 +1,3 @@
-#if !WINDOWS_UAP
-using ImGuiNET;
 using Microsoft.Xna.Framework;
 using System.Collections.Generic;
 
@@ -11,7 +9,6 @@ namespace ShevaEngine.Core
     /// </summary>
     public class DebugUI
     {
-        private readonly ImGuiRenderer _renderer;
         private object _pagesLock = new object();
         private List<IDebugUIPage> _pages;        
 
@@ -21,9 +18,6 @@ namespace ShevaEngine.Core
         /// </summary>        
         public DebugUI(ShevaGame game)
         {
-            _renderer = new ImGuiRenderer(game);
-            _renderer.RebuildFontAtlas();            
-
             _pages = new List<IDebugUIPage>();
         }
 
@@ -56,42 +50,7 @@ namespace ShevaEngine.Core
         /// </summary>
         public void Draw(GameTime gameTime)
         {
-            // Call BeforeLayout first to set things up
-            _renderer.BeforeLayout(gameTime);
-
-            // Draw our UI
-            ImGuiLayout();
-
-            // Call AfterLayout now to finish up and draw all the things
-            _renderer.AfterLayout();
-        }
-
-        /// <summary>
-        /// ImGui layout.
-        /// </summary>
-        protected virtual void ImGuiLayout()
-        {
-            ImGui.Begin("Debug Inspector");
-
-            ImGui.BeginTabBar("Pages");
-
-            lock (_pagesLock)
-            {
-                for (int i = 0; i < _pages.Count; i++)
-                {
-                    if (ImGui.BeginTabItem(_pages[i].DebugUIPageName))
-                    {
-                        _pages[i].DebugUI();
-                    
-                        ImGui.EndTabItem();
-                    }
-                }
-            }
-
-            ImGui.EndTabBar();
-
-            ImGui.End();
+         
         }
     }
 }
-#endif

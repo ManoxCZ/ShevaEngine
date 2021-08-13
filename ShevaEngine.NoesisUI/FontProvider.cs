@@ -1,9 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Threading.Tasks;
+#if WINDOWS_UAP
 using Windows.Storage;
 using Windows.Storage.Streams;
+#else
+#endif
 
 namespace ShevaEngine.NoesisUI
 {
@@ -12,8 +13,9 @@ namespace ShevaEngine.NoesisUI
         /// <summary>
         /// Open font.
         /// </summary>
-        public override Stream OpenFont(string folder, string id)
+        public override Stream OpenFont(Uri folder, string id)
         {
+#if WINDOWS_UAP
             string filePath = Path.Combine(
                 Windows.ApplicationModel.Package.Current.InstalledLocation.Path,
                 "Assets",
@@ -27,13 +29,17 @@ namespace ShevaEngine.NoesisUI
             openFileTask.Wait();
 
             return openFileTask.Result.AsStream();
+#else
+            return null;
+#endif
         }
 
         /// <summary>
         /// Scan folder.
         /// </summary>        
-        public override void ScanFolder(string folder)
+        public override void ScanFolder(Uri folder)
         {
+#if WINDOWS_UAP
             string folderPath = Path.Combine(
                 Windows.ApplicationModel.Package.Current.InstalledLocation.Path,
                 "Content",
@@ -56,6 +62,9 @@ namespace ShevaEngine.NoesisUI
                     RegisterFont(folder, file.Name);
                 }
             }
+#else
+
+#endif
         }
     }
 }

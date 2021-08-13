@@ -9,6 +9,7 @@ namespace ShevaEngine.NoesisUI
 {
     public class Layer
     {
+        public ShevaGame Game { get; }
         public bool IsActive { get; set; } = true;
         public View View { get; }
         private object _dataContext;
@@ -19,11 +20,11 @@ namespace ShevaEngine.NoesisUI
             {
                 _dataContext = value;
 
-                NoesisUIWrapper.RunOnUIThread(() =>                 
+                Game.TasksManager.RunTaskOnMainThread(new Task(() =>
                 {
                     if (View.Content != null)
                         View.Content.DataContext = DataContext;
-                });                
+                }));
             }
         }
         private InputState _previousInputState;
@@ -32,8 +33,9 @@ namespace ShevaEngine.NoesisUI
         /// <summary>
         /// Constructor.
         /// </summary>        
-        public Layer(View view)
+        public Layer(ShevaGame game, View view)
         {
+            Game = game;
             View = view;                             
         }
 
@@ -48,7 +50,7 @@ namespace ShevaEngine.NoesisUI
 		/// </summary>
 		public void Draw(GameTime time)
         {
-            bool updated = View.Renderer.UpdateRenderTree();
+            View.Renderer.UpdateRenderTree();
 
             foreach (Viewport viewport in GetChildrenOfType<Viewport>(View.Content))
                 viewport.Render(time);
@@ -82,10 +84,10 @@ namespace ShevaEngine.NoesisUI
 		/// </summary>        
 		public void OnWindowResize(int width, int height)
         {
-            NoesisUIWrapper.RunOnUIThread(() =>
+            Game.TasksManager.RunTaskOnMainThread(new Task(() =>
             {
                 View.SetSize(width, height);
-            });
+            }));
         }
 
         /// <summary>
@@ -146,10 +148,14 @@ namespace ShevaEngine.NoesisUI
         /// </summary>
         public Task<FrameworkElement> GetElement(string name)
         {
-            return NoesisUIWrapper.RunFuncOnUIThread(() =>
+            Task<FrameworkElement> task = new Task<FrameworkElement>(() =>            
             {             
                 return View?.Content?.FindName(name) as FrameworkElement;
-            });           
+            });
+
+            Game.TasksManager.RunTaskOnMainThread(task);
+
+            return task;
         }
     }
 }

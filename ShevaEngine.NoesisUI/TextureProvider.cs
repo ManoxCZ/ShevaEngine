@@ -1,38 +1,22 @@
 ﻿using Microsoft.Xna.Framework.Graphics;
+using Noesis;
 using ShevaEngine.Core;
+using System;
+using System.IO;
 
 namespace ShevaEngine.NoesisUI
 {
-    public class TextureProvider : Noesis.TextureProvider
+    public class TextureProvider : Noesis.FileTextureProvider
     {
-        public override void GetTextureInfo(string filename, out uint width, out uint height)
+        private readonly ShevaGame _game;
+
+
+        /// <summary>
+        /// Constructor.
+        /// </summary>        
+        public TextureProvider(ShevaGame game)
         {
-            string contentPath = GetContentFilename(filename);
-
-            Texture2D texture = ShevaGame.Instance.Content.Load<Texture2D>(contentPath);
-
-            if (texture != null)
-            {
-                width = (uint)texture.Width;
-                height = (uint)texture.Height;
-            }
-            else
-            {
-                width = 0;
-                height = 0;
-            }
-        }
-
-        public override Noesis.Texture LoadTexture(string filename)
-        {
-            string contentPath = GetContentFilename(filename);
-
-            Texture2D texture = ShevaGame.Instance.Content.Load<Texture2D>(contentPath);
-
-            System.Reflection.FieldInfo info = typeof(Texture2D).GetField("_texture", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic);
-            SharpDX.Direct3D11.Resource handle = info.GetValue(texture) as SharpDX.Direct3D11.Resource;
-
-            return Noesis.Texture.WrapD3D11Texture(texture, handle.NativePointer, texture.Width, texture.Height, texture.LevelCount, false);
+            _game = game;
         }
 
         /// <summary>
@@ -41,12 +25,64 @@ namespace ShevaEngine.NoesisUI
         public static string GetContentFilename(string filename)
         {
             return filename
-                .Replace(".png", string.Empty, System.StringComparison.InvariantCultureIgnoreCase)
-                .Replace(".tif", string.Empty, System.StringComparison.InvariantCultureIgnoreCase)
-                .Replace(".tiff", string.Empty, System.StringComparison.InvariantCultureIgnoreCase)
-                .Replace(".webp", string.Empty, System.StringComparison.InvariantCultureIgnoreCase)
-                .Replace(".jpg", string.Empty, System.StringComparison.InvariantCultureIgnoreCase)
-                .Replace(".jpeg", string.Empty, System.StringComparison.InvariantCultureIgnoreCase);
+                .Replace(".png", string.Empty, StringComparison.InvariantCultureIgnoreCase)
+                .Replace(".tif", string.Empty, StringComparison.InvariantCultureIgnoreCase)
+                .Replace(".tiff", string.Empty, StringComparison.InvariantCultureIgnoreCase)
+                .Replace(".webp", string.Empty, StringComparison.InvariantCultureIgnoreCase)
+                .Replace(".jpg", string.Empty, StringComparison.InvariantCultureIgnoreCase)
+                .Replace(".jpeg", string.Empty, StringComparison.InvariantCultureIgnoreCase);
+        }
+
+        /// <summary>
+        /// Get texture info.
+        /// </summary>
+        public override void GetTextureInfo(Uri uri, out uint width, out uint height)
+        {
+            width = 0;
+            height = 0;
+
+            string contentName = GetContentFilename(uri.OriginalString);
+
+            Texture2D texture = _game.Content.Load<Texture2D>(contentName);
+
+            if (texture == null)
+                return;
+
+            width = (uint)texture.Width;
+            height = (uint)texture.Height;
+        }
+
+        /// <summary>
+        /// Load texture.
+        /// </summary>
+        public override Noesis.Texture LoadTexture(Uri uri)
+        {
+            string contentName = GetContentFilename(uri.OriginalString);
+
+            Texture2D texture = _game.Content.Load<Texture2D>(contentName);
+
+            System.Reflection.FieldInfo info = typeof(Texture2D).GetField("_texture", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic);
+            SharpDX.Direct3D11.Resource handle = info.GetValue(texture) as SharpDX.Direct3D11.Resource;
+
+            return Noesis.RenderDeviceD3D11.WrapTexture(texture, handle.NativePointer, texture.Width, texture.Height, texture.LevelCount, false, true);            
+        }
+
+        /// <summary>
+        /// Open stream.
+        /// </summary>
+        public override Stream OpenStream(Uri filename)
+        {
+            string contentName = GetContentFilename(filename.OriginalString);
+
+            Texture2D texture = _game.Content.Load<Texture2D>(contentName);
+
+            Stream stream = new MemoryStream();
+            
+            texture.SaveAsPng(stream, texture.Width, texture.Height);
+
+            stream.Position = 0;
+
+            return stream;
         }
     }
 }

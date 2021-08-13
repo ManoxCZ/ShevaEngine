@@ -2,10 +2,11 @@
 using Microsoft.Xna.Framework.Graphics;
 using Noesis;
 using ShevaEngine.Core;
+using System;
 
 namespace ShevaEngine.NoesisUI
 {
-    public sealed class Viewport : UserControl
+    public sealed class Viewport : Canvas
     {
         public static readonly DependencyProperty CameraProperty = DependencyProperty.Register(
             nameof(Camera), typeof(Camera), typeof(Viewport), new PropertyMetadata(null));
@@ -33,15 +34,49 @@ namespace ShevaEngine.NoesisUI
         /// Constructor.
         /// </summary>
         public Viewport()
+            : base()
         {
             _image = new Image()
             {
-                HorizontalAlignment = HorizontalAlignment.Stretch,
-                VerticalAlignment = VerticalAlignment.Stretch,
+                HorizontalAlignment = HorizontalAlignment.Center,
+                VerticalAlignment = VerticalAlignment.Center,
             };
 
-            Content = _image;
-        }                
+            Loaded += (object sender, RoutedEventArgs args) => { Children.Add(_image);
+
+                //Nullable<Noesis.Point> dragStart = null;
+
+                //MouseButtonEventHandler mouseDown = (sender, args) => {
+                //    var element = (UIElement)sender;
+                //    dragStart = args.GetPosition(element);
+                //    element.CaptureMouse();
+                //};
+                //MouseButtonEventHandler mouseUp = (sender, args) => {
+                //    var element = (UIElement)sender;
+                //    dragStart = null;
+                //    element.ReleaseMouseCapture();
+                //};
+                //MouseEventHandler mouseMove = (sender, args) => {
+                //    if (dragStart != null && args.LeftButton == MouseButtonState.Pressed)
+                //    {
+                //        var element = (UIElement)sender;
+                //        var p2 = args.GetPosition(this);
+                //        Canvas.SetLeft(element, p2.X - dragStart.Value.X);
+                //        Canvas.SetTop(element, p2.Y - dragStart.Value.Y);
+                //    }
+                //};
+                //Action<UIElement> enableDrag = (element) => {
+                //    element.MouseDown += mouseDown;
+                //    element.MouseMove += mouseMove;
+                //    element.MouseUp += mouseUp;
+                //};
+                
+                //foreach (var shape in Children)
+                //{
+                //    enableDrag(shape);                    
+                //}
+            };
+        }        
 
         /// <summary>
         /// Arrange override.
@@ -69,8 +104,15 @@ namespace ShevaEngine.NoesisUI
                 System.Reflection.FieldInfo info = typeof(RenderTarget2D).GetField("_texture", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic);
                 SharpDX.Direct3D11.Resource handle = info.GetValue(_renderTarget) as SharpDX.Direct3D11.Resource;
 
-                _image.Source = new TextureSource(Noesis.Texture.WrapD3D11Texture(_renderTarget, handle.NativePointer, _renderTarget.Width, _renderTarget.Height, 1, false));
+                _image.Source = new TextureSource(
+                    RenderDeviceD3D11.WrapTexture(_renderTarget, handle.NativePointer, _renderTarget.Width, _renderTarget.Height, _renderTarget.LevelCount, false, true));
 
+                _image.Width = finalSize.Width;
+                _image.Height = finalSize.Height;
+
+                Canvas.SetTop(_image, 0);
+                Canvas.SetLeft(_image, 0);
+                
                 _depthTarget?.Dispose();
 
                 _depthTarget = new RenderTarget2D(
