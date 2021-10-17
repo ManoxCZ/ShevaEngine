@@ -5,19 +5,19 @@ namespace ShevaEngine.Core.Graphics.Materials
 {
     public class PhysicallyBasedMaterial : TexturedNormalMaterial
     {
-        private EffectParameter _metallicTexture;
-        private EffectParameter _roughnessTexture;
-        private EffectParameter _aoTexture;
-        private EffectParameter _enviroTexture;
-        private EffectParameter _irradianceTexture;
-        private EffectParameter _brdfLutTexture;
+        private readonly EffectParameter _metallicTexture;
+        private readonly EffectParameter _roughnessTexture;
+        private readonly EffectParameter _aoTexture;
+        private readonly EffectParameter _enviroTexture;
+        private readonly EffectParameter _irradianceTexture;
+        private readonly EffectParameter _brdfLutTexture;
 
-        private EffectParameter _uniformRoughness;
-        private EffectParameter _uniformMetallic;
+        private readonly EffectParameter _uniformRoughness;
+        private readonly EffectParameter _uniformMetallic;
 
-        private EffectParameter _useAOTexture;
-        private EffectParameter _useMetallicTexture;
-        private EffectParameter _useRoughnessTexture;
+        private readonly EffectParameter _useAOTexture;
+        private readonly EffectParameter _useMetallicTexture;
+        private readonly EffectParameter _useRoughnessTexture;
 
         protected PhysicallyBasedMaterial(Effect effect)
             : base(effect)
@@ -42,7 +42,7 @@ namespace ShevaEngine.Core.Graphics.Materials
         {
         }
 
-        public bool UseAO
+        public bool UseAo
         {
             get => _useAOTexture?.GetValueBoolean() == true;
             set => _useAOTexture?.SetValue(value);
