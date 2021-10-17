@@ -39,9 +39,7 @@ namespace ShevaEngine.UserAccounts
                 else if (typeof(T) == typeof(string))
                     Microsoft.Xbox.Services.Statistics.Manager.StatisticManager.SingletonInstance.SetStatisticStringData(XboxLiveUser, name, Convert.ToString(value));
 
-                Microsoft.Xbox.Services.Statistics.Manager.StatisticManager.SingletonInstance.RequestFlushToService(XboxLiveUser);
-
-                System.Threading.Thread.Sleep(10000);
+                Microsoft.Xbox.Services.Statistics.Manager.StatisticManager.SingletonInstance.RequestFlushToService(XboxLiveUser);                
 
                 while (true)
                 {
@@ -52,6 +50,37 @@ namespace ShevaEngine.UserAccounts
                     }
                 }
             });
+#else
+            return Task.FromResult(false);
+#endif
+        }
+
+        /// <summary>
+        /// Update score.
+        /// </summary>
+        public T GetScore<T>(string name)
+        {
+#if WINDOWS_UAP
+            Microsoft.Xbox.Services.Statistics.Manager.StatisticValue scoreValue =
+                Microsoft.Xbox.Services.Statistics.Manager.StatisticManager.SingletonInstance.GetStatistic(XboxLiveUser, name);
+
+            if (typeof(T) == typeof(byte) ||
+                typeof(T) == typeof(short) ||
+                typeof(T) == typeof(ushort) ||
+                typeof(T) == typeof(int) ||
+                typeof(T) == typeof(uint) ||
+                typeof(T) == typeof(long) ||
+                typeof(T) == typeof(ulong))
+                return (T)(object)scoreValue.AsInteger;
+            else if (typeof(T) == typeof(float) ||
+                     typeof(T) == typeof(double))
+                return (T)(object)scoreValue.AsNumber;
+            else if (typeof(T) == typeof(string))
+                return (T)(object)scoreValue.AsString;
+
+            return default;
+#else
+            return default;
 #endif
         }
     }

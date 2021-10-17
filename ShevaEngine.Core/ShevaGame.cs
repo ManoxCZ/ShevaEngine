@@ -1,11 +1,9 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Media;
-using ShevaEngine.UI;
 using ShevaEngine.UserAccounts;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Threading.Tasks;
@@ -30,11 +28,9 @@ namespace ShevaEngine.Core
 		private Stack<ShevaGameComponent> _gameComponents;
 		private object _componentsLock = new object();
         public User User { get; private set; }        
-        private bool _showDebugUI = false;
-#if !WINDOWS_UAP
-        public DebugUI DebugUI { get; private set; }
-#endif
-        public IUIStyleGenerator UIStyle { get; protected set; } = new DefaultUIStyleGenerator();
+        public NoesisUI.NoesisUIWrapper UISystem { get; }
+        public string LoadingLayerFilename { get; set; }
+		public TasksManager TasksManager { get; } = new TasksManager();
         
 
         /// <summary>
@@ -81,14 +77,15 @@ namespace ShevaEngine.Core
 
             GraphicsDeviceManager.ApplyChanges();
 
-			Content = new ContentManagerEx(this, Services);
+			Content = new ContentManagerEx(Services);
 
 			Window.Title = @"Sheva Engine MG";
 			
 			Window.AllowUserResizing = true;
 			IsMouseVisible = true;
 			
-			_gameComponents = new Stack<ShevaGameComponent>();				
+			_gameComponents = new Stack<ShevaGameComponent>();
+            UISystem = new NoesisUI.NoesisUIWrapper(this);
         }        
 
 		/// <summary>
@@ -115,18 +112,6 @@ namespace ShevaEngine.Core
 
             Input = new Input();
 
-#if !DEBUG
-            if (Environment.GetCommandLineArgs().Any(item => item == "debug"))
-#endif
-            Input.OnKeyPressed(Microsoft.Xna.Framework.Input.Keys.F1).Subscribe(item =>
-            {
-                _showDebugUI = !_showDebugUI;
-            });
-
-#if !WINDOWS_UAP
-            DebugUI = new DebugUI(this);
-#endif
-
             base.Initialize();			
 
 			Settings.Resolution.OnNext(new Resolution(Window.ClientBounds.Width, Window.ClientBounds.Height));			
@@ -151,11 +136,11 @@ namespace ShevaEngine.Core
 
 			IsFixedTimeStep = false;			
 
-			Settings.MusicVolume.Subscribe(item =>
-            {
-                MediaPlayer.Volume = item;
+			//Settings.MusicVolume.Subscribe(item =>
+   //         {
+   //             MediaPlayer.Volume = item;
 
-            });            
+   //         });            
 
 			_log.Info("Initialization ended");						
 		}
@@ -200,7 +185,7 @@ namespace ShevaEngine.Core
 			}            
 
             User = new User(this);
-            User.ConnectToService(true);
+            User.ConnectToService(true);            
 
 			_log.Info("All game components initialized");
 		}
@@ -230,8 +215,11 @@ namespace ShevaEngine.Core
 		/// </summary>
 		private void CreateLoadingScreen()
 		{
-			LoadingScreenComponent component = new LoadingScreenComponent();
-
+            LoadingScreenComponent component = new LoadingScreenComponent()
+            { 
+                XamlFilename = LoadingLayerFilename
+            };
+            
 			PushGameComponent(component);
 		}
 
@@ -242,13 +230,16 @@ namespace ShevaEngine.Core
 		{
 			base.Update(time);
 
+			TasksManager.RunMainThreadTasks();
+
             Input.Update();
 
-			InputState.OnNext(new InputState(time, Window));
+            InputState inputState = new InputState(time, Window);
+            InputState.OnNext(inputState);
 
 			lock (_gameComponents)
 				if (_gameComponents.Count > 0)
-					_gameComponents.Peek().Update(time);
+					_gameComponents.Peek().Update(time, inputState);
 		}
 
         /// <summary>
@@ -272,11 +263,6 @@ namespace ShevaEngine.Core
 					_gameComponents.Peek().Draw(gameTime);	
 				else
 					GraphicsDevice.Clear(Color.Black);
-
-#if !WINDOWS_UAP
-			if (_showDebugUI)
-				DebugUI?.Draw(gameTime);
-#endif
         }
 
         /// <summary>
@@ -363,5 +349,7 @@ namespace ShevaEngine.Core
 			Settings.Fullscreen.OnNext(fullscreen);
 			ShevaGameSettings.Save(Settings);		
 		}
+
+		
     }        
 }

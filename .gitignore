@@ -12,3 +12,11 @@ ShevaEngine.PostProcesses/Content/obj/
 ContentPipeline/
 ShevaEngine.XamlImporter/bin/
 ShevaEngine.XamlImporter/obj/
+ShevaEngine.ParticleSystems/Content/bin/
+ShevaEngine.ParticleSystems/Content/obj/
+ShevaEngine.Physics/Content/obj/
+ShevaEngine.Physics/Content/bin/
+ShevaEngine.NoesisUI/Content/obj/
+ShevaEngine.NoesisUI/Content/bin/
+ShevaEngine.Terrain/Content/obj/
+ShevaEngine.Terrain/Content/bin/

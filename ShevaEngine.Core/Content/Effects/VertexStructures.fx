@@ -1,3 +1,8 @@
+struct VertexShaderInputP
+{
+    float3 Position : POSITION;  
+};
+
 struct VertexShaderInputPN
 {
 	float3 Position : POSITION;
@@ -49,6 +54,15 @@ struct VertexShaderOutputPNTWD
 {
 	float4 Position : SV_POSITION;
 	float3 Normal : TEXCOORD0;	
+	float2 TextureCoordinates0 : TEXCOORD1;
+    float4 WorldPosition : TEXCOORD2;
+	float2 Depth : COLOR;
+};
+
+struct VertexShaderOutputPCTWD
+{
+	float4 Position : SV_POSITION;
+	float4 Color : TEXCOORD0;	
 	float2 TextureCoordinates0 : TEXCOORD1;
     float4 WorldPosition : TEXCOORD2;
 	float2 Depth : COLOR;

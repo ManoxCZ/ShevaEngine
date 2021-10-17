@@ -8,7 +8,7 @@ using System.Linq;
 namespace ShevaEngine.Core
 {
 
-	public enum CameraType
+    public enum CameraType
 	{
 		Perspective,
 		Orthographic
@@ -18,9 +18,6 @@ namespace ShevaEngine.Core
 	/// Camera.
 	/// </summary> 
 	public class Camera : IDisposable
-#if !WINDOWS_UAP
-        , IDebugUIPage
-#endif
 	{
 		private readonly Log _log = new Log(typeof(Camera));
 		public string DebugUIPageName { get; private set; }
@@ -153,11 +150,6 @@ namespace ShevaEngine.Core
 			ViewMatrix = Matrix.Identity;
 			CameraType = CameraType.Perspective;
 
-#if !WINDOWS_UAP
-			DebugUIPageName = $"Camera: {name}";
-			ShevaGame.Instance.DebugUI.AddDebugPage(this);	
-#endif
-
 			_spriteBatch = new SpriteBatch(ShevaGame.Instance.GraphicsDevice);
             _pipeline = new RenderingPipeline("Camera pipeline")
             {
@@ -170,9 +162,7 @@ namespace ShevaEngine.Core
         /// </summary>
         public void Dispose()
         {
-#if !WINDOWS_UAP
-            ShevaGame.Instance.DebugUI.RemoveDebugPage(this);
-#endif
+
         }
 		
 		/// <summary>
@@ -347,56 +337,5 @@ namespace ShevaEngine.Core
 			using (Stream stream = File.Create(Path.Combine(directory, realName))) 
 				target.SaveAsPng(stream, target.Width, target.Height );							
 		}
-
-#if !WINDOWS_UAP
-        /// <summary>
-        /// DebugUI.
-        /// </summary>
-        public virtual void DebugUI()
-        {		
-			if (ImGuiNET.ImGui.TreeNode($"Settings"))
-            {   				                
-				//Vector3 temp = ClearColor.ToVector3();				
-				//ImGuiNET.ImGui.ColorEdit3("Clear color", ref temp);
-				//ClearColor = new Color(temp);
-
-				float tempSingle = FieldOfView;
-				ImGuiNET.ImGui.SliderFloat("Field of view", ref tempSingle, 0.01f, 3.14f);
-				FieldOfView = tempSingle;
-
-				tempSingle = NearPlane;
-				ImGuiNET.ImGui.SliderFloat("Near", ref tempSingle, 0.01f, FarPlane - 0.01f);
-				NearPlane = tempSingle;
-
-				tempSingle = FarPlane;
-				ImGuiNET.ImGui.SliderFloat("Far", ref tempSingle, NearPlane + 0.01f, 10000);
-				FarPlane = tempSingle;
-
-				ImGuiNET.ImGui.TreePop();
-			}
-			
-
-			if (ImGuiNET.ImGui.TreeNode($"Post Processes"))
-            {   				
-				foreach (PostProcess postProcess in PostProcesses)	
-					if (ImGuiNET.ImGui.TreeNode(postProcess.GetType().Name))
-            		{   				
-						postProcess.DebugUI();
-
-						ImGuiNET.ImGui.TreePop();
-	        		}
-
-				ImGuiNET.ImGui.TreePop();
-	        }
-
-			if (ImGuiNET.ImGui.TreeNode($"Tools"))
-            {
-				if (ImGuiNET.ImGui.Button("Save image"))
-					_saveScreen = true;	
-
-				ImGuiNET.ImGui.TreePop();
-			}   				
-		}
-#endif
     }    
 }

@@ -1,18 +1,17 @@
 ﻿using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
-using ShevaEngine.UI;
 using System;
 using System.Collections.Generic;
+using System.IO;
 
 namespace ShevaEngine.Core
 {
-	/// <summary>
-	/// Content manager extended.
-	/// </summary>
-	public class ContentManagerEx : ContentManager
+    /// <summary>
+    /// Content manager extended.
+    /// </summary>
+    public class ContentManagerEx : ContentManager
 	{
-		private readonly Log _log = new Log(typeof(ContentManagerEx));
-        private readonly ShevaGame _game;
+		private readonly Log _log = new Log(typeof(ContentManagerEx));        
         private object _lock = new object();
 		private SortedDictionary<string,Font> _fonts = new SortedDictionary<string, Font>();
 
@@ -20,47 +19,29 @@ namespace ShevaEngine.Core
 		/// <summary>
 		/// Constructor.
 		/// </summary>		
-		public ContentManagerEx(ShevaGame game, IServiceProvider serviceProvider) 
+		public ContentManagerEx(IServiceProvider serviceProvider) 
 			: base(serviceProvider)
-		{
-            _game = game;
-		}
+		{            
+        }
 
 		/// <summary>
 		/// Constructor.
 		/// </summary>		
 		public ContentManagerEx(IServiceProvider serviceProvider, string rootDirectory)
 			: base(serviceProvider, rootDirectory)
-		{
-		}
-
-		/// <summary>
-		/// Load.
-		/// </summary>
-		public override T Load<T>(string assetName)
+		{         
+        }
+        
+        /// <summary>
+        /// Load.
+        /// </summary>
+        public override T Load<T>(string assetName)
 		{
             try
             {
                 lock (_lock)
                 {
                     _log.Info($"Loading: {assetName}, type: {typeof(T)}");
-
-                    if (typeof(T) == typeof(Font))
-                    {
-                        if (!_fonts.ContainsKey(assetName))
-                        {
-                            Font newFont = new Font(assetName);
-                            newFont.LoadContent(this);
-
-                            _fonts.Add(assetName, newFont);
-                        }
-
-                        return (T)(object)_fonts[assetName];
-                    }
-
-                    if (typeof(T) == typeof(Control) ||
-                        typeof(T) == typeof(Layer))                        
-                        return XamlImporter.Import<T>(_game.UIStyle, base.Load<string>(assetName));
 
                     T output = base.Load<T>(assetName);
 
@@ -85,6 +66,11 @@ namespace ShevaEngine.Core
             }
 
             return default;
-		}        
-	}
+		}
+
+        /// <summary>
+        /// Open stream method.
+        /// </summary>
+        public Stream OpenStream(string assetName) => base.OpenStream(assetName);
+    }
 }

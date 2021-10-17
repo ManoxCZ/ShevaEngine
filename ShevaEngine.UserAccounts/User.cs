@@ -27,6 +27,8 @@ namespace ShevaEngine.UserAccounts
 #endif
         public BehaviorSubject<UserData> Data { get; private set; } 
         public CancellationTokenSource _cancellationTokenSource;
+        public readonly object _picturesLock = new object();
+        public readonly SortedDictionary<string, Texture2D> _picturesCache = new SortedDictionary<string, Texture2D>();
 
 
         /// <summary>
@@ -222,18 +224,28 @@ namespace ShevaEngine.UserAccounts
         /// </summary>
         private Task<Texture2D> GetGamerPicture(string xboxLiveId)
         {
-            Microsoft.Xbox.Services.XboxLiveContext context = new Microsoft.Xbox.Services.XboxLiveContext(_xboxLiveUser);
-            Task<Microsoft.Xbox.Services.Social.XboxUserProfile> getUserProfileTask = context.ProfileService.GetUserProfileAsync(xboxLiveId).AsTask();
-
-            return getUserProfileTask.ContinueWith(userProfileTask =>
+            lock (_picturesLock)
             {
-                Microsoft.Xbox.Services.Social.XboxUserProfile userProfile = userProfileTask.Result;
+                if (_picturesCache.ContainsKey(xboxLiveId))
+                    return Task.FromResult(_picturesCache[xboxLiveId]);
 
-                Task<Texture2D> pictureTask = GetGamerPicture(context, userProfile);
-                pictureTask.Wait();
+                Microsoft.Xbox.Services.XboxLiveContext context = new Microsoft.Xbox.Services.XboxLiveContext(_xboxLiveUser);
+                Task<Microsoft.Xbox.Services.Social.XboxUserProfile> getUserProfileTask = context.ProfileService.GetUserProfileAsync(xboxLiveId).AsTask();
 
-                return pictureTask.Result;
-            });
+                return getUserProfileTask.ContinueWith(userProfileTask =>
+                {
+                    Microsoft.Xbox.Services.Social.XboxUserProfile userProfile = userProfileTask.Result;
+
+                    Task<Texture2D> pictureTask = GetGamerPicture(context, userProfile);
+                    pictureTask.Wait();
+
+                    lock (_picturesCache)
+                        if (!_picturesCache.ContainsKey(xboxLiveId))
+                            _picturesCache.Add(xboxLiveId, pictureTask.Result);
+
+                    return pictureTask.Result;
+                });
+            }
         }
 
         /// <summary>
@@ -373,17 +385,21 @@ namespace ShevaEngine.UserAccounts
             
             return Task.Run(() =>
             {
-                while (true)
+                bool stop = false;
+
+                while (!stop)
                     foreach (Microsoft.Xbox.Services.Statistics.Manager.StatisticEvent statEvent in _statisticManager.DoWork())
                     {
                         if (statEvent.EventType == Microsoft.Xbox.Services.Statistics.Manager.StatisticEventType.GetLeaderboardComplete && statEvent.ErrorCode == 0)
                         {
+                            stop = true;
+
                             Microsoft.Xbox.Services.Statistics.Manager.LeaderboardResultEventArgs leaderArgs =
                                 (Microsoft.Xbox.Services.Statistics.Manager.LeaderboardResultEventArgs)statEvent.EventArgs;
 
                             Microsoft.Xbox.Services.Leaderboard.LeaderboardResult leaderboardResult = leaderArgs.Result;
 
-                            return leaderboardResult.Rows.ToList().Select(item =>
+                            return leaderboardResult.Rows.Select(item =>
                             {
                                 Task<Texture2D> pictureTask = GetGamerPicture(item.XboxUserId);
                                 pictureTask.Wait();
@@ -392,12 +408,14 @@ namespace ShevaEngine.UserAccounts
                                 {
                                     GamerName = item.Gamertag,
                                     Rank = item.Rank,
-                                    Score = GetScore<T>(item.Values[0]),                                    
+                                    Score = GetScore<T>(item.Values[0]),
                                     Picture = pictureTask.Result,
                                 };
                             });
                         }
                     }
+
+                return null;
             });
         }
 

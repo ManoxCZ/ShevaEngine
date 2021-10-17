@@ -3,6 +3,20 @@
 #include "Lightning.fx"
 #include "Skinned.fx"
 
+VertexShaderOutputPNWD MainVSP(const VertexShaderInputP input, matrix transform : COLOR0)
+{
+    VertexShaderOutputPNWD output;
+
+    matrix transformTrans = transpose(transform);
+
+    output.WorldPosition = mul(float4(input.Position, 1.0), transformTrans);
+    output.Position = mul(mul(mul(float4(input.Position, 1.0), transformTrans), ViewMatrix), ProjMatrix);
+    output.Normal = mul(float3(0, 1, 0), (float3x3) transformTrans);
+    output.Depth = output.Position.zw;
+
+    return output;
+}
+
 VertexShaderOutputPNWD MainVSPN(const VertexShaderInputPN input, matrix transform : COLOR0)
 {
 	VertexShaderOutputPNWD output;
@@ -154,6 +168,12 @@ float4 MainPSPNShadows(VertexShaderOutputPNWD input) : COLOR
 
 technique Default
 {
+    pass P12
+    {
+        VertexShader = compile VS_SHADERMODEL MainVSP();
+        PixelShader = compile PS_SHADERMODEL MainPSPN();
+    }
+
 	pass PN24
 	{
 		VertexShader = compile VS_SHADERMODEL MainVSPN();
@@ -211,6 +231,12 @@ technique Default
 
 technique Shadows
 {
+    pass P12
+    {
+        VertexShader = compile VS_SHADERMODEL MainVSP();
+        PixelShader = compile PS_SHADERMODEL MainPSPNShadows();
+    }
+
 	pass PN24
 	{
 		VertexShader = compile VS_SHADERMODEL MainVSPN();

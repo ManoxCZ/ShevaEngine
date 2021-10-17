@@ -29,36 +29,16 @@ namespace AnimationImporters
 		/// Get runtime type.
 		/// </summary>
 		public override string GetRuntimeType(TargetPlatform targetPlatform)
-        {
-			switch (targetPlatform)
-			{
-				case TargetPlatform.Windows:
-				case TargetPlatform.WindowsStoreApp:
-				case TargetPlatform.Android:
-				case TargetPlatform.DesktopGL:
-                case TargetPlatform.MacOSX:
-                    return "ShevaEngine.Core.Clip, ArcticSurvivor";
-			}
-
-			throw new NotImplementedException("Can't find Runtime type");			
-        }
+		{
+			return "ShevaEngine.Core.Clip, Project01";
+		}
 
 		/// <summary>
 		/// Get runtime header.
 		/// </summary>
 		public override string GetRuntimeReader(TargetPlatform targetPlatform)
-        {
-			switch (targetPlatform)
-			{
-				case TargetPlatform.Windows:
-				case TargetPlatform.WindowsStoreApp:
-				case TargetPlatform.Android:
-				case TargetPlatform.DesktopGL:
-                case TargetPlatform.MacOSX:
-                    return "ShevaEngine.Core.ClipReader, ArcticSurvivor";
-			}
-
-			throw new NotImplementedException("Can't find Runtime type");			
-        }
+		{
+			return "ShevaEngine.Core.ClipReader, Project01";
+		}
     }    
 }

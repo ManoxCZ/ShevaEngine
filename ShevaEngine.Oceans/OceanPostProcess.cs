@@ -117,29 +117,5 @@ namespace ShevaEngine.Oceans
 			_oceanMaterial.RefractionTexture = null;
 			_oceanMaterial.DepthTexture = null;
 		}
-
-#if !WINDOWS_UAP
-		/// <summary>
-        /// DebugUI.
-        /// </summary>
-        public override void DebugUI()
-		{
-			Vector3 temp = _oceanMaterial.OceanColor.ToVector3();				
-			ImGuiNET.ImGui.ColorEdit3("Ocean color", ref temp);
-			_oceanMaterial.OceanColor = new Color(temp);
-
-			temp = _oceanMaterial.SkyColor.ToVector3();				
-			ImGuiNET.ImGui.ColorEdit3("Sky color", ref temp);
-			_oceanMaterial.SkyColor = new Color(temp);
-
-			float tempSingle = _oceanMaterial.DepthFactor;
-			ImGuiNET.ImGui.SliderFloat("Depth factor", ref tempSingle, 0.01f, 5.0f);
-			_oceanMaterial.DepthFactor = tempSingle;
-
-			tempSingle = _oceanMaterial.LightFactor;
-			ImGuiNET.ImGui.SliderFloat("Light factor", ref tempSingle, 0.00f, 1.0f);
-			_oceanMaterial.LightFactor = tempSingle;
-		}
-#endif
 	}
 }
