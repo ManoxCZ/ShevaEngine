@@ -29,17 +29,5 @@ namespace ShevaEngine.Core
 		{
 
 		}
-
-#if !WINDOWS_UAP
-		/// <summary>
-        /// DebugUI.
-        /// </summary>
-        public virtual void DebugUI()
-        {
-			bool tempBool = Enabled;
-			ImGuiNET.ImGui.Checkbox("Enabled", ref tempBool);
-			Enabled = tempBool;
-		}	
-#endif
 	}
 }

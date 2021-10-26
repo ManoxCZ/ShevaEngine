@@ -1,13 +1,14 @@
 ﻿using Microsoft.Xna.Framework.Graphics;
 using ShevaEngine.Core;
+using System;
 
 namespace ShevaEngine.NoesisUI
 {
     public class TextureProvider : Noesis.TextureProvider
     {
-        public override void GetTextureInfo(string filename, out uint width, out uint height)
+        public override void GetTextureInfo(Uri filename, out uint width, out uint height)
         {
-            string contentPath = GetContentFilename(filename);
+            string contentPath = GetContentFilename(filename.OriginalString);
 
             Texture2D texture = ShevaGame.Instance.Content.Load<Texture2D>(contentPath);
 
@@ -23,16 +24,16 @@ namespace ShevaEngine.NoesisUI
             }
         }
 
-        public override Noesis.Texture LoadTexture(string filename)
+        public override Noesis.Texture LoadTexture(Uri filename)
         {
-            string contentPath = GetContentFilename(filename);
+            string contentPath = GetContentFilename(filename.OriginalString);
 
             Texture2D texture = ShevaGame.Instance.Content.Load<Texture2D>(contentPath);
 
             System.Reflection.FieldInfo info = typeof(Texture2D).GetField("_texture", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic);
             SharpDX.Direct3D11.Resource handle = info.GetValue(texture) as SharpDX.Direct3D11.Resource;
 
-            return Noesis.Texture.WrapD3D11Texture(texture, handle.NativePointer, texture.Width, texture.Height, texture.LevelCount, false);
+            return Noesis.RenderDeviceD3D11.WrapTexture(texture, handle.NativePointer, texture.Width, texture.Height, texture.LevelCount, false, true);
         }
 
         /// <summary>
@@ -41,12 +42,12 @@ namespace ShevaEngine.NoesisUI
         public static string GetContentFilename(string filename)
         {
             return filename
-                .Replace(".png", string.Empty, System.StringComparison.InvariantCultureIgnoreCase)
-                .Replace(".tif", string.Empty, System.StringComparison.InvariantCultureIgnoreCase)
-                .Replace(".tiff", string.Empty, System.StringComparison.InvariantCultureIgnoreCase)
-                .Replace(".webp", string.Empty, System.StringComparison.InvariantCultureIgnoreCase)
-                .Replace(".jpg", string.Empty, System.StringComparison.InvariantCultureIgnoreCase)
-                .Replace(".jpeg", string.Empty, System.StringComparison.InvariantCultureIgnoreCase);
+                .Replace(".png", string.Empty, StringComparison.InvariantCultureIgnoreCase)
+                .Replace(".tif", string.Empty, StringComparison.InvariantCultureIgnoreCase)
+                .Replace(".tiff", string.Empty, StringComparison.InvariantCultureIgnoreCase)
+                .Replace(".webp", string.Empty, StringComparison.InvariantCultureIgnoreCase)
+                .Replace(".jpg", string.Empty, StringComparison.InvariantCultureIgnoreCase)
+                .Replace(".jpeg", string.Empty, StringComparison.InvariantCultureIgnoreCase);
         }
     }
 }

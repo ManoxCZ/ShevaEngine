@@ -1,4 +1,5 @@
-﻿
+﻿using System;
+
 namespace ShevaEngine.Core
 {
 	/// <summary>
@@ -23,18 +24,18 @@ namespace ShevaEngine.Core
 #if WINDOWS_UAP
             _resourceManager = Windows.ApplicationModel.Resources.ResourceLoader.GetForViewIndependentUse();
 #elif WINDOWS
-			_resourceManager = new System.Resources.ResourceManager("Project00-Windows.Resources", System.Reflection.Assembly.GetExecutingAssembly());
+			_resourceManager = new System.Resources.ResourceManager("Project00-Windows.Resources", System.Reflection.Assembly.GetEntryAssembly());
 #elif DESKTOPGL
-			_resourceManager = new System.Resources.ResourceManager("Project00-DesktopGL.Resources", System.Reflection.Assembly.GetExecutingAssembly());
+			_resourceManager = new System.Resources.ResourceManager("Project00-DesktopGL.Resources", System.Reflection.Assembly.GetEntryAssembly());
 #endif
-        }
+		}
 
 		/// <summary>
 		/// Get value.
 		/// </summary>		
 		public string GetValue(string key)
 		{
-			string localizedString = _resourceManager.GetString(key);
+			string localizedString =  _resourceManager.GetString(key);
 
 			if (localizedString != null)
 				return localizedString;

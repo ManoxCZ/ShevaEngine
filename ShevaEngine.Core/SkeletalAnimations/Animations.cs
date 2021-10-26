@@ -3,14 +3,12 @@ using System.Collections.Generic;
 
 namespace ShevaEngine.Core
 {
-	/// <summary>
-	/// Animations.
-	/// </summary>
-	public class Animations
+    /// <summary>
+    /// Animations.
+    /// </summary>
+    public class Animations
     {
-		private readonly Log _log = new Log(typeof(Animations));
-
-        public List<Matrix> BindPose;
+		public List<Matrix> BindPose;
 		public List<Matrix> InvBindPose;
 		public List<int> SkeletonHierarchy;
 		public Dictionary<string, int> BoneMap;				

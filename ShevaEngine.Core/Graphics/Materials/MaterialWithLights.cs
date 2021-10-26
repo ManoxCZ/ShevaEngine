@@ -117,7 +117,7 @@ namespace ShevaEngine.Core
 		private Vector2 GetShadowMapSize(Light light)
 		{
 			if (light.Shadow is SingleMapShadow singleMapShadow)
-				return new Vector2(singleMapShadow.ShadowMap.Width, singleMapShadow.ShadowMap.Height);
+				return new Vector2(singleMapShadow.Size.Width, singleMapShadow.Size.Height);
 
 			return Vector2.Zero;
 		}
@@ -128,7 +128,7 @@ namespace ShevaEngine.Core
 		private Texture2D GetShadowMap(Light light)
 		{
 			if (light.Shadow is SingleMapShadow singleMapShadow)
-				return singleMapShadow.ShadowMap;
+				return singleMapShadow.GetShadowMap();
 
 			return null;
 		}

@@ -7,8 +7,8 @@ using System.Collections.Generic;
 using System.ComponentModel;
 
 namespace AnimationImporters
-{	
-	[ContentProcessor(DisplayName = "Animation")]
+{
+    [ContentProcessor(DisplayName = "Animation")]
 	public class AnimationsProcessor : ContentProcessor<NodeContent, AnimationsContent>
 	{
 		[DisplayName("MaxBones")]

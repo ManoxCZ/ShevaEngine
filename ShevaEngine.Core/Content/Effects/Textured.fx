@@ -3,8 +3,8 @@
 #include "Lightning.fx"
 #include "Skinned.fx"
 
-Texture2D Texture;
-sampler2D TextureSampler = sampler_state
+Texture2D<float4> Texture : register(t1);
+sampler TextureSampler: register(s1)
 {
 	Texture = <Texture>;
 };

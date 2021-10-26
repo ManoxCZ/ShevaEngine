@@ -1,10 +1,9 @@
-﻿using Microsoft.Xna.Framework.Graphics;
+﻿using Microsoft.Extensions.Logging;
+using Microsoft.Xna.Framework.Graphics;
 using ShevaEngine.Core;
+using ShevaEngine.Core.UserAccounts;
 using System;
 using System.Collections.Generic;
-using System.Globalization;
-using System.IO;
-using System.Linq;
 using System.Reactive.Subjects;
 using System.Threading;
 using System.Threading.Tasks;
@@ -14,11 +13,11 @@ namespace ShevaEngine.UserAccounts
     /// <summary>
     /// User.
     /// </summary>
-    public class User : IDisposable
+    public class User : IUser, IDisposable
     {        
         private const int CANCEL_TIMEOUT = 5000;
 
-        private readonly Log _log = new Log(typeof(User));
+        private readonly ILogger _log = ShevaGame.Instance.LoggerFactory.CreateLogger<User>();
         private readonly ShevaGame _game;
 
 #if WINDOWS_UAP
@@ -34,7 +33,7 @@ namespace ShevaEngine.UserAccounts
         /// <summary>
         /// Constructor.
         /// </summary>
-        internal User(ShevaGame game)
+        public User(ShevaGame game)
         {
             _game = game;
             Data = new BehaviorSubject<UserData>(null);            

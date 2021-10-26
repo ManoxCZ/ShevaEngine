@@ -2,13 +2,15 @@
 using Microsoft.Xna.Framework.Input;
 using Noesis;
 using ShevaEngine.Core;
+using ShevaEngine.Core.UI;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace ShevaEngine.NoesisUI
 {
-    public class Layer
+    public class Layer : ILayer
     {
+        private readonly NoesisUIWrapper _uiWrapper;
         public bool IsActive { get; set; } = true;
         public View View { get; }
         private object _dataContext;
@@ -19,7 +21,7 @@ namespace ShevaEngine.NoesisUI
             {
                 _dataContext = value;
 
-                NoesisUIWrapper.RunOnUIThread(() =>                 
+                _uiWrapper.RunOnUIThread(() =>                 
                 {
                     if (View.Content != null)
                         View.Content.DataContext = DataContext;
@@ -32,8 +34,9 @@ namespace ShevaEngine.NoesisUI
         /// <summary>
         /// Constructor.
         /// </summary>        
-        public Layer(View view)
+        public Layer(NoesisUIWrapper uiWrapper, View view)
         {
+            _uiWrapper = uiWrapper;
             View = view;                             
         }
 
@@ -82,7 +85,7 @@ namespace ShevaEngine.NoesisUI
 		/// </summary>        
 		public void OnWindowResize(int width, int height)
         {
-            NoesisUIWrapper.RunOnUIThread(() =>
+            _uiWrapper.RunOnUIThread(() =>
             {
                 View.SetSize(width, height);
             });
@@ -142,13 +145,13 @@ namespace ShevaEngine.NoesisUI
         }
 
         /// <summary>
-        /// Get element.
+        /// Get viewport.
         /// </summary>
-        public Task<FrameworkElement> GetElement(string name)
+        public Task<IViewport> GetViewport(string name)
         {
-            return NoesisUIWrapper.RunFuncOnUIThread(() =>
+            return _uiWrapper.RunFuncOnUIThread(() =>
             {             
-                return View?.Content?.FindName(name) as FrameworkElement;
+                return View?.Content?.FindName(name) as IViewport;
             });           
         }
     }

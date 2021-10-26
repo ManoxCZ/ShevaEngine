@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework.Content;
+﻿using Microsoft.Extensions.Logging;
+using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
@@ -10,7 +11,7 @@ namespace ShevaEngine.Core
     /// </summary>
     public class ContentManagerEx : ContentManager
 	{
-		private readonly Log _log = new Log(typeof(ContentManagerEx));
+        private readonly ILogger _log;
         private readonly ShevaGame _game;
         private object _lock = new object();
 		//private SortedDictionary<string,Font> _fonts = new SortedDictionary<string, Font>();
@@ -22,7 +23,8 @@ namespace ShevaEngine.Core
 		public ContentManagerEx(ShevaGame game, IServiceProvider serviceProvider) 
 			: base(serviceProvider)
 		{
-            _game = game;
+            _log = game.LoggerFactory.CreateLogger<ContentManagerEx>();
+            _game = game;            
 		}
 
 		/// <summary>
@@ -31,6 +33,7 @@ namespace ShevaEngine.Core
 		public ContentManagerEx(IServiceProvider serviceProvider, string rootDirectory)
 			: base(serviceProvider, rootDirectory)
 		{
+            throw new NotImplementedException();
 		}
 
 		/// <summary>
@@ -42,7 +45,7 @@ namespace ShevaEngine.Core
             {
                 lock (_lock)
                 {
-                    _log.Info($"Loading: {assetName}, type: {typeof(T)}");
+                    _log.LogInformation($"Loading: {assetName}, type: {typeof(T)}");
 
                     //if (typeof(T) == typeof(Font))
                     //{
@@ -57,26 +60,26 @@ namespace ShevaEngine.Core
                     //    return (T)(object)_fonts[assetName];
                     //}                    
 
-                    T output = base.Load<T>(assetName);
+                    T output = base.Load<T>(assetName);                    
 
                     if ((object)output is Model model)
                     {
-                        _log.Info($"Updating materials");
+                        _log.LogInformation($"Updating materials");
 
                         MaterialsManager.UpdateMaterials(model);
                     }
 
                     if (output == null)
-                        _log.Warning($"Can't load");
+                        _log.LogWarning($"Can't load");
 
-                    _log.Info($"Successfully loaded");
+                    _log.LogInformation($"Successfully loaded");
 
                     return output;
                 }
             }
             catch (Exception ex)
             {
-                _log.Error($"Can't load content item: {assetName}", ex);
+                _log.LogError($"Can't load content item: {assetName}", ex);
             }
 
             return default;

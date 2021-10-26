@@ -7,24 +7,24 @@
 
 matrix InverseViewProjMatrix;
 
-Texture2D RefractionTexture;
-sampler RefractionTextureSampler = sampler_state
+Texture2D<float4> RefractionTexture : register(t1);
+sampler RefractionTextureSampler : register(s1)
 {	
 	Texture = <RefractionTexture>;
 	AddressU = Clamp;
     AddressV = Clamp;
 };
 
-Texture2D NormalTexture;
-sampler NormalTextureSampler = sampler_state
+Texture2D<float4> NormalTexture: register(t2);
+sampler NormalTextureSampler  : register(s2)
 {	
-	Texture = <NormalTexture>;
+	Texture = <NormalTexture>;	
 	AddressU = Wrap;
-    AddressV = Wrap;
+    AddressV = Wrap;	
 };
 
-Texture2D DepthTexture;
-sampler DepthTextureSampler = sampler_state
+Texture2D<float4> DepthTexture: register(t3);
+sampler DepthTextureSampler  : register(s3)
 {	
 	Texture = <DepthTexture>;
 	AddressU = Clamp;
@@ -63,7 +63,7 @@ VertexShaderOutputPNTWD MainVSPT(const VertexShaderInputPT input, matrix transfo
 	GerstnerWaves(waveP, waveN, output.WorldPosition.xz, GameTime);
 
 	output.WorldPosition.xyz += waveP.xzy;	
-	output.Position = mul(mul(float4(output.WorldPosition.xyz, 1.0f), ViewMatrix), ProjMatrix);	
+	output.Position = mul(mul(output.WorldPosition, ViewMatrix), ProjMatrix);	
 	output.Normal = waveN.xzy;
 	output.TextureCoordinates0 = (output.Position.xy / output.Position.w + 1) * 0.5;
 	output.TextureCoordinates0.y = 1 - output.TextureCoordinates0.y;
@@ -81,7 +81,7 @@ float fresnel(in float3 I, in float3 N, in float power)
 }
 
 float4 MainPSPN(VertexShaderOutputPNTWD input) : COLOR
-{	
+{			
 	float depth = tex2D(DepthTextureSampler, input.TextureCoordinates0).x;
 
 	if (input.Depth.x > depth && depth > 0.0001)		
@@ -89,14 +89,17 @@ float4 MainPSPN(VertexShaderOutputPNTWD input) : COLOR
 
 	float ratio = length(CameraPosition.xyz - input.WorldPosition.xyz) / 50;
 
-	float2 normUV1 = (input.WorldPosition.xz + float2(GameTime / 12, GameTime / 16));
-	float2 normUV2 = (input.WorldPosition.xz * 0.2 + float2(-GameTime / 20, GameTime / 10));
+	float2 normUV1 = input.WorldPosition.xz + float2(GameTime / 12, GameTime / 16);
+	float2 normUV2 = input.WorldPosition.xz * 0.2 + float2(-GameTime / 20, GameTime / 10);
 
-	float3 normTextureColor = 
+	float3 normTextureColor =		
 	  	tex2D(NormalTextureSampler, normUV1).xzy +
-	  	tex2D(NormalTextureSampler, normUV2).xzy;	
+	  	tex2D(NormalTextureSampler, normUV2).xzy;
 	
 	float3 normal = normalize(normTextureColor + lerp(input.Normal, float3(0,1,0), ratio));	
+
+	
+	//return float4(tex2D(NormalTextureSampler, input.WorldPosition.xz % 1.0f).xyz, 1);
 
 	float3 view = normalize(CameraPosition - input.WorldPosition.xyz);
 	float3 light = lerp(ComputeDiffuseLighting(normal, input.WorldPosition), float3(1,1,1), LightFactor);		
@@ -128,7 +131,7 @@ float4 MainPSPN(VertexShaderOutputPNTWD input) : COLOR
 
 		refr = lerp(refr, OceanColor.xyz, min(1, abs(depth - input.Depth.x) * DepthFactor));		
 	}	 		
-
+	
 	return float4(saturate(AmbientLight + light) * lerp(refr, refl, 0 + fres) + saturate(specular), 1);	
 }
 

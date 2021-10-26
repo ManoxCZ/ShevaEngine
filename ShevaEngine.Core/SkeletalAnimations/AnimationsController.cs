@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using Microsoft.Extensions.Logging;
+using Microsoft.Xna.Framework;
 using System;
 using System.Reactive.Subjects;
 
@@ -9,7 +10,7 @@ namespace ShevaEngine.Core
 	/// </summary>
 	public class AnimationsController : IDisposable
 	{
-		private readonly Log _log = new Log(typeof(Animations));
+		private readonly ILogger _log = ShevaGame.Instance.LoggerFactory.CreateLogger<AnimationsController>();
 		private readonly Animations _animations;
 		public Clip CurrentClip { get; private set; }
 		private Matrix[] _boneTransforms;
@@ -45,7 +46,7 @@ namespace ShevaEngine.Core
 		{
 			if (!_animations.Clips.ContainsKey(clipName))
 			{
-				_log.Error($"Can't find clip {clipName}");
+				_log.LogError($"Can't find clip {clipName}");
 
 				return;
 			}
@@ -60,7 +61,7 @@ namespace ShevaEngine.Core
 		{
 			if (clip == null)
 			{
-				_log.Error("Clip is null");
+				_log.LogError("Clip is null");
 
 				return;
 			}

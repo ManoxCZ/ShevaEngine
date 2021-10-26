@@ -2,10 +2,11 @@
 using Microsoft.Xna.Framework.Graphics;
 using Noesis;
 using ShevaEngine.Core;
+using ShevaEngine.Core.UI;
 
 namespace ShevaEngine.NoesisUI
 {
-    public sealed class Viewport : UserControl
+    public sealed class Viewport : UserControl, IViewport
     {
         public static readonly DependencyProperty CameraProperty = DependencyProperty.Register(
             nameof(Camera), typeof(Camera), typeof(Viewport), new PropertyMetadata(null));
@@ -69,7 +70,7 @@ namespace ShevaEngine.NoesisUI
                 System.Reflection.FieldInfo info = typeof(RenderTarget2D).GetField("_texture", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic);
                 SharpDX.Direct3D11.Resource handle = info.GetValue(_renderTarget) as SharpDX.Direct3D11.Resource;
 
-                _image.Source = new TextureSource(Noesis.Texture.WrapD3D11Texture(_renderTarget, handle.NativePointer, _renderTarget.Width, _renderTarget.Height, 1, false));
+                _image.Source = new TextureSource(Noesis.RenderDeviceD3D11.WrapTexture(_renderTarget, handle.NativePointer, _renderTarget.Width, _renderTarget.Height, 1, false, true));
 
                 _depthTarget?.Dispose();
 

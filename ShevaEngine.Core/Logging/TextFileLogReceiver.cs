@@ -1,8 +1,9 @@
-﻿using System;
+﻿using Microsoft.Extensions.Logging;
+using System;
 
 namespace ShevaEngine.Core
 {
-    public class TextFileLogReceiver : ILogReceiver, IDisposable
+    public class TextFileLogReceiver : ILoggerProvider, IDisposable
     {
         private const string LOGS_DIRECTORY = "Logs";
 
@@ -10,6 +11,7 @@ namespace ShevaEngine.Core
         private Windows.Foundation.Diagnostics.FileLoggingSession _session;
         private Windows.Foundation.Diagnostics.LoggingChannel _channel;
 #else
+        private readonly object _lock = new object();
         private System.IO.StreamWriter _writer;
 #endif
 
@@ -63,9 +65,10 @@ namespace ShevaEngine.Core
             _session?.Dispose();
             _session = null;
 #else
-			_writer?.Dispose();
+            _writer?.Flush();
 
-			_writer = null;
+            _writer?.Dispose();
+			_writer = null!;
 #endif
         }
 
@@ -73,24 +76,30 @@ namespace ShevaEngine.Core
         /// <summary>
         /// On new message.
         /// </summary>		
-        public void OnNewMessage(LogMessage message)
+        public void OnNewMessage<TState>(LogLevel logLevel, string category, EventId eventId, TState state, Exception exception, Func<TState, Exception, string> formatter)
         {
-#if WINDOWS_UAP           
-            Windows.Foundation.Diagnostics.LoggingFields fields = new Windows.Foundation.Diagnostics.LoggingFields();
-            fields.AddString("Source", message.Origin);            
-            fields.AddString("Message", message.Message);
+            lock (_lock)
+            {
+#if WINDOWS_UAP
+                Windows.Foundation.Diagnostics.LoggingFields fields = new Windows.Foundation.Diagnostics.LoggingFields();
+                fields.AddString("Source", message.Origin);            
+                fields.AddString("Message", message.Message);
             
-            if (message.Exception != null)
-                fields.AddString("Exception", message.Exception.ToString());
+                if (message.Exception != null)
+                    fields.AddString("Exception", message.Exception.ToString());
             
-            _channel.LogEvent("Game", fields, GetLoggingLevel(message));
+                _channel.LogEvent("Game", fields, GetLoggingLevel(message));
 #else
-            string formattedMessage = $"{message.DateTime.ToString()}\t{message.Severity}\t{message.Origin}\t{message.Message}\t{message.Exception?.ToString()}";
+                string formattedMessage = $"{DateTime.Now}\t{logLevel}\t{category}\t{formatter(state, exception)}\t{exception?.ToString()}";
 
-			_writer?.WriteLine(formattedMessage);
-
-			_writer?.Flush();
+                _writer?.WriteLine(formattedMessage);                
 #endif
+            }
+        }
+
+        public ILogger CreateLogger(string categoryName)
+        {
+            return new TextFileLogger(this, categoryName);
         }
 
 #if WINDOWS_UAP

@@ -50,7 +50,9 @@ namespace ShevaEngine.UserAccounts
                     }
                 }
             });
-#endif
+#else
+            return default;
+#endif            
         }
 
         /// <summary>
@@ -76,6 +78,8 @@ namespace ShevaEngine.UserAccounts
             else if (typeof(T) == typeof(string))
                 return (T)(object)scoreValue.AsString;
 
+            return default;
+#else
             return default;
 #endif
         }

@@ -1,4 +1,5 @@
 ﻿using ShevaEngine.Core;
+using System;
 using System.IO;
 
 namespace ShevaEngine.NoesisUI
@@ -11,9 +12,9 @@ namespace ShevaEngine.NoesisUI
         /// <summary>
         /// Load xaml.
         /// </summary>
-        public override Stream LoadXaml(string filename)
+        public override Stream LoadXaml(Uri filename)
         {
-            string filenameWithoutExtension = filename.Replace(".xaml", string.Empty);
+            string filenameWithoutExtension = filename.OriginalString.Replace(".xaml", string.Empty);
 
             string data = ShevaGame.Instance.Content.Load<string>(filenameWithoutExtension);
 

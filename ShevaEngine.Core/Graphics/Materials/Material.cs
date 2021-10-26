@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using Microsoft.Extensions.Logging;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System.Linq;
 
@@ -18,7 +19,7 @@ namespace ShevaEngine.Core
     /// </summary>
     public abstract class Material : Effect
     {
-		protected readonly Log Log;
+		protected readonly ILogger Log;
 		public const int SKINNED_EFFECT_MAX_BONES = 72;
 		public static Matrix[] BonesIdentity;
 
@@ -36,14 +37,14 @@ namespace ShevaEngine.Core
 			get
 			{
 				if (!Animated || _bonesParameter == null)
-					Log.Warning("Material is not animated");
+					Log.LogWarning("Material is not animated");
 
 				return _bonesParameter?.GetValueMatrixArray(SKINNED_EFFECT_MAX_BONES);
 			}
 			set
 			{
 				if (!Animated || _bonesParameter == null)
-					Log.Warning("Material is not animated");				
+					Log.LogWarning("Material is not animated");				
 
 				_bonesParameter?.SetValue(value);
 			}	
@@ -55,7 +56,7 @@ namespace ShevaEngine.Core
 		protected Material(Effect effect)
 			: base(effect)
 		{
-			Log = new Log(GetType());
+			Log = ShevaGame.Instance.LoggerFactory.CreateLogger(GetType());
 
 			_viewParameter = GetParameter("ViewMatrix");
 			_projParameter = GetParameter("ProjMatrix");
@@ -78,12 +79,12 @@ namespace ShevaEngine.Core
 		/// <summary>
 		/// Get parameter.
 		/// </summary>
-		protected EffectParameter GetParameter(string name)
+		protected EffectParameter? GetParameter(string name)
 		{
-			EffectParameter parameter = Parameters.FirstOrDefault(item => item.Name == name);
+			EffectParameter? parameter = Parameters.FirstOrDefault(item => item.Name == name);
 
 			if (parameter == null)
-				Log.Error($"Effect parameter {name} doesn't exist");
+				Log.LogError($"Effect parameter {name} doesn't exist");
 
 			return parameter;
 		}
@@ -96,7 +97,7 @@ namespace ShevaEngine.Core
 			_viewParameter?.SetValue(camera.ViewMatrix);
 			_projParameter?.SetValue(camera.ProjectionMatrix);
 			_cameraPositionParameter?.SetValue(camera.Position);
-			_gameTimeParameter?.SetValue(gameTime);
+			_gameTimeParameter?.SetValue(gameTime);			
 
 			if (Animated)
 				Techniques[(int)matProfile].Passes[declaration.Name + @"Animated"].Apply();

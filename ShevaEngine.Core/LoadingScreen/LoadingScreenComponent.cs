@@ -1,4 +1,4 @@
-using ShevaEngine.NoesisUI;
+using ShevaEngine.Core.UI;
 using System.Threading.Tasks;
 
 namespace ShevaEngine.Core
@@ -8,19 +8,19 @@ namespace ShevaEngine.Core
     /// </summary>
     public class LoadingScreenComponent : ShevaGameComponent
     {
-        public string XamlFilename { get; set; }        
+        public string XamlFilename { get; set; }
 
         /// <summary>
-		/// Initialize.
-		/// </summary>
-		public override void LoadContent(ShevaGame game)
+        /// Initialize.
+        /// </summary>
+        public override void LoadContent(ShevaGame game)
         {
             base.LoadContent(game);
 
-            Task<Layer> task = NoesisUIWrapper.GetLayer(XamlFilename);
+            Task<ILayer> task = game.UISystem.GetLayer(XamlFilename);
             task.Wait();
 
             Layers.Add(task.Result);
-        }        
+        }
     }
 }

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Reactive.Linq;
 using System.Reactive.Subjects;
 
 namespace ShevaEngine.Core
@@ -9,8 +8,7 @@ namespace ShevaEngine.Core
     /// Game settings.
     /// </summary>
     public class ShevaGameSettings : IDisposable
-	{		
-		protected readonly Log Log;
+	{				
 		protected List<IDisposable> Disposables;
 
 
@@ -19,8 +17,6 @@ namespace ShevaEngine.Core
         /// </summary>
         public ShevaGameSettings()
 		{
-			Log = new Log(GetType());
-
 			Disposables = new List<IDisposable>();
 		}
 
@@ -41,7 +37,7 @@ namespace ShevaEngine.Core
 				disposable?.Dispose();			
 
 			Disposables.Clear();
-			Disposables = null;
+			Disposables = null!;
 		}
 
 		/// <summary>
@@ -64,14 +60,14 @@ namespace ShevaEngine.Core
 
             if (string.IsNullOrEmpty(fileContent))
             {
-                LogManager.Instance.AddLogMessage(new LogMessage()
-                {
-                    DateTime = DateTime.Now,
-                    Exception = null,
-                    Message = $"File {typeof(T).Name}.settings not found",
-                    Origin = nameof(ShevaGameSettings),
-                    Severity = LogSeverity.Warning
-                });
+                //LogManager.Instance.AddLogMessage(new LogMessage()
+                //{
+                //    DateTime = DateTime.Now,
+                //    Exception = null,
+                //    Message = $"File {typeof(T).Name}.settings not found",
+                //    Origin = nameof(ShevaGameSettings),
+                //    Severity = LogSeverity.Warning
+                //});
 
                 return new T();
             }
@@ -86,14 +82,14 @@ namespace ShevaEngine.Core
             }
             catch (Exception exception)
             {
-                LogManager.Instance.AddLogMessage(new LogMessage()
-                {
-                    DateTime = DateTime.Now,
-                    Exception = exception,
-                    Message = "Settings deserialization error",
-                    Origin = nameof(ShevaGameSettings),
-                    Severity = LogSeverity.Error
-                });
+                //LogManager.Instance.AddLogMessage(new LogMessage()
+                //{
+                //    DateTime = DateTime.Now,
+                //    Exception = exception,
+                //    Message = "Settings deserialization error",
+                //    Origin = nameof(ShevaGameSettings),
+                //    Severity = LogSeverity.Error
+                //});
             }
         
 			return new T();

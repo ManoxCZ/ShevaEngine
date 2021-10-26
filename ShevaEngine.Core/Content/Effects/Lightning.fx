@@ -8,8 +8,9 @@ float3 LightPositions[MAX_LIGHTS];
 float4 LightColors[MAX_LIGHTS];
 matrix LightViewProjs[MAX_LIGHTS];
 float2 LightShadowMapSizes[MAX_LIGHTS];
-Texture2D Light1ShadowMap;
-sampler2D Light1ShadowMapSampler = sampler_state
+
+Texture2D<float4> Light1ShadowMap : register(t0);
+sampler Light1ShadowMapSampler : register(s0)
 {
  	Texture = <Light1ShadowMap>;
 	MinFilter = linear;

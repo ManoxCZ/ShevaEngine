@@ -1,11 +1,10 @@
 using Microsoft.Xna.Framework.Content.Pipeline;
 using Microsoft.Xna.Framework.Content.Pipeline.Serialization.Compiler;
-using System;
 using System.Collections.Generic;
 
 namespace AnimationImporters
 {
-	[ContentTypeWriter]
+    [ContentTypeWriter]
     class AnimationsDataWriter : ContentTypeWriter<AnimationsContent>
     {
         protected override void Write(ContentWriter output, AnimationsContent value)
@@ -19,22 +18,22 @@ namespace AnimationImporters
 
         private void WriteClips(ContentWriter output, Dictionary<string, ClipContent> clips)
         {
-            Int32 count = clips.Count;
-            output.Write((Int32)count);
+            int count = clips.Count;
+            output.Write(count);
 
             foreach (var clip in clips)
             {
                 output.Write(clip.Key);
-                output.WriteObject<ClipContent>(clip.Value);
-            }            
+                output.WriteObject(clip.Value);
+            }
 
             return;
         }
 
         private void WriteBindPose(ContentWriter output, List<Microsoft.Xna.Framework.Matrix> bindPoses)
         {
-            Int32 count = bindPoses.Count;
-            output.Write((Int32)count);
+            int count = bindPoses.Count;
+            output.Write((int)count);
 
             for (int i = 0; i < count; i++)
                 output.Write(bindPoses[i]);
@@ -44,8 +43,8 @@ namespace AnimationImporters
 
         private void WriteInvBindPose(ContentWriter output, List<Microsoft.Xna.Framework.Matrix> invBindPoses)
         {
-            Int32 count = invBindPoses.Count;
-            output.Write((Int32)count);
+            int count = invBindPoses.Count;
+            output.Write(count);
 
             for (int i = 0; i < count; i++)
                 output.Write(invBindPoses[i]);
@@ -55,20 +54,20 @@ namespace AnimationImporters
 
         private void WriteSkeletonHierarchy(ContentWriter output, List<int> skeletonHierarchy)
         {
-            Int32 count = skeletonHierarchy.Count;
-            output.Write((Int32)count);
+            int count = skeletonHierarchy.Count;
+            output.Write(count);
 
             for (int i = 0; i < count; i++)
-                output.Write((Int32)skeletonHierarchy[i]);
+                output.Write(skeletonHierarchy[i]);
 
             return;
         }
-    
+
         private void WriteBoneNames(ContentWriter output, List<string> boneNames)
         {
-            Int32 count = boneNames.Count;
-            output.Write((Int32)count);
-            
+            int count = boneNames.Count;
+            output.Write(count);
+
             for (int boneIndex = 0; boneIndex < count; boneIndex++)
             {
                 var boneName = boneNames[boneIndex];
@@ -80,33 +79,12 @@ namespace AnimationImporters
 
         public override string GetRuntimeType(TargetPlatform targetPlatform)
         {
-			switch (targetPlatform)
-			{
-				case TargetPlatform.Windows:
-				case TargetPlatform.WindowsStoreApp:
-				case TargetPlatform.Android:
-				case TargetPlatform.DesktopGL:
-                case TargetPlatform.MacOSX:
-                    return "ShevaEngine.Core.Animations, ArcticSurvivor";					
-			}
-
-			throw new NotImplementedException("Can't find Runtime type");
+            return "ShevaEngine.Core.Animations, ShevaEngine.Core";
         }
 
         public override string GetRuntimeReader(TargetPlatform targetPlatform)
         {
-			switch (targetPlatform)
-			{
-				case TargetPlatform.Windows:
-				case TargetPlatform.WindowsStoreApp:
-				case TargetPlatform.Android:
-				case TargetPlatform.DesktopGL:
-                case TargetPlatform.MacOSX:
-                    return "ShevaEngine.Core.AnimationsReader, ArcticSurvivor";
-			}
-
-			throw new NotImplementedException("Can't find Runtime type");			
+            return "ShevaEngine.Core.AnimationsReader, ShevaEngine.Core";
         }
     }
-        
 }

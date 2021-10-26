@@ -25,7 +25,7 @@ VertexShaderOutputPNWD MainVSPNT(const VertexShaderInputPNT input, matrix transf
 
 	output.WorldPosition = mul(float4(input.Position, 1.0), transformTrans);	
 	output.Position = mul(mul(mul(float4(input.Position, 1.0), transformTrans), ViewMatrix), ProjMatrix);
-	output.Normal = mul(input.Normal, (float3x3)transformTrans);	
+	output.Normal = mul(input.Normal, (float3x3)transformTrans).xyz;	
 	output.Depth = output.Position.zw;
 
 	return output;
@@ -39,7 +39,7 @@ VertexShaderOutputPNWD MainVSPNTT(const VertexShaderInputPNTT input, matrix tran
 
 	output.WorldPosition = mul(float4(input.Position, 1.0), transformTrans);	
 	output.Position = mul(mul(mul(float4(input.Position, 1.0), transformTrans), ViewMatrix), ProjMatrix);
-	output.Normal = mul(input.Normal, (float3x3)transformTrans);	
+	output.Normal = mul(input.Normal, (float3x3)transformTrans).xyz;	
 	output.Depth = output.Position.zw;
 
 	return output;

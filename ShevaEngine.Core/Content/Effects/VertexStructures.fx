@@ -59,8 +59,8 @@ struct VertexShaderOutputPCTWD
 	float4 Position : SV_POSITION;
 	float4 Color : TEXCOORD0;	
 	float2 TextureCoordinates0 : TEXCOORD1;
-    float4 WorldPosition : TEXCOORD2;
-	float2 Depth : COLOR;
+    float4 WorldPosition : COLOR1;
+	float2 Depth : COLOR0;
 };
 
 struct VertexShaderInputPNT

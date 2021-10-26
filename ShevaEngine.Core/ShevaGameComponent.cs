@@ -1,6 +1,7 @@
-﻿using Microsoft.Xna.Framework;
+﻿using Microsoft.Extensions.Logging;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using ShevaEngine.NoesisUI;
+using ShevaEngine.Core.UI;
 using System;
 using System.Collections.Generic;
 
@@ -11,8 +12,8 @@ namespace ShevaEngine.Core
     /// </summary>
     public abstract class ShevaGameComponent : IDisposable
     {
-		protected readonly Log Log;		
-		public List<Layer> Layers { get; } = new List<Layer>();
+		protected readonly ILogger Log;		
+		public List<ILayer> Layers { get; } = new List<ILayer>();
 		public bool IsInitialized { get; private set; } = false;
 		public bool IsContentLoaded { get; private set; } = false;
 		protected List<IDisposable> Disposables { get; } = new List<IDisposable>();		        
@@ -23,7 +24,7 @@ namespace ShevaEngine.Core
 		/// </summary>
 		public ShevaGameComponent()
 		{
-			Log = new Log(GetType());			
+			Log = ShevaGame.Instance.LoggerFactory.CreateLogger(GetType());			
 		}
 
 		/// <summary>
@@ -44,7 +45,7 @@ namespace ShevaEngine.Core
 
             Disposables.Add(game.Settings.Resolution.Subscribe(item =>
             {
-                foreach (Layer layer in Layers)
+                foreach (ILayer layer in Layers)
                     layer.OnWindowResize(item.Width, item.Height);                
             }));
 		}
@@ -70,7 +71,7 @@ namespace ShevaEngine.Core
 		/// </summary>
 		public virtual void Activate(ShevaGame game)
 		{									
-            foreach (Layer layer in Layers)
+            foreach (ILayer layer in Layers)
                 layer.OnWindowResize(game.Settings.Resolution.Value.Width, game.Settings.Resolution.Value.Height);            
         }
 
@@ -90,7 +91,7 @@ namespace ShevaEngine.Core
 
             for (int i = Layers.Count - 1; i >= 0; i--)
             {
-                Layer layer = Layers[i];
+                ILayer layer = Layers[i];
 
                 if (layer.IsActive)
                 {

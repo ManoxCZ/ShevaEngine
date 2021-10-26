@@ -1,11 +1,15 @@
-﻿using Microsoft.Xna.Framework;
+﻿using Microsoft.Extensions.Logging;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Media;
-using ShevaEngine.UserAccounts;
+using ShevaEngine.Core.UI;
+using ShevaEngine.Core.UserAccounts;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace ShevaEngine.Core
@@ -13,12 +17,16 @@ namespace ShevaEngine.Core
     /// <summary>
     /// Engine base class.
     /// </summary>
-    public class ShevaGame : Microsoft.Xna.Framework.Game
+    public class ShevaGame : Game 
     {		
         public static ShevaGame Instance { get; set; }
 
-		private readonly Log _log = new Log(typeof(ShevaGame));
-		private TextFileLogReceiver _logReceiver;
+		public SynchronizationContext SynchronizationContext { get; }
+
+		private readonly ILogger _log;
+		public ILoggerFactory LoggerFactory { get; }
+		//private readonly Log _log = new Log(typeof(ShevaGame));
+		//private TextFileLogReceiver _logReceiver;
 
 		public GameSettings Settings { get; }		
 		private Type[] _initialComponentTypes;
@@ -27,8 +35,8 @@ namespace ShevaEngine.Core
         public ReplaySubject<InputState> InputState { get; private set; } = new ReplaySubject<InputState>();
 		private Stack<ShevaGameComponent> _gameComponents;
 		private object _componentsLock = new object();
-        public User User { get; private set; }        
-        public NoesisUI.NoesisUIWrapper UISystem { get; }
+        public IUser User { get; set; }        
+        public IUISystem UISystem { get; set; }
         public string LoadingLayerFilename { get; set; }
         
 
@@ -39,6 +47,7 @@ namespace ShevaEngine.Core
             : base()
         {
             Instance = this;
+			SynchronizationContext = SynchronizationContext.Current;
             
 #if WINDOWS || DESKTOPGL
             string dataPath = System.IO.Path.Combine(
@@ -49,8 +58,18 @@ namespace ShevaEngine.Core
 				System.IO.Directory.CreateDirectory(dataPath);
 #endif
 
-            _logReceiver = new TextFileLogReceiver("game.log");
-            LogManager.AddLogReceiver(_logReceiver);
+			LoggerFactory = Microsoft.Extensions.Logging.LoggerFactory.Create(builder =>
+			{
+				builder
+					.AddProvider(new TextFileLogReceiver("game.log"))
+#if DEBUG
+					.SetMinimumLevel(LogLevel.Debug);
+#else
+					;
+#endif
+			});
+
+			_log = LoggerFactory.CreateLogger<ShevaGame>();            
 
             AppDomain.CurrentDomain.UnhandledException += new UnhandledExceptionEventHandler(UnhandledExceptionHandler);
 
@@ -58,7 +77,7 @@ namespace ShevaEngine.Core
 
             _initialComponentTypes = initialComponents;
 
-            _log.Info($"Sheva Engine {Version.GetVersion()}");
+            _log.LogInformation($"Sheva Engine {Version.GetVersion()}");			
 
 #if WINDOWS_UAP
             Settings.Resolution.OnNext(new Resolution(Window.ClientBounds.Width, Window.ClientBounds.Height));
@@ -73,7 +92,7 @@ namespace ShevaEngine.Core
                 PreferredBackBufferHeight = Settings.Resolution.Value.Height,
                 GraphicsProfile = GraphicsProfile.HiDef
             };
-
+			
             GraphicsDeviceManager.ApplyChanges();
 
 			Content = new ContentManagerEx(this, Services);
@@ -83,31 +102,32 @@ namespace ShevaEngine.Core
 			Window.AllowUserResizing = true;
 			IsMouseVisible = true;
 			
-			_gameComponents = new Stack<ShevaGameComponent>();
-            UISystem = new NoesisUI.NoesisUIWrapper();
-        }        
+			_gameComponents = new Stack<ShevaGameComponent>();			
+        }
 
 		/// <summary>
-        /// Unhandled exception handler.
-        /// </summary>
+		/// Unhandled exception handler.
+		/// </summary>
 		private static void UnhandledExceptionHandler(object sender, UnhandledExceptionEventArgs args)
-   		{      		
-      		LogManager.Instance.AddLogMessage(new LogMessage()
+		{
+			string dataPath = Path.Combine(
+				Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
+				System.Reflection.Assembly.GetEntryAssembly().GetName().Name,
+				"crash.log");
+
+			File.WriteAllLines(dataPath, new string[]
 			{
-				DateTime = DateTime.Now,
-				Exception = (Exception)args.ExceptionObject,
-				Message = "UnhandledException",
-				Origin = "Core",
-				Severity = LogSeverity.Error
-			});			
-		   }
+				 "UnhandledException",
+				 args.ExceptionObject.ToString()
+			}) ;			
+		}
 
         /// <summary>
         /// Initialize engine.
         /// </summary>
         protected override void Initialize()
         {
-			_log.Info("Initialization started");
+			_log.LogInformation("Initialization started");
 
             Input = new Input();
 
@@ -119,7 +139,7 @@ namespace ShevaEngine.Core
 				handler => Window.ClientSizeChanged += handler,
 				handler => Window.ClientSizeChanged -= handler).Subscribe((events) =>
 				{
-					_log.Info($"Window size changed {Window.ClientBounds.Width} {Window.ClientBounds.Height}");
+					_log.LogInformation($"Window size changed {Window.ClientBounds.Width} {Window.ClientBounds.Height}");
 
 					if (Window.ClientBounds.Width != 0 && Window.ClientBounds.Height != 0)
 					{
@@ -129,7 +149,7 @@ namespace ShevaEngine.Core
 					}
 					else
 					{
-						_log.Warning("Invalid resolution");
+						_log.LogWarning("Invalid resolution");
 					}
 				});			
 
@@ -141,7 +161,7 @@ namespace ShevaEngine.Core
 
             });            
 
-			_log.Info("Initialization ended");						
+			_log.LogInformation("Initialization ended");						
 		}
 
         /// <summary>
@@ -149,44 +169,43 @@ namespace ShevaEngine.Core
         /// </summary>
         protected override void LoadContent()
         {
-			_log.Info("Loading content started");			
+			_log.LogInformation("Loading content started");			
 
             base.LoadContent();
 
             TextureUtils.Prepare(GraphicsDevice);            
 
-			_log.Info("Loading content finished");
+			_log.LogInformation("Loading content finished");
 
-			_log.Info("Loading loading screen started");
+			_log.LogInformation("Loading loading screen started");
 
 			CreateLoadingScreen();
 
-			_log.Info("Loading loading screen finished");
+			_log.LogInformation("Loading loading screen finished");
 
-			_log.Info("Initialize game components");
+			_log.LogInformation("Initialize game components");
 
 			foreach (Type componentType in _initialComponentTypes)
 			{
-				_log.Info($"Creating new component instance of type: {componentType}");
+				_log.LogInformation($"Creating new component instance of type: {componentType}");
 
 				object component = Activator.CreateInstance(componentType);
 
 				if (component is ShevaGameComponent gameComponent)
 				{
-					_log.Info($"Component added to game");
+					_log.LogInformation($"Component added to game");
 
 					PushGameComponentAsync(gameComponent);
 				}
 				else
 				{
-					_log.Info($"Invalid component type");
+					_log.LogInformation($"Invalid component type");
 				}
 			}            
 
-            User = new User(this);
-            User.ConnectToService(true);            
+               
 
-			_log.Info("All game components initialized");
+			_log.LogInformation("All game components initialized");
 		}
 
 		/// <summary>
@@ -195,16 +214,14 @@ namespace ShevaEngine.Core
 		protected override void OnExiting(object sender, EventArgs args)
 		{
 			ShevaGameComponent component =  PopGameComponent();
-			component?.Dispose();			
-
-			LogManager.RemoveLogReceiver(_logReceiver);
-			_logReceiver.Dispose();
-			_logReceiver = null;
+			component?.Dispose();						
 
 			InputState.Dispose();
 			User.Dispose();		
 			Settings.Dispose();
             Input.Dispose();
+
+			LoggerFactory.Dispose();
 
 			base.OnExiting(sender, args);
 		}
@@ -260,11 +277,6 @@ namespace ShevaEngine.Core
 					_gameComponents.Peek().Draw(gameTime);	
 				else
 					GraphicsDevice.Clear(Color.Black);
-
-#if !WINDOWS_UAP
-			if (_showDebugUI)
-				DebugUI?.Draw(gameTime);
-#endif
         }
 
         /// <summary>

@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using Microsoft.Extensions.Logging;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
@@ -7,12 +8,12 @@ using System.Linq;
 
 namespace ShevaEngine.Core
 {
-	/// <summary>
-	/// Rendering pipeline.
-	/// </summary>
-	public class RenderingPipeline
+    /// <summary>
+    /// Rendering pipeline.
+    /// </summary>
+    public class RenderingPipeline
     {
-		private readonly Log _log;
+		private readonly ILogger _log;
 		public GraphicsDevice Device => ShevaGame.Instance.GraphicsDevice;
 		public string Name { get; }
 		public Camera Camera { get; private set; }
@@ -21,11 +22,11 @@ namespace ShevaEngine.Core
 		public List<Light> Lights { get; private set; } = new List<Light>();
         private readonly Dictionary<Effect, Dictionary<ModelMeshPart, List<Matrix>>> OpaqueDrawCalls = new Dictionary<Effect, Dictionary<ModelMeshPart, List<Matrix>>>();
 		private readonly List<Tuple<Material, ModelMeshPart, Matrix>> TransparentDrawCalls = new List<Tuple<Material, ModelMeshPart, Matrix>>();
-		private VertexBuffer _instancesBuffer;		
+		private VertexBuffer _instancesBuffer;
 		private int _instancesCount = 0;
 		private int _instancesAllocatedCount = 0;
 		public BlendState BlendState { get; set; } = BlendState.Opaque;
-		public RasterizerState RasterizerState { get; set; } = RasterizerState.CullNone;			
+		public RasterizerState RasterizerState { get; set; } = RasterizerState.CullNone;
 		public DepthStencilState DepthStencilState { get; set; } = DepthStencilState.Default;
 
 
@@ -37,7 +38,8 @@ namespace ShevaEngine.Core
 		{
 			Name = name;
             
-			_log = new Log(typeof(RenderingPipeline), Name);
+			_log = ShevaGame.Instance.LoggerFactory.CreateLogger($"{typeof(RenderingPipeline)} - {Name}");
+
             Profile = MaterialProfile.Default;
         }
 
@@ -46,7 +48,7 @@ namespace ShevaEngine.Core
 		/// </summary>
 		public void Clear()
 		{
-			_log.Info("Clear");
+			_log.LogDebug("Clear");
 
 			ClearLights();
 
@@ -66,7 +68,7 @@ namespace ShevaEngine.Core
 		/// </summary>
 		public void ClearLights()
 		{
-			_log.Info("Lights cleared");
+			_log.LogDebug("Lights cleared");
 
 			Lights.Clear();
 		}
@@ -76,7 +78,7 @@ namespace ShevaEngine.Core
 		/// </summary>		
 		public void SetCamera(Camera camera)
 		{
-			_log.Info("Settings camera");
+			_log.LogDebug("Set camera");
 			Camera = camera;
 		}		
 
@@ -85,7 +87,7 @@ namespace ShevaEngine.Core
 		/// </summary>		
 		public void AddLight(Light light)
 		{
-			_log.Info("Light added");
+			_log.LogDebug("Light added");
 
 			Lights.Add(light);
 		}
@@ -93,7 +95,7 @@ namespace ShevaEngine.Core
 		/// <summary>
 		/// Add object.
 		/// </summary>
-		public void AddObject(Model model, Matrix worldMatrix, AnimationsController controller = null)
+		public void AddObject(Model model, Matrix worldMatrix, AnimationsController? controller = null)
 		{
 			foreach (ModelMesh mesh in model.Meshes)
 				AddObject(mesh, worldMatrix, controller);
@@ -102,7 +104,7 @@ namespace ShevaEngine.Core
 		/// <summary>
 		/// Add object.
 		/// </summary>
-		public void AddObject(ModelMesh modelPart, Matrix worldMatrix, AnimationsController controller = null)
+		public void AddObject(ModelMesh modelPart, Matrix worldMatrix, AnimationsController? controller = null)
 		{
 			int count = modelPart.MeshParts.Count;
 
@@ -113,15 +115,29 @@ namespace ShevaEngine.Core
 		/// <summary>
 		/// Add object.
 		/// </summary>
-		public void AddObject(ModelMeshPart modelMeshPart, Matrix worldMatrix, AnimationsController controller = null)
+		public void AddObject(ModelMeshPart modelMeshPart, Matrix worldMatrix, AnimationsController? controller = null)
 		{
 			if (modelMeshPart.Effect is Material material)
 			{
-                if (Profile == MaterialProfile.Shadows && !material.CastShadows)
-                    return;
+				if (Profile == MaterialProfile.Shadows && !material.CastShadows)
+				{
+					return;
+				}
 
 				if (material.Animated)
-					material.Bones = controller.GetTransforms(GameTime);					
+				{
+					if (controller != null)
+					{
+						material.Bones = controller.GetTransforms(GameTime);
+					}
+					else
+					{
+						_log.LogError($"Material {material} is animated, but Animation Controller is null");
+
+						if (material is TexturedMaterial textured)
+							_log.LogError($"Used texture: {textured.Texture.Name}");
+					}
+				}
 				
 				if (material.Transparent)
 				{
@@ -201,7 +217,7 @@ namespace ShevaEngine.Core
 		/// </summary>		
 		public void Draw()
 		{
-			_log.Info($"Draw started with {Profile} profile");
+			_log.LogDebug($"Draw started with {Profile} profile");
 
 			try
 			{
@@ -219,7 +235,7 @@ namespace ShevaEngine.Core
 							{
 								if (Profile != MaterialProfile.Shadows || material.CastShadows)
 								{
-									_log.Debug($"Applying material {material}");
+									_log.LogDebug($"Applying material {material}");
 
 									if (Profile != MaterialProfile.Shadows)
 										material.Lights = Lights;
@@ -238,7 +254,7 @@ namespace ShevaEngine.Core
 								}
 							}
 							else
-								_log.Error($"Invalid material: {effectMeshes.Key.GetType()}");						
+								_log.LogError($"Invalid material: {effectMeshes.Key.GetType()}");						
 						}
 					}
 				}
@@ -268,10 +284,10 @@ namespace ShevaEngine.Core
 			}
 			catch (Exception ex)
 			{
-				_log.Error(ex.Message, ex);
+				_log.LogError(ex.Message, ex);
 			}
 
-			_log.Info($"Draw ended");
+			_log.LogDebug($"Draw ended");
 		}
 
 		/// <summary>

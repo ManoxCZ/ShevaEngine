@@ -1,65 +1,45 @@
-﻿using ShevaEngine.Core;
+﻿using Microsoft.Extensions.Logging;
+using ShevaEngine.Core;
+using ShevaEngine.Core.UI;
 using System;
 using System.Threading.Tasks;
 
 namespace ShevaEngine.NoesisUI
 {
-    public class NoesisUIWrapper
+    public class NoesisUIWrapper : IUISystem
     {
         public static string LICENSE_NAME = "";
         public static string LICENSE_KEY = "";
-        
+
+        private readonly ILogger _log = ShevaGame.Instance.LoggerFactory.CreateLogger<NoesisUIWrapper>();
 
         /// <summary>
         /// Constructor.
         /// </summary>
         public NoesisUIWrapper()
-        {           
+        {                      
             Noesis.Log.SetLogCallback((level, channel, message) => 
             {
                 switch (level)
                 {
                     case Noesis.LogLevel.Trace:                        
                     case Noesis.LogLevel.Debug:
-                        LogManager.Instance.AddLogMessage(new LogMessage()
-                        {
-                            DateTime = DateTime.Now,
-                            Origin = channel,
-                            Message = message,
-                            Severity = LogSeverity.Debug
-                        });
+                        _log.LogDebug(message);
                         break;
                     case Noesis.LogLevel.Info:
-                        LogManager.Instance.AddLogMessage(new LogMessage()
-                        {
-                            DateTime = DateTime.Now,
-                            Origin = channel,
-                            Message = message,
-                            Severity = LogSeverity.Info
-                        });
+                        _log.LogInformation(message);
                         break;
                     case Noesis.LogLevel.Warning:
-                        LogManager.Instance.AddLogMessage(new LogMessage()
-                        {
-                            DateTime = DateTime.Now,
-                            Origin = channel,
-                            Message = message,
-                            Severity = LogSeverity.Warning
-                        });
+                        _log.LogWarning(message);
                         break;
                     case Noesis.LogLevel.Error:
-                        LogManager.Instance.AddLogMessage(new LogMessage()
-                        {
-                            DateTime = DateTime.Now,
-                            Origin = channel,
-                            Message = message,
-                            Severity = LogSeverity.Error
-                        });
+                        _log.LogError(message);
                         break;                    
                 }
             });
 
-            Noesis.GUI.Init(LICENSE_NAME, LICENSE_KEY);
+            Noesis.GUI.SetLicense(LICENSE_NAME, LICENSE_KEY);
+            Noesis.GUI.Init();
                         
             Noesis.GUI.SetXamlProvider(new XamlProvider());
             Noesis.GUI.SetFontProvider(new FontProvider());
@@ -74,7 +54,7 @@ namespace ShevaEngine.NoesisUI
         /// <summary>
         /// Get layer.
         /// </summary>
-        public static Task<Noesis.FrameworkElement> GetFrameworkElement(string xamlFilename)
+        public Task<Noesis.FrameworkElement> GetFrameworkElement(string xamlFilename)
         {
             return RunFuncOnUIThread(() =>
             {                
@@ -85,7 +65,7 @@ namespace ShevaEngine.NoesisUI
         /// <summary>
         /// Get layer.
         /// </summary>
-        public static Task<Layer> GetLayer(string xamlFilename)
+        public Task<ILayer> GetLayer(string xamlFilename)
         {
             return RunFuncOnUIThread(() =>
             { 
@@ -100,46 +80,58 @@ namespace ShevaEngine.NoesisUI
                 view.Renderer.Init(device);
                 view.SetFlags(Noesis.RenderFlags.LCD | Noesis.RenderFlags.PPAA);
 
-                return new Layer(view);
+                return (ILayer)new Layer(this, view);
             });
         }
 
         /// <summary>
         /// Run on UI thread.
         /// </summary>        
-        public static void RunOnUIThread(Action action)
+        public void RunOnUIThread(Action action)
         {
-            Windows.UI.Core.CoreDispatcher dispatcher = Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher;
+            ShevaGame.Instance.SynchronizationContext.Send(_ => action(), null);
 
-            if (dispatcher.HasThreadAccess)
-                action();
-            else
-                dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () =>
-                {
-                    action();
-                }).AsTask();
+            //Windows.UI.Core.CoreDispatcher dispatcher = Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher;
+
+            //if (dispatcher.HasThreadAccess)
+            //    action();
+            //else
+            //    dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () =>
+            //    {
+            //        action();
+            //    }).AsTask();
         }
 
         /// <summary>
         /// Run on UI thread.
         /// </summary>        
-        public static Task<T> RunFuncOnUIThread<T>(Func<T> function)
+        public Task<T> RunFuncOnUIThread<T>(Func<T> function)
         {
-            Windows.UI.Core.CoreDispatcher dispatcher = Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher;
+            TaskCompletionSource<T> taskSource = new TaskCompletionSource<T>();
 
-            if (dispatcher.HasThreadAccess)
-                return Task.FromResult(function());
-            else
+            ShevaGame.Instance.SynchronizationContext.Send(_ =>
             {
-                TaskCompletionSource<T> taskSource = new TaskCompletionSource<T>();
+                taskSource.SetResult(function());
+            }, null);
 
-                dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () =>
-                {
-                    taskSource.SetResult(function());
-                }).AsTask();                    
+            return taskSource.Task;
 
-                return taskSource.Task;
-            }
+
+            //Windows.UI.Core.CoreDispatcher dispatcher = Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher;
+
+            //if (dispatcher.HasThreadAccess)
+            //    return Task.FromResult(function());
+            //else
+            //{
+            //    TaskCompletionSource<T> taskSource = new TaskCompletionSource<T>();
+
+            //    dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () =>
+            //    {
+            //        taskSource.SetResult(function());
+            //    }).AsTask();                    
+
+            //    return taskSource.Task;
+            //}
         }
     }
 }

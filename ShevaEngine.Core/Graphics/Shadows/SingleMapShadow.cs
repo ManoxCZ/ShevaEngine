@@ -10,8 +10,8 @@ namespace ShevaEngine.Core
 	public class SingleMapShadow : Shadow
 	{
 		public Resolution Size { get; set; } = new Resolution(512, 512);		
-		public RenderTarget2D ShadowMap { get; private set; }
-		private Camera _camera;
+		private RenderTarget2D _shadowMap = null!;
+		private Camera _camera = null!;
 
 
 		/// <summary>
@@ -27,11 +27,11 @@ namespace ShevaEngine.Core
 		/// </summary>
 		public override void Update(GameTime gameTime, IScene scene, Light light, Camera camera)
 		{
-			if (ShadowMap == null || ShadowMap.Width != Size.Width || ShadowMap.Height != Size.Height)
+			if (_shadowMap == null || _shadowMap.Width != Size.Width || _shadowMap.Height != Size.Height)
 			{
-				ShadowMap?.Dispose();
+				_shadowMap?.Dispose();
 
-				ShadowMap = new RenderTarget2D(ShevaGame.Instance.GraphicsDevice,
+				_shadowMap = new RenderTarget2D(ShevaGame.Instance.GraphicsDevice,
 					Size.Width, Size.Height, false, SurfaceFormat.Single, DepthFormat.Depth16);
 
                 _camera?.Dispose();
@@ -48,7 +48,7 @@ namespace ShevaEngine.Core
 				};                
 			}
 
-			ShevaGame.Instance.GraphicsDevice.SetRenderTarget(ShadowMap);
+			ShevaGame.Instance.GraphicsDevice.SetRenderTarget(_shadowMap);
             
             _camera.LookAt(light.GetLightCameraPosition(camera), camera.Target, camera.Up);
 
@@ -56,7 +56,7 @@ namespace ShevaEngine.Core
 
 			_camera.OrthographicSize = (dim, dim);
 
-			_camera.Draw(scene, gameTime, ShadowMap);
+			_camera.Draw(scene, gameTime, _shadowMap);
 
 			ShevaGame.Instance.GraphicsDevice.SetRenderTarget(null);
 		}
@@ -66,7 +66,7 @@ namespace ShevaEngine.Core
         /// </summary>        
         public override Texture2D GetShadowMap()
         {
-            return ShadowMap;
+            return _shadowMap;
         }
     }
 }
