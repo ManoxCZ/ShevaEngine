@@ -18,28 +18,28 @@ namespace ShevaEngine.Core
     /// <summary>
     /// Engine base class.
     /// </summary>
-    public class ShevaGame : Game 
-    {		
+    public class ShevaGame : Game
+    {
         public static ShevaGame Instance { get; set; }
 
-		public SynchronizationContext SynchronizationContext { get; }
+        public SynchronizationContext SynchronizationContext { get; }
 
-		private readonly ILogger _log;
-		public ILoggerFactory LoggerFactory { get; }
-		//private readonly Log _log = new Log(typeof(ShevaGame));
-		//private TextFileLogReceiver _logReceiver;
+        private readonly ILogger _log;
+        public ILoggerFactory LoggerFactory { get; }
+        //private readonly Log _log = new Log(typeof(ShevaGame));
+        //private TextFileLogReceiver _logReceiver;
 
-		public GameSettings Settings { get; }		
-		private Type[] _initialComponentTypes;
-		public GraphicsDeviceManager GraphicsDeviceManager { get; private set; }        
+        public GameSettings Settings { get; }
+        private Type[] _initialComponentTypes;
+        public GraphicsDeviceManager GraphicsDeviceManager { get; private set; }
         public Input Input { get; private set; }
         public ReplaySubject<InputState> InputState { get; private set; } = new ReplaySubject<InputState>();
-		private Stack<ShevaGameComponent> _gameComponents;
-		private object _componentsLock = new object();
-        public IUser User { get; set; }        
+        private Stack<ShevaGameComponent> _gameComponents;
+        private object _componentsLock = new object();
+        public IUser User { get; set; }
         public IUISystem UISystem { get; set; }
         public string LoadingLayerFilename { get; set; }
-		       
+
 
         /// <summary>
         /// Constructor.
@@ -48,31 +48,31 @@ namespace ShevaEngine.Core
             : base()
         {
             Instance = this;
-			SynchronizationContext = SynchronizationContext.Current;
-            
+            SynchronizationContext = SynchronizationContext.Current;
+
 #if WINDOWS || DESKTOPGL
             string dataPath = System.IO.Path.Combine(
-				Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
+                Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
                 System.Reflection.Assembly.GetEntryAssembly().GetName().Name);
 
-			if (!System.IO.Directory.Exists(dataPath))
-				System.IO.Directory.CreateDirectory(dataPath);
-#endif			
+            if (!System.IO.Directory.Exists(dataPath))
+                System.IO.Directory.CreateDirectory(dataPath);
+#endif
 
-			LoggerFactory = Microsoft.Extensions.Logging.LoggerFactory.Create(builder =>
-			{
-				builder
-					.AddProvider(new TextFileLogReceiver("game.log"))
+            LoggerFactory = Microsoft.Extensions.Logging.LoggerFactory.Create(builder =>
+            {
+                builder
+                    .AddProvider(new TextFileLogReceiver("game.log"))
 #if DEBUG
-					.SetMinimumLevel(LogLevel.Debug);
+                    .SetMinimumLevel(LogLevel.Debug);
 #else
 					;
 #endif
-			});
+            });
 
-			Services.AddService<ILoggerFactory>(LoggerFactory);
+            Services.AddService<ILoggerFactory>(LoggerFactory);
 
-			_log = LoggerFactory.CreateLogger<ShevaGame>();            
+            _log = LoggerFactory.CreateLogger<ShevaGame>();
 
             AppDomain.CurrentDomain.UnhandledException += new UnhandledExceptionEventHandler(UnhandledExceptionHandler);
 
@@ -80,7 +80,7 @@ namespace ShevaEngine.Core
 
             _initialComponentTypes = initialComponents;
 
-            _log.LogInformation($"Sheva Engine {Version.GetVersion()}");			
+            _log.LogInformation($"Sheva Engine {Version.GetVersion()}");
 
 #if WINDOWS_UAP
             Settings.Resolution.OnNext(new Resolution(Window.ClientBounds.Width, Window.ClientBounds.Height));
@@ -95,188 +95,188 @@ namespace ShevaEngine.Core
                 PreferredBackBufferHeight = Settings.Resolution.Value.Height,
                 GraphicsProfile = GraphicsProfile.HiDef
             };
-			
+
             GraphicsDeviceManager.ApplyChanges();
 
-			Content = new ContentManagerEx(this, Services);
+            Content = new ContentManagerEx(this, Services);
 
-			Window.Title = @"Sheva Engine MG";
-			
-			Window.AllowUserResizing = true;
-			IsMouseVisible = true;
-			
-			_gameComponents = new Stack<ShevaGameComponent>();
+            Window.Title = @"Sheva Engine MG";
 
-			Services.AddService<IEmbeddedFilesService>(new EmbeddedFilesService());
+            Window.AllowUserResizing = true;
+            IsMouseVisible = true;
+
+            _gameComponents = new Stack<ShevaGameComponent>();
+
+            Services.AddService<IEmbeddedFilesService>(new EmbeddedFilesService());
         }
 
-		/// <summary>
-		/// Unhandled exception handler.
-		/// </summary>
-		private static void UnhandledExceptionHandler(object sender, UnhandledExceptionEventArgs args)
-		{
-			string dataPath = Path.Combine(
-				Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
-				System.Reflection.Assembly.GetEntryAssembly().GetName().Name,
-				"crash.log");
+        /// <summary>
+        /// Unhandled exception handler.
+        /// </summary>
+        private static void UnhandledExceptionHandler(object sender, UnhandledExceptionEventArgs args)
+        {
+            string dataPath = Path.Combine(
+                Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
+                System.Reflection.Assembly.GetEntryAssembly().GetName().Name,
+                "crash.log");
 
-			File.WriteAllLines(dataPath, new string[]
-			{
-				 "UnhandledException",
-				 args.ExceptionObject.ToString()
-			}) ;			
-		}
+            File.WriteAllLines(dataPath, new string[]
+            {
+                 "UnhandledException",
+                 args.ExceptionObject.ToString()
+            });
+        }
 
         /// <summary>
         /// Initialize engine.
         /// </summary>
         protected override void Initialize()
         {
-			_log.LogInformation("Initialization started");
+            _log.LogInformation("Initialization started");
 
             Input = new Input();
 
-            base.Initialize();			
+            base.Initialize();
 
-			Settings.Resolution.OnNext(new Resolution(Window.ClientBounds.Width, Window.ClientBounds.Height));			
+            Settings.Resolution.OnNext(new Resolution(Window.ClientBounds.Width, Window.ClientBounds.Height));
 
-			Observable.FromEventPattern<EventArgs>(
-				handler => Window.ClientSizeChanged += handler,
-				handler => Window.ClientSizeChanged -= handler).Subscribe((events) =>
-				{
-					_log.LogInformation($"Window size changed {Window.ClientBounds.Width} {Window.ClientBounds.Height}");
+            Observable.FromEventPattern<EventArgs>(
+                handler => Window.ClientSizeChanged += handler,
+                handler => Window.ClientSizeChanged -= handler).Subscribe((events) =>
+                {
+                    _log.LogInformation($"Window size changed {Window.ClientBounds.Width} {Window.ClientBounds.Height}");
 
-					if (Window.ClientBounds.Width != 0 && Window.ClientBounds.Height != 0)
-					{
-						Settings.Resolution.OnNext(new Resolution(Window.ClientBounds.Width,	Window.ClientBounds.Height));
+                    if (Window.ClientBounds.Width != 0 && Window.ClientBounds.Height != 0)
+                    {
+                        Settings.Resolution.OnNext(new Resolution(Window.ClientBounds.Width, Window.ClientBounds.Height));
 
-						ShevaGameSettings.Save(Settings);
-					}
-					else
-					{
-						_log.LogWarning("Invalid resolution");
-					}
-				});			
+                        ShevaGameSettings.Save(Settings);
+                    }
+                    else
+                    {
+                        _log.LogWarning("Invalid resolution");
+                    }
+                });
 
-			IsFixedTimeStep = false;			
+            IsFixedTimeStep = false;
 
-			//Settings.MusicVolume.Subscribe(item =>
-   //         {
-   //             MediaPlayer.Volume = item;
+            //Settings.MusicVolume.Subscribe(item =>
+            //         {
+            //             MediaPlayer.Volume = item;
 
-   //         });            
+            //         });            
 
-			_log.LogInformation("Initialization ended");						
-		}
+            _log.LogInformation("Initialization ended");
+        }
 
         /// <summary>
         /// Loaf content.
         /// </summary>
         protected override void LoadContent()
         {
-			_log.LogInformation("Loading content started");			
+            _log.LogInformation("Loading content started");
 
             base.LoadContent();
 
-            TextureUtils.Prepare(GraphicsDevice);            
+            TextureUtils.Prepare(GraphicsDevice);
 
-			_log.LogInformation("Loading content finished");
+            _log.LogInformation("Loading content finished");
 
-			
 
-			_log.LogInformation("Initialize game components");
 
-			foreach (Type componentType in _initialComponentTypes)
-			{
-				_log.LogInformation($"Creating new component instance of type: {componentType}");
+            _log.LogInformation("Initialize game components");
 
-				object component = Activator.CreateInstance(componentType);
+            foreach (Type componentType in _initialComponentTypes)
+            {
+                _log.LogInformation($"Creating new component instance of type: {componentType}");
 
-				if (component is ShevaGameComponent gameComponent)
-				{
-					_log.LogInformation($"Component added to game");
+                object component = Activator.CreateInstance(componentType);
 
-					PushGameComponentAsync(gameComponent);
-				}
-				else
-				{
-					_log.LogInformation($"Invalid component type");
-				}
-			}            
+                if (component is ShevaGameComponent gameComponent)
+                {
+                    _log.LogInformation($"Component added to game");
 
-               
+                    PushGameComponentAsync(gameComponent);
+                }
+                else
+                {
+                    _log.LogInformation($"Invalid component type");
+                }
+            }
 
-			_log.LogInformation("All game components initialized");
-		}
 
-		/// <summary>
-		/// On exiting.
-		/// </summary>
-		protected override void OnExiting(object sender, EventArgs args)
-		{
-			ShevaGameComponent component =  PopGameComponent();
-			component?.Dispose();						
 
-			InputState.Dispose();
-			User.Dispose();		
-			Settings.Dispose();
+            _log.LogInformation("All game components initialized");
+        }
+
+        /// <summary>
+        /// On exiting.
+        /// </summary>
+        protected override void OnExiting(object sender, EventArgs args)
+        {
+            ShevaGameComponent component = PopGameComponent();
+            component?.Dispose();
+
+            InputState.Dispose();
+            User.Dispose();
+            Settings.Dispose();
             Input.Dispose();
 
-			LoggerFactory.Dispose();
+            LoggerFactory.Dispose();
 
-			base.OnExiting(sender, args);
-		}
+            base.OnExiting(sender, args);
+        }
 
-		/// <summary>
-		/// Create loading screen.
-		/// </summary>
-		public void CreateLoadingScreen<T>() where T : ILayer, new()
-		{
-			_log.LogInformation("Loading loading screen started");
+        /// <summary>
+        /// Create loading screen.
+        /// </summary>
+        public void CreateLoadingScreen<T>() where T : ILayer, new()
+        {
+            _log.LogInformation("Loading loading screen started");
 
-			PushGameComponent(new LoadingScreenComponent<T>());
+            PushGameComponent(new LoadingScreenComponent<T>());
 
-			_log.LogInformation("Loading loading screen finished");
-		}
+            _log.LogInformation("Loading loading screen finished");
+        }
 
-		/// <summary>
-		/// Update().
-		/// </summary>        
-		protected override void Update(GameTime time)
-		{
-			base.Update(time);			
+        /// <summary>
+        /// Update().
+        /// </summary>        
+        protected override void Update(GameTime time)
+        {
+            base.Update(time);
 
             Input.Update();
 
             InputState inputState = new InputState(time, Window);
             InputState.OnNext(inputState);
 
-			lock (_gameComponents)
-				if (_gameComponents.Count > 0)
-					_gameComponents.Peek().Update(time, inputState);
-		}
+            lock (_gameComponents)
+                if (_gameComponents.Count > 0)
+                    _gameComponents.Peek().Update(time, inputState);
+        }
 
         /// <summary>
         /// Draw().
         /// </summary>
         protected override void Draw(GameTime gameTime)
         {
-			if (Settings.Fullscreen.Value != GraphicsDeviceManager.IsFullScreen)
-			{
-				DisplayMode displayMode = GraphicsAdapter.DefaultAdapter.CurrentDisplayMode;
+            if (Settings.Fullscreen.Value != GraphicsDeviceManager.IsFullScreen)
+            {
+                DisplayMode displayMode = GraphicsAdapter.DefaultAdapter.CurrentDisplayMode;
 
-				GraphicsDeviceManager.IsFullScreen = Settings.Fullscreen.Value;
-				GraphicsDeviceManager.PreferredBackBufferWidth = Settings.Fullscreen.Value ? displayMode.Width : Settings.Resolution.Value.Width;
-				GraphicsDeviceManager.PreferredBackBufferHeight = Settings.Fullscreen.Value ? displayMode.Height : Settings.Resolution.Value.Height;			
-				
-				GraphicsDeviceManager.ApplyChanges();
-			}
+                GraphicsDeviceManager.IsFullScreen = Settings.Fullscreen.Value;
+                GraphicsDeviceManager.PreferredBackBufferWidth = Settings.Fullscreen.Value ? displayMode.Width : Settings.Resolution.Value.Width;
+                GraphicsDeviceManager.PreferredBackBufferHeight = Settings.Fullscreen.Value ? displayMode.Height : Settings.Resolution.Value.Height;
 
-			lock (_gameComponents)
-				if (_gameComponents.Count > 0)
-					_gameComponents.Peek().Draw(gameTime);	
-				else
-					GraphicsDevice.Clear(Color.Black);
+                GraphicsDeviceManager.ApplyChanges();
+            }
+
+            lock (_gameComponents)
+                if (_gameComponents.Count > 0)
+                    _gameComponents.Peek().Draw(gameTime);
+                else
+                    GraphicsDevice.Clear(Color.Black);
         }
 
         /// <summary>
@@ -286,7 +286,7 @@ namespace ShevaEngine.Core
         {
             if (component == null)
                 return;
-                       
+
             if (!component.IsInitialized)
                 component.Initialize(this);
 
@@ -311,7 +311,7 @@ namespace ShevaEngine.Core
         {
             if (component == null)
                 return;
-                                 
+
             Task.Run(() =>
             {
                 if (!component.IsInitialized)
@@ -337,33 +337,33 @@ namespace ShevaEngine.Core
         /// </summary>        
         public ShevaGameComponent PopGameComponent()
         {
-			lock (_gameComponents)
-			{
-				ShevaGameComponent component = null;
+            lock (_gameComponents)
+            {
+                ShevaGameComponent component = null;
 
-				if (_gameComponents.Count > 0)				
-					component = _gameComponents.Pop();
+                if (_gameComponents.Count > 0)
+                    component = _gameComponents.Pop();
 
-				component?.Deactivate(this);
+                component?.Deactivate(this);
 
-				if (_gameComponents.Count > 0)
-					_gameComponents.Peek().Activate(this);
-				else
-					Exit();
+                if (_gameComponents.Count > 0)
+                    _gameComponents.Peek().Activate(this);
+                else
+                    Exit();
 
-				return component;
-			}
+                return component;
+            }
         }
 
-		/// <summary>
-		/// Set fullscreen.
-		/// </summary>		
-		public void SetFullscreen(bool fullscreen)
-		{	
-			Settings.Fullscreen.OnNext(fullscreen);
-			ShevaGameSettings.Save(Settings);		
-		}
+        /// <summary>
+        /// Set fullscreen.
+        /// </summary>		
+        public void SetFullscreen(bool fullscreen)
+        {
+            Settings.Fullscreen.OnNext(fullscreen);
+            ShevaGameSettings.Save(Settings);
+        }
 
-		
-    }        
+
+    }
 }

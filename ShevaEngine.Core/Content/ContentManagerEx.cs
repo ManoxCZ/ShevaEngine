@@ -11,35 +11,35 @@ namespace ShevaEngine.Core
     /// Content manager extended.
     /// </summary>
     public class ContentManagerEx : ContentManager
-	{
+    {
         private readonly ILogger _log;
         private readonly ShevaGame _game;
         private object _lock = new object();
 
-		/// <summary>
-		/// Constructor.
-		/// </summary>		
-		public ContentManagerEx(ShevaGame game, IServiceProvider serviceProvider) 
-			: base(serviceProvider)
-		{
+        /// <summary>
+        /// Constructor.
+        /// </summary>		
+        public ContentManagerEx(ShevaGame game, IServiceProvider serviceProvider)
+            : base(serviceProvider)
+        {
             _log = game.LoggerFactory.CreateLogger<ContentManagerEx>();
-            _game = game;            
-		}
+            _game = game;
+        }
 
-		/// <summary>
-		/// Constructor.
-		/// </summary>		
-		public ContentManagerEx(IServiceProvider serviceProvider, string rootDirectory)
-			: base(serviceProvider, rootDirectory)
-		{
+        /// <summary>
+        /// Constructor.
+        /// </summary>		
+        public ContentManagerEx(IServiceProvider serviceProvider, string rootDirectory)
+            : base(serviceProvider, rootDirectory)
+        {
             throw new NotImplementedException();
-		}
+        }
 
-		/// <summary>
+        /// <summary>
         /// Load.
         /// </summary>
         public override T Load<T>(string assetName)
-		{
+        {
             try
             {
                 lock (_lock)
@@ -69,7 +69,7 @@ namespace ShevaEngine.Core
             }
 
             return default;
-		}
+        }
 
         /// <summary>
         /// Open stream method.

@@ -3,9 +3,9 @@ using System.Text.Json;
 
 namespace ShevaEngine.Core
 {
-    public class Serializer 
+    public class Serializer
     {
-        
+
         /// <summary>
         /// Serialize.
         /// </summary>
@@ -25,7 +25,7 @@ namespace ShevaEngine.Core
         {
             JsonSerializerOptions serializeOptions = new JsonSerializerOptions();
             serializeOptions.Converters.Add(new BehaviorSubjectConverterFactory());
-            serializeOptions.WriteIndented = true;            
+            serializeOptions.WriteIndented = true;
 
             return JsonSerializer.Deserialize<T>(data, serializeOptions);
         }

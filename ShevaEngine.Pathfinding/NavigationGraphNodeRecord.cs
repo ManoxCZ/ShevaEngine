@@ -29,7 +29,7 @@ namespace ShevaEngine.Pathfinding
     /// Navigation graph node record equality comparer.
     /// </summary>
     public class NavigationGraphNodeRecordEqualityComparer : IEqualityComparer<NavigationGraphNodeRecord>
-    {        
+    {
         public static readonly NavigationGraphNodeRecordEqualityComparer Instance = new NavigationGraphNodeRecordEqualityComparer();
 
         /// <summary>

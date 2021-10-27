@@ -11,6 +11,6 @@ namespace ShevaEngine.PostProcesses
             get => Effect.Parameters[nameof(BloomThreshold)].GetValueSingle();
             set => Effect.Parameters[nameof(BloomThreshold)].SetValue(value);
         }
-        
+
     }
 }

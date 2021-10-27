@@ -39,6 +39,6 @@ namespace ShevaEngine.NoesisUI
             _log.LogError($"Can't find xaml file!");
 
             return null!;
-        }        
+        }
     }
 }

@@ -9,22 +9,22 @@ namespace ShevaEngine.Core
     /// Game settings.
     /// </summary>
     public class GameSettings : ShevaGameSettings
-	{		
-		public BehaviorSubject<Resolution> Resolution { get; set; }
-		public BehaviorSubject<bool> Fullscreen { get; set; }
-		public BehaviorSubject<float> MusicVolume { get; set; }
-		public BehaviorSubject<GraphicsQuality> GraphicsQuality { get; set; }
-				
+    {
+        public BehaviorSubject<Resolution> Resolution { get; set; }
+        public BehaviorSubject<bool> Fullscreen { get; set; }
+        public BehaviorSubject<float> MusicVolume { get; set; }
+        public BehaviorSubject<GraphicsQuality> GraphicsQuality { get; set; }
 
-		/// <summary>
-		/// Constructor.
-		/// </summary>
-		public GameSettings()
-		{
-			Resolution = Create(new Resolution(800,600));			
-			Fullscreen = Create(false);						
-			MusicVolume = Create(1.0f);	
-			GraphicsQuality = Create(Core.GraphicsQuality.Medium);
+
+        /// <summary>
+        /// Constructor.
+        /// </summary>
+        public GameSettings()
+        {
+            Resolution = Create(new Resolution(800, 600));
+            Fullscreen = Create(false);
+            MusicVolume = Create(1.0f);
+            GraphicsQuality = Create(Core.GraphicsQuality.Medium);
 
             Initialize();
         }
@@ -39,5 +39,5 @@ namespace ShevaEngine.Core
             Disposables.Add(MusicVolume.DistinctUntilChanged().Subscribe(item => Save(this)));
             Disposables.Add(GraphicsQuality.DistinctUntilChanged().Subscribe(item => Save(this)));
         }
-	}
+    }
 }

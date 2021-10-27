@@ -10,7 +10,7 @@ namespace ShevaEngine.ParticleSystems
     /// Particle system.
     /// </summary>
     public class ParticleSystem
-    {        
+    {
         private int _actualParticle = 0;
         private double _spawningTime = 0;
         private readonly List<Vector3> _particlePositions;
@@ -30,7 +30,7 @@ namespace ShevaEngine.ParticleSystems
         {
             get => _graphicsMaterial.StartColor;
             set => _graphicsMaterial.StartColor = value;
-        }        
+        }
         public Color EndColor
         {
             get => _graphicsMaterial.EndColor;
@@ -63,7 +63,7 @@ namespace ShevaEngine.ParticleSystems
         /// Constructor.
         /// </summary>        
         public ParticleSystem(int maxParticles)
-        {            
+        {
             _particlePositions = new List<Vector3>(maxParticles);
             _particleLifetimes = new List<float>(maxParticles);
             _particleRandoms = new List<float>(maxParticles);
@@ -72,7 +72,7 @@ namespace ShevaEngine.ParticleSystems
 
             for (int i = 0; i < maxParticles; i++)
             {
-                _particlePositions.Add(Vector3.Zero);                    
+                _particlePositions.Add(Vector3.Zero);
                 _particleLifetimes.Add(-1.0f);
                 _particleRandoms.Add((float)random.NextDouble() * .5f + 0.8f);
             }
@@ -131,7 +131,7 @@ namespace ShevaEngine.ParticleSystems
                     _particlePositions[i] += velocity * deltaTime;
                 }
             }
-        }        
+        }
 
         /// <summary>
         /// Spawn particles.
@@ -145,7 +145,7 @@ namespace ShevaEngine.ParticleSystems
                     _particlePositions[_actualParticle] = GetStartPositionFunction == null ? Vector3.Zero : GetStartPositionFunction.Invoke();
 
                     _actualParticle = (_actualParticle + 1) % _particleLifetimes.Count;
-                }            
+                }
         }
 
         /// <summary>
@@ -163,8 +163,8 @@ namespace ShevaEngine.ParticleSystems
 
                     _matrices.Add(matrix);
                 }
-            
-            pipeline.AddObject(_particleModel, _matrices);                
+
+            pipeline.AddObject(_particleModel, _matrices);
         }
     }
 }

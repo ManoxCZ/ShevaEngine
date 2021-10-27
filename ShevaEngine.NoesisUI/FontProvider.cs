@@ -35,7 +35,7 @@ namespace ShevaEngine.NoesisUI
             return openFileTask.Result.AsStream();
 #else
 
-            return new StreamReader(filePath).BaseStream;            
+            return new StreamReader(filePath).BaseStream;
 #endif
         }
 

@@ -43,11 +43,11 @@ namespace ShevaEngine.Core
 #endif
 #else
             string dataPath = System.IO.Path.Combine(
-				Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
-                System.Reflection.Assembly.GetEntryAssembly().GetName().Name,                
+                Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
+                System.Reflection.Assembly.GetEntryAssembly().GetName().Name,
                 filename);
 
-			_writer = new System.IO.StreamWriter(dataPath, false);
+            _writer = new System.IO.StreamWriter(dataPath, false);
 #endif
         }
 
@@ -68,7 +68,7 @@ namespace ShevaEngine.Core
             _writer?.Flush();
 
             _writer?.Dispose();
-			_writer = null!;
+            _writer = null!;
 #endif
         }
 
@@ -92,7 +92,7 @@ namespace ShevaEngine.Core
 #else
                 string formattedMessage = $"{DateTime.Now}\t{logLevel}\t{category}\t{formatter(state, exception)}\t{exception?.ToString()}";
 
-                _writer?.WriteLine(formattedMessage);                
+                _writer?.WriteLine(formattedMessage);
 #endif
             }
         }

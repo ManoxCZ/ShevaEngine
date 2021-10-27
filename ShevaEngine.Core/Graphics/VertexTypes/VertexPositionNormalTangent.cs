@@ -22,7 +22,7 @@ namespace ShevaEngine.Core
         public VertexPositionNormalTangent(Vector3 position, Vector3 normal, Vector3 tangent)
         {
             Position = position;
-            Normal = normal;            
+            Normal = normal;
             Tangent = tangent;
         }
     }

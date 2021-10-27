@@ -3,21 +3,21 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace ShevaEngine.Core
 {
-	/// <summary>
-	/// Shadow.
-	/// </summary>
-	public abstract class Shadow
-	{
+    /// <summary>
+    /// Shadow.
+    /// </summary>
+    public abstract class Shadow
+    {
 
-		/// <summary>
-		/// Get light viewProj matrix.
-		/// </summary>		
-		public abstract Matrix GetLightViewProjMatrix();		
+        /// <summary>
+        /// Get light viewProj matrix.
+        /// </summary>		
+        public abstract Matrix GetLightViewProjMatrix();
 
-		/// <summary>
-		/// Update method.
-		/// </summary>
-		public abstract void Update(GameTime gametime, IScene scene, Light light, Camera camera);
+        /// <summary>
+        /// Update method.
+        /// </summary>
+        public abstract void Update(GameTime gametime, IScene scene, Light light, Camera camera);
 
         /// <summary>
         /// Get shadow map.

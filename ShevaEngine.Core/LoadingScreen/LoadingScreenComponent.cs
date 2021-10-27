@@ -6,7 +6,7 @@ namespace ShevaEngine.Core
     /// Loading screen component.
     /// </summary>
     public class LoadingScreenComponent<T> : ShevaGameComponent where T : ILayer, new()
-    {        
+    {
         /// <summary>
         /// Initialize.
         /// </summary>

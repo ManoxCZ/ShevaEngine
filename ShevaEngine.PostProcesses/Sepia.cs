@@ -6,6 +6,6 @@ namespace ShevaEngine.PostProcesses
 {
     public class Sepia : BasePostProcess
     {
-        protected override string EffectFilename => nameof(Sepia);  
+        protected override string EffectFilename => nameof(Sepia);
     }
 }

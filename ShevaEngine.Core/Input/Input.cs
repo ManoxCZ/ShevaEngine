@@ -30,7 +30,7 @@ namespace ShevaEngine.Core
         private void InitializeKeyboard()
         {
             _keysCount = (int)Enum.GetValues(typeof(Keys)).Cast<Keys>().Max() + 1;
-            
+
             _onKeyPressedSubjects = new Subject<Keys>[_keysCount];
             _isKeyPressedSubjects = new BehaviorSubject<bool>[_keysCount];
 
@@ -51,7 +51,7 @@ namespace ShevaEngine.Core
                 _onKeyPressedSubjects[i].Dispose();
                 _isKeyPressedSubjects[i].Dispose();
             }
-            
+
             _onKeyPressedSubjects = null;
         }
 
@@ -78,7 +78,7 @@ namespace ShevaEngine.Core
                 if (keyboardState.IsKeyDown((Keys)i) != _previousKeyboardState.IsKeyDown((Keys)i))
                 {
                     if (keyboardState.IsKeyUp((Keys)i))
-                        _onKeyPressedSubjects[i].OnNext((Keys)i);                    
+                        _onKeyPressedSubjects[i].OnNext((Keys)i);
                 }
             }
 

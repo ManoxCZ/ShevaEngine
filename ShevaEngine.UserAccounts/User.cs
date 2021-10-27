@@ -14,7 +14,7 @@ namespace ShevaEngine.UserAccounts
     /// User.
     /// </summary>
     public class User : IUser, IDisposable
-    {        
+    {
         private const int CANCEL_TIMEOUT = 5000;
 
         private readonly ILogger _log = ShevaGame.Instance.LoggerFactory.CreateLogger<User>();
@@ -24,7 +24,7 @@ namespace ShevaEngine.UserAccounts
         private Microsoft.Xbox.Services.System.XboxLiveUser _xboxLiveUser;
         private Microsoft.Xbox.Services.Statistics.Manager.StatisticManager _statisticManager => Microsoft.Xbox.Services.Statistics.Manager.StatisticManager.SingletonInstance;
 #endif
-        public BehaviorSubject<UserData> Data { get; private set; } 
+        public BehaviorSubject<UserData> Data { get; private set; }
         public CancellationTokenSource _cancellationTokenSource;
         public readonly object _picturesLock = new object();
         public readonly SortedDictionary<string, Texture2D> _picturesCache = new SortedDictionary<string, Texture2D>();
@@ -36,12 +36,12 @@ namespace ShevaEngine.UserAccounts
         public User(ShevaGame game)
         {
             _game = game;
-            Data = new BehaviorSubject<UserData>(null);            
+            Data = new BehaviorSubject<UserData>(null);
 
 #if WINDOWS_UAP
             Microsoft.Xbox.Services.System.XboxLiveUser.SignOutCompleted += XboxLiveUser_SignOutCompleted;
 #endif
-        }        
+        }
 
         /// <summary>
         /// Dispose.s
@@ -62,7 +62,7 @@ namespace ShevaEngine.UserAccounts
         public Task<bool> ConnectToService(bool silently = false)
         {
             _cancellationTokenSource?.Cancel();
-            
+
             _cancellationTokenSource = new CancellationTokenSource();
             _cancellationTokenSource.CancelAfter(CANCEL_TIMEOUT);
 

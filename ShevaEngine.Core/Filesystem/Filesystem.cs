@@ -45,11 +45,11 @@ namespace ShevaEngine.Core
 
                 return task.Result != null;
 #else
-            return System.IO.Directory.CreateDirectory(
-                System.IO.Path.Combine(
-                    Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
-                    System.Reflection.Assembly.GetEntryAssembly().GetName().Name,
-                    subdirectoryPath)) != null;
+                return System.IO.Directory.CreateDirectory(
+                    System.IO.Path.Combine(
+                        Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
+                        System.Reflection.Assembly.GetEntryAssembly().GetName().Name,
+                        subdirectoryPath)) != null;
 #endif
             }
 
@@ -143,7 +143,7 @@ namespace ShevaEngine.Core
                     Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
                     System.Reflection.Assembly.GetEntryAssembly().GetName().Name,
                     filename),
-                new [] { content });
+                new[] { content });
 #endif
         }
     }

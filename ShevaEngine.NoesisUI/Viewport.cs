@@ -78,7 +78,7 @@ namespace ShevaEngine.NoesisUI
 
                 _image.Width = finalSize.Width;
                 _image.Height = finalSize.Height;
-                
+
                 _depthTarget?.Dispose();
 
                 _depthTarget = new RenderTarget2D(
@@ -105,7 +105,7 @@ namespace ShevaEngine.NoesisUI
         public void Render(GameTime gameTime)
         {
             lock (_lock)
-                Camera?.Draw(Scene, gameTime, _renderTarget, _depthTarget);            
+                Camera?.Draw(Scene, gameTime, _renderTarget, _depthTarget);
         }
     }
 }

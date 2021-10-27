@@ -3,15 +3,15 @@ using System;
 
 namespace ShevaEngine.Core
 {
-	public struct Keyframe
+    public struct Keyframe
     {
         internal int _bone;
         internal double _time;
         internal Matrix _transform;
-        
-        public int Bone 
-        { 
-            get {return _bone;}
+
+        public int Bone
+        {
+            get { return _bone; }
             internal set { _bone = value; }
         }
 
@@ -26,7 +26,7 @@ namespace ShevaEngine.Core
             get { return _transform; }
             internal set { _transform = value; }
         }
-        
+
         public Keyframe(int bone, double time, Matrix transform)
         {
             _bone = bone;

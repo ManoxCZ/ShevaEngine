@@ -17,7 +17,7 @@ namespace ShevaEngine.Core
 #else
             return System.Reflection.Assembly.GetEntryAssembly()
                 .GetCustomAttribute<System.Reflection.AssemblyInformationalVersionAttribute>()
-                .InformationalVersion;         
+                .InformationalVersion;
 #endif
         }
     }

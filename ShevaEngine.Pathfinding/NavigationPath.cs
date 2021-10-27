@@ -6,6 +6,6 @@ namespace ShevaEngine.Pathfinding
     /// Navigation path.
     /// </summary>
     public class NavigationPath : Stack<NavigationGraphNode>
-    {        
+    {
     }
 }

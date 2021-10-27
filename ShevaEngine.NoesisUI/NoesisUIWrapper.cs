@@ -18,12 +18,12 @@ namespace ShevaEngine.NoesisUI
         /// Constructor.
         /// </summary>
         public NoesisUIWrapper()
-        {                      
-            Noesis.Log.SetLogCallback((level, channel, message) => 
+        {
+            Noesis.Log.SetLogCallback((level, channel, message) =>
             {
                 switch (level)
                 {
-                    case Noesis.LogLevel.Trace:                        
+                    case Noesis.LogLevel.Trace:
                     case Noesis.LogLevel.Debug:
                         _log.LogDebug(message);
                         break;
@@ -35,7 +35,7 @@ namespace ShevaEngine.NoesisUI
                         break;
                     case Noesis.LogLevel.Error:
                         _log.LogError(message);
-                        break;                    
+                        break;
                 }
             });
 
@@ -55,16 +55,16 @@ namespace ShevaEngine.NoesisUI
                 NoesisApp.Theme.DefaultFontWeight,
                 NoesisApp.Theme.DefaultFontStretch,
                 NoesisApp.Theme.DefaultFontStyle);
-           
+
             Noesis.GUI.LoadApplicationResources("Themes.Theme.xaml");
         }
-       
+
         /// <summary>
         /// Run on UI thread.
         /// </summary>        
         public void RunOnUIThread(Action action)
         {
-            ShevaGame.Instance.SynchronizationContext.Send(_ => action(), null);            
+            ShevaGame.Instance.SynchronizationContext.Send(_ => action(), null);
         }
 
         /// <summary>
@@ -79,7 +79,7 @@ namespace ShevaEngine.NoesisUI
                 taskSource.SetResult(function());
             }, null);
 
-            return taskSource.Task;            
+            return taskSource.Task;
         }
     }
 }

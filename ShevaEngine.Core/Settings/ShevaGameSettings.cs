@@ -8,17 +8,17 @@ namespace ShevaEngine.Core
     /// Game settings.
     /// </summary>
     public class ShevaGameSettings : IDisposable
-	{				
-		protected List<IDisposable> Disposables;
+    {
+        protected List<IDisposable> Disposables;
 
 
         /// <summary>
         /// Constructor.
         /// </summary>
         public ShevaGameSettings()
-		{
-			Disposables = new List<IDisposable>();
-		}
+        {
+            Disposables = new List<IDisposable>();
+        }
 
         /// <summary>
         /// Initialize.
@@ -32,24 +32,24 @@ namespace ShevaEngine.Core
         /// Dispose.
         /// </summary>
         public virtual void Dispose()
-		{
-			foreach	(IDisposable disposable in Disposables)			
-				disposable?.Dispose();			
+        {
+            foreach (IDisposable disposable in Disposables)
+                disposable?.Dispose();
 
-			Disposables.Clear();
-			Disposables = null!;
-		}
+            Disposables.Clear();
+            Disposables = null!;
+        }
 
-		/// <summary>
-		/// Create new property.
-		/// </summary>
-		public BehaviorSubject<T> Create<T>(T value)
-		{
-			BehaviorSubject<T> result = new BehaviorSubject<T>(value);
-			Disposables.Add(result);            
+        /// <summary>
+        /// Create new property.
+        /// </summary>
+        public BehaviorSubject<T> Create<T>(T value)
+        {
+            BehaviorSubject<T> result = new BehaviorSubject<T>(value);
+            Disposables.Add(result);
 
             return result;
-		}
+        }
 
         /// <summary>
         /// Method loads settings.
@@ -91,16 +91,16 @@ namespace ShevaEngine.Core
                 //    Severity = LogSeverity.Error
                 //});
             }
-        
-			return new T();
-		}
 
-		/// <summary>
-		/// Method saves settings.
-		/// </summary>
-		public static void Save<T>(T settings)	
-		{
+            return new T();
+        }
+
+        /// <summary>
+        /// Method saves settings.
+        /// </summary>
+        public static void Save<T>(T settings)
+        {
             Filesystem.WriteFileContent($"{typeof(T).Name}.settings", Serializer.Serialize(settings));
-        }	
-	}
+        }
+    }
 }

@@ -31,7 +31,7 @@ namespace ShevaEngine.Core
         /// Create converter.
         /// </summary>
         public override JsonConverter CreateConverter(Type type, JsonSerializerOptions options)
-        {            
+        {
             Type valueType = type.GetGenericArguments()[0];
 
             JsonConverter converter = (JsonConverter)Activator.CreateInstance(

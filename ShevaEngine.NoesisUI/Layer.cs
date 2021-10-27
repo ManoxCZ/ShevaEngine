@@ -12,7 +12,7 @@ namespace ShevaEngine.NoesisUI
     public class Layer<U> : ILayer where U : UserControl, new()
     {
         public bool IsActive { get; set; } = true;
-        private View _view = null!;        
+        private View _view = null!;
         public object DataContext
         {
             get => _view.Content.DataContext;
@@ -92,7 +92,7 @@ namespace ShevaEngine.NoesisUI
 		/// </summary>        
 		public void OnWindowResize(int width, int height)
         {
-            RunOnUIThread(() =>            
+            RunOnUIThread(() =>
             {
                 _view.SetSize(width, height);
             });
@@ -157,9 +157,9 @@ namespace ShevaEngine.NoesisUI
         public Task<IViewport> GetViewport(string name)
         {
             return RunFuncOnUIThread(() =>
-            {             
+            {
                 return _view?.Content?.FindName(name) as IViewport;
-            });           
+            });
         }
 
         /// <summary>

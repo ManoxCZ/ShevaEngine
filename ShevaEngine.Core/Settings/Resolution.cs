@@ -6,9 +6,9 @@ namespace ShevaEngine.Core
     /// </summary>
     public struct Resolution
     {
-        public int Width {get;set;}
-        public int Height {get;set;}
-       
+        public int Width { get; set; }
+        public int Height { get; set; }
+
 
         /// <summary>
         /// Constructor.

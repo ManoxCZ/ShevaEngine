@@ -28,7 +28,7 @@
 //		public TexturedNormalEmissiveMaterial()
 //			: this(ShevaGame.Instance.Content.Load<Effect>(@"Content\Effects\TexturedNormalEmissive"))
 //		{
-			
+
 //		}		
 //	}
 //}

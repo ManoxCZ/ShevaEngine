@@ -9,9 +9,9 @@ namespace ShevaEngine.PostProcesses
     {
         protected override string EffectFilename => nameof(DepthOfField);
         public float FocusDistance { get; set; } = 50;
-        public float FocusRange{ get; set; } = 5;
+        public float FocusRange { get; set; } = 5;
 
-        
+
         /// <summary>
         /// Prepare effect.
         /// </summary>

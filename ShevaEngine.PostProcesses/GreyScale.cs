@@ -6,6 +6,6 @@ namespace ShevaEngine.PostProcesses
 {
     public class GreyScale : BasePostProcess
     {
-        protected override string EffectFilename => "GreyScale";         
+        protected override string EffectFilename => "GreyScale";
     }
 }

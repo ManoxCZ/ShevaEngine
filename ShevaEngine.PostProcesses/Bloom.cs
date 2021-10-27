@@ -28,17 +28,17 @@ namespace ShevaEngine.PostProcesses
             set => Effect.Parameters[nameof(BaseSaturation)].SetValue(value);
         }
         public bool Glare { get; set; }
-        
+
 
         /// <summary>
         /// Prepare effect.
         /// </summary>
         protected override void PrepareEffect(Camera camera, GameTime time, IScene scene)
         {
-            if(Glare)
+            if (Glare)
                 Effect.CurrentTechnique = Effect.Techniques["GlareComposite"];
             else
-                Effect.CurrentTechnique = Effect.Techniques["BloomComposite"];            
+                Effect.CurrentTechnique = Effect.Techniques["BloomComposite"];
         }
     }
 }

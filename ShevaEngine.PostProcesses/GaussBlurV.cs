@@ -41,7 +41,7 @@ namespace ShevaEngine.PostProcesses
 
                 _blurRadiusChanged = false;
             }
-        }       
+        }
 
         /// <summary>
         /// Computes sample weightings and texture coordinate offsets

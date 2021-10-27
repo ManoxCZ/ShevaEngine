@@ -25,7 +25,7 @@ namespace ShevaEngine.NoesisUI
             m_execute = execute ?? throw new ArgumentNullException("execute");
 
             m_canExecute = canExecute;
-        }        
+        }
 
         ///<summary>
         /// Defines the method that determines whether the command can execute in its current state.

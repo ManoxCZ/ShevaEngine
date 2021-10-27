@@ -6,19 +6,19 @@ namespace ShevaEngine.PostProcesses
 {
     public class Vignette : BasePostProcess
     {
-        protected override string EffectFilename => nameof(Vignette);  
-        public float Slope 
-        { 
+        protected override string EffectFilename => nameof(Vignette);
+        public float Slope
+        {
             get => Effect.Parameters[nameof(Slope)].GetValueSingle();
             set => Effect.Parameters[nameof(Slope)].SetValue(value);
         }
-        public float Radius 
-        { 
+        public float Radius
+        {
             get => Effect.Parameters[nameof(Radius)].GetValueSingle();
             set => Effect.Parameters[nameof(Radius)].SetValue(value);
         }
         public float Amount
-        { 
+        {
             get => Effect.Parameters[nameof(Amount)].GetValueSingle();
             set => Effect.Parameters[nameof(Amount)].SetValue(value);
         }

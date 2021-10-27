@@ -23,7 +23,7 @@ namespace ShevaEngine.Pathfinding
 
             heuristic.EndNode = endNode;
 
-            List<NavigationGraphNodeRecord> openNodes = new List<NavigationGraphNodeRecord> {new NavigationGraphNodeRecord(startNode)};
+            List<NavigationGraphNodeRecord> openNodes = new List<NavigationGraphNodeRecord> { new NavigationGraphNodeRecord(startNode) };
             List<NavigationGraphNodeRecord> closedNodes = new List<NavigationGraphNodeRecord>();
 
             NavigationGraphNodeRecord currentNode = openNodes.OrderBy(node => node.CostSoFar).First();

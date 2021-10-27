@@ -30,7 +30,7 @@ namespace ShevaEngine.PostProcesses
             {
                 _blurRadius = value;
 
-                _blurRadiusChanged = true; 
+                _blurRadiusChanged = true;
             }
         }
 
@@ -52,7 +52,7 @@ namespace ShevaEngine.PostProcesses
         /// for one pass of a separable gaussian blur filter.
         /// </summary>
         private void SetBlurEffectParameters(int resolution)
-        {        
+        {
             SampleWeights = new float[] { 0.2270270270f, 0.1945945946f, 0.1216216216f, 0.0540540541f, 0.0162162162f };
 
             SampleOffsets = new Vector2[]

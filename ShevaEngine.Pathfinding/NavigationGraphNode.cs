@@ -9,7 +9,7 @@ namespace ShevaEngine.Pathfinding
     {
         /// <summary>Connections.</summary>
         public List<NavigationGraphConnection> Connections;
-        
+
         /// <summary>
         /// Constructor.
         /// </summary>

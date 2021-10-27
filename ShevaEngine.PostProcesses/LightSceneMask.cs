@@ -34,7 +34,7 @@
 //                 effect.Parameters["matInvVP"].SetValue(Matrix.Invert(Matrix.Identity));
 //             }
 
-            
+
 
 //             // Set Params.
 //             base.Draw(gameTime);
