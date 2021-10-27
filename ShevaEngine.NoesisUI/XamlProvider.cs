@@ -1,4 +1,6 @@
-﻿using ShevaEngine.Core;
+﻿using Microsoft.Extensions.Logging;
+using ShevaEngine.Core;
+using ShevaEngine.Core.Services.EmbeddedFilesService;
 using System;
 using System.IO;
 
@@ -8,25 +10,35 @@ namespace ShevaEngine.NoesisUI
     /// Xaml Provider.
     /// </summary>
     public class XamlProvider : Noesis.XamlProvider
-    {        
+    {
+        private readonly ILogger _log;
+
+
+        /// <summary>
+        /// Constructor.
+        /// </summary>
+        public XamlProvider()
+        {
+            _log = ShevaGame.Instance.Services.GetService<ILoggerFactory>().CreateLogger(GetType());
+        }
+
         /// <summary>
         /// Load xaml.
         /// </summary>
         public override Stream LoadXaml(Uri filename)
         {
-            string filenameWithoutExtension = filename.OriginalString.Replace(".xaml", string.Empty);
+            _log.LogInformation($"Loading xaml file: {filename}");
 
-            string data = ShevaGame.Instance.Content.Load<string>(filenameWithoutExtension);
+            if (ShevaGame.Instance.Services.GetService<IEmbeddedFilesService>().TryGetStream(filename.OriginalString, out Stream stream))
+            {
+                _log.LogInformation($"Xaml file found and loaded!");
 
-            MemoryStream stream = new MemoryStream();
+                return stream;
+            }
 
-            StreamWriter writer = new StreamWriter(stream);
-                writer.Write(data);
+            _log.LogError($"Can't find xaml file!");
 
-            writer.Flush();
-            stream.Position = 0;
-
-            return stream;
-        }
+            return null!;
+        }        
     }
 }

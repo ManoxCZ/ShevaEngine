@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 #if WINDOWS_UAP
@@ -35,6 +34,7 @@ namespace ShevaEngine.NoesisUI
 
             return openFileTask.Result.AsStream();
 #else
+
             return new StreamReader(filePath).BaseStream;            
 #endif
         }

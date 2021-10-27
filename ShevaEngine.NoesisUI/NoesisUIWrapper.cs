@@ -12,6 +12,7 @@ namespace ShevaEngine.NoesisUI
         public static string LICENSE_KEY = "";
 
         private readonly ILogger _log = ShevaGame.Instance.LoggerFactory.CreateLogger<NoesisUIWrapper>();
+        private readonly Noesis.RenderDeviceD3D11 _device;
 
         /// <summary>
         /// Constructor.
@@ -38,68 +39,32 @@ namespace ShevaEngine.NoesisUI
                 }
             });
 
+            _device = new Noesis.RenderDeviceD3D11(
+                ((SharpDX.Direct3D11.Device)ShevaGame.Instance.GraphicsDevice.Handle).ImmediateContext.NativePointer, false);
+
             Noesis.GUI.SetLicense(LICENSE_NAME, LICENSE_KEY);
             Noesis.GUI.Init();
-                        
+
             Noesis.GUI.SetXamlProvider(new XamlProvider());
             Noesis.GUI.SetFontProvider(new FontProvider());
             Noesis.GUI.SetTextureProvider(new TextureProvider());
 
-            Noesis.GUI.SetFontFallbacks(new[] { "Arial" });
-            Noesis.GUI.SetFontDefaultProperties(15.0f, Noesis.FontWeight.Normal, Noesis.FontStretch.Normal, Noesis.FontStyle.Normal);
-            
-            Noesis.GUI.LoadApplicationResources(@"Content\Themes\Theme.xaml");
+            Noesis.GUI.SetFontFallbacks(NoesisApp.Theme.FontFallbacks);
+            Noesis.GUI.SetFontDefaultProperties(
+                NoesisApp.Theme.DefaultFontSize,
+                NoesisApp.Theme.DefaultFontWeight,
+                NoesisApp.Theme.DefaultFontStretch,
+                NoesisApp.Theme.DefaultFontStyle);
+           
+            Noesis.GUI.LoadApplicationResources("Themes.Theme.xaml");
         }
-
-        /// <summary>
-        /// Get layer.
-        /// </summary>
-        public Task<Noesis.FrameworkElement> GetFrameworkElement(string xamlFilename)
-        {
-            return RunFuncOnUIThread(() =>
-            {                
-                return (Noesis.FrameworkElement)Noesis.GUI.LoadXaml(xamlFilename);                
-            });            
-        }
-
-        /// <summary>
-        /// Get layer.
-        /// </summary>
-        public Task<ILayer> GetLayer(string xamlFilename)
-        {
-            return RunFuncOnUIThread(() =>
-            { 
-                Noesis.FrameworkElement frameworkElement = (Noesis.FrameworkElement)Noesis.GUI.LoadXaml(xamlFilename);
-
-                Noesis.View view = Noesis.GUI.CreateView(frameworkElement);
-
-                Noesis.RenderDeviceD3D11 device = new Noesis.RenderDeviceD3D11(
-                    ((SharpDX.Direct3D11.Device)ShevaGame.Instance.GraphicsDevice.Handle).ImmediateContext.NativePointer,
-                    false);
-
-                view.Renderer.Init(device);
-                view.SetFlags(Noesis.RenderFlags.LCD | Noesis.RenderFlags.PPAA);
-
-                return (ILayer)new Layer(this, view);
-            });
-        }
-
+       
         /// <summary>
         /// Run on UI thread.
         /// </summary>        
         public void RunOnUIThread(Action action)
         {
-            ShevaGame.Instance.SynchronizationContext.Send(_ => action(), null);
-
-            //Windows.UI.Core.CoreDispatcher dispatcher = Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher;
-
-            //if (dispatcher.HasThreadAccess)
-            //    action();
-            //else
-            //    dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () =>
-            //    {
-            //        action();
-            //    }).AsTask();
+            ShevaGame.Instance.SynchronizationContext.Send(_ => action(), null);            
         }
 
         /// <summary>
@@ -114,24 +79,7 @@ namespace ShevaEngine.NoesisUI
                 taskSource.SetResult(function());
             }, null);
 
-            return taskSource.Task;
-
-
-            //Windows.UI.Core.CoreDispatcher dispatcher = Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher;
-
-            //if (dispatcher.HasThreadAccess)
-            //    return Task.FromResult(function());
-            //else
-            //{
-            //    TaskCompletionSource<T> taskSource = new TaskCompletionSource<T>();
-
-            //    dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () =>
-            //    {
-            //        taskSource.SetResult(function());
-            //    }).AsTask();                    
-
-            //    return taskSource.Task;
-            //}
+            return taskSource.Task;            
         }
     }
 }

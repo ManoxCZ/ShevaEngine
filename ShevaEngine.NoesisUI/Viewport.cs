@@ -6,7 +6,7 @@ using ShevaEngine.Core.UI;
 
 namespace ShevaEngine.NoesisUI
 {
-    public sealed class Viewport : UserControl, IViewport
+    public sealed class Viewport : Grid, IViewport
     {
         public static readonly DependencyProperty CameraProperty = DependencyProperty.Register(
             nameof(Camera), typeof(Camera), typeof(Viewport), new PropertyMetadata(null));
@@ -24,8 +24,8 @@ namespace ShevaEngine.NoesisUI
             get => (IScene)GetValue(SceneProperty);
             set => SetValue(SceneProperty, value);
         }
-        private RenderTarget2D _renderTarget;
-        private RenderTarget2D _depthTarget;
+        private RenderTarget2D _renderTarget = null!;
+        private RenderTarget2D _depthTarget = null!;
         private object _lock = new object();
         private readonly Image _image;
 
@@ -34,6 +34,7 @@ namespace ShevaEngine.NoesisUI
         /// Constructor.
         /// </summary>
         public Viewport()
+            : base()
         {
             _image = new Image()
             {
@@ -41,8 +42,11 @@ namespace ShevaEngine.NoesisUI
                 VerticalAlignment = VerticalAlignment.Stretch,
             };
 
-            Content = _image;
-        }                
+            Loaded += (object sender, RoutedEventArgs args) =>
+            {
+                Children.Add(_image);
+            };
+        }
 
         /// <summary>
         /// Arrange override.
@@ -64,14 +68,17 @@ namespace ShevaEngine.NoesisUI
                         RenderTargetUsage.PreserveContents,
                         false)
                 {
-                    Name = nameof(Viewport) + "- Render target"
+                    Name = $"{nameof(Viewport)} - Render target"
                 };
 
                 System.Reflection.FieldInfo info = typeof(RenderTarget2D).GetField("_texture", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic);
                 SharpDX.Direct3D11.Resource handle = info.GetValue(_renderTarget) as SharpDX.Direct3D11.Resource;
 
-                _image.Source = new TextureSource(Noesis.RenderDeviceD3D11.WrapTexture(_renderTarget, handle.NativePointer, _renderTarget.Width, _renderTarget.Height, 1, false, true));
+                _image.Source = new TextureSource(RenderDeviceD3D11.WrapTexture(_renderTarget, handle.NativePointer, _renderTarget.Width, _renderTarget.Height, 1, false, true));
 
+                _image.Width = finalSize.Width;
+                _image.Height = finalSize.Height;
+                
                 _depthTarget?.Dispose();
 
                 _depthTarget = new RenderTarget2D(
@@ -82,7 +89,7 @@ namespace ShevaEngine.NoesisUI
                         SurfaceFormat.Single,
                         DepthFormat.None)
                 {
-                    Name = nameof(Viewport) + "- Depth render target"
+                    Name = $"{nameof(Viewport)} - Depth render target"
                 };
             }
 
@@ -97,7 +104,7 @@ namespace ShevaEngine.NoesisUI
         /// </summary>        
         public void Render(GameTime gameTime)
         {
-            lock (_lock)            
+            lock (_lock)
                 Camera?.Draw(Scene, gameTime, _renderTarget, _depthTarget);            
         }
     }

@@ -1,53 +1,43 @@
-﻿using Microsoft.Xna.Framework.Graphics;
+﻿using Microsoft.Extensions.Logging;
+using Microsoft.Xna.Framework.Graphics;
+using Noesis;
 using ShevaEngine.Core;
+using ShevaEngine.Core.Services.EmbeddedFilesService;
 using System;
+using System.IO;
 
 namespace ShevaEngine.NoesisUI
 {
-    public class TextureProvider : Noesis.TextureProvider
+    public class TextureProvider : FileTextureProvider
     {
-        public override void GetTextureInfo(Uri filename, out uint width, out uint height)
+        private readonly ILogger _log;
+
+
+        /// <summary>
+        /// Constructor.
+        /// </summary>
+        public TextureProvider()
         {
-            string contentPath = GetContentFilename(filename.OriginalString);
-
-            Texture2D texture = ShevaGame.Instance.Content.Load<Texture2D>(contentPath);
-
-            if (texture != null)
-            {
-                width = (uint)texture.Width;
-                height = (uint)texture.Height;
-            }
-            else
-            {
-                width = 0;
-                height = 0;
-            }
-        }
-
-        public override Noesis.Texture LoadTexture(Uri filename)
-        {
-            string contentPath = GetContentFilename(filename.OriginalString);
-
-            Texture2D texture = ShevaGame.Instance.Content.Load<Texture2D>(contentPath);
-
-            System.Reflection.FieldInfo info = typeof(Texture2D).GetField("_texture", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic);
-            SharpDX.Direct3D11.Resource handle = info.GetValue(texture) as SharpDX.Direct3D11.Resource;
-
-            return Noesis.RenderDeviceD3D11.WrapTexture(texture, handle.NativePointer, texture.Width, texture.Height, texture.LevelCount, false, true);
+            _log = ShevaGame.Instance.Services.GetService<ILoggerFactory>().CreateLogger(GetType());
         }
 
         /// <summary>
-        /// Get content filename.
+        /// Load xaml.
         /// </summary>
-        public static string GetContentFilename(string filename)
+        public override Stream OpenStream(Uri filename)
         {
-            return filename
-                .Replace(".png", string.Empty, StringComparison.InvariantCultureIgnoreCase)
-                .Replace(".tif", string.Empty, StringComparison.InvariantCultureIgnoreCase)
-                .Replace(".tiff", string.Empty, StringComparison.InvariantCultureIgnoreCase)
-                .Replace(".webp", string.Empty, StringComparison.InvariantCultureIgnoreCase)
-                .Replace(".jpg", string.Empty, StringComparison.InvariantCultureIgnoreCase)
-                .Replace(".jpeg", string.Empty, StringComparison.InvariantCultureIgnoreCase);
+            _log.LogInformation($"Loading file: {filename}");
+
+            if (ShevaGame.Instance.Services.GetService<IEmbeddedFilesService>().TryGetStream(filename.OriginalString, out Stream stream))
+            {
+                _log.LogInformation($"File found and loaded!");
+
+                return stream;
+            }
+
+            _log.LogError($"Can't find file!");
+
+            return null!;
         }
     }
 }

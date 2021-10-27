@@ -1,13 +1,25 @@
-﻿using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging;
 using ShevaEngine.Core;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Threading.Tasks;
 
 namespace ShevaEngine.NoesisUI
 {
     public class ModelView : INotifyPropertyChanged, IDisposable
     {
+        protected ShevaGame Game { get; }
+
+
+        /// <summary>
+        /// Constructor.
+        /// </summary>        
+        public ModelView(ShevaGame game)
+        {
+            Game = game;
+        }
+
         public event PropertyChangedEventHandler PropertyChanged;
         protected ILogger Log { get; }
 

@@ -41,4 +41,6 @@ void Skin(inout VertexShaderInputPBBNTTB vin, uniform int boneCount)
 
     vin.Position.xyz = mul(vin.Position, skinning);
     vin.Normal = mul(vin.Normal, (float3x3)skinning);
+    vin.Tangent = mul(vin.Tangent, (float3x3)skinning);
+    vin.Binormal = mul(vin.Binormal, (float3x3)skinning);
 }

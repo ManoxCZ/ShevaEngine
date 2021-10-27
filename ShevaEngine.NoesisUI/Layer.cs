@@ -3,47 +3,54 @@ using Microsoft.Xna.Framework.Input;
 using Noesis;
 using ShevaEngine.Core;
 using ShevaEngine.Core.UI;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace ShevaEngine.NoesisUI
 {
-    public class Layer : ILayer
+    public class Layer<U> : ILayer where U : UserControl, new()
     {
-        private readonly NoesisUIWrapper _uiWrapper;
         public bool IsActive { get; set; } = true;
-        public View View { get; }
-        private object _dataContext;
+        private View _view = null!;        
         public object DataContext
         {
-            get => _dataContext;
+            get => _view.Content.DataContext;
             set
             {
-                _dataContext = value;
-
-                _uiWrapper.RunOnUIThread(() =>                 
+                RunOnUIThread(() =>
                 {
-                    if (View.Content != null)
-                        View.Content.DataContext = DataContext;
-                });                
+                    if (_view.Content != null)
+                    {
+                        _view.Content.DataContext = value;
+                    }
+                });
             }
         }
-        private InputState _previousInputState;
+        private InputState _previousInputState = null!;
 
 
         /// <summary>
         /// Constructor.
         /// </summary>        
-        public Layer(NoesisUIWrapper uiWrapper, View view)
+        public Layer()
         {
-            _uiWrapper = uiWrapper;
-            View = view;                             
+            RunOnUIThread(() =>
+            {
+                _view = GUI.CreateView(new U());
+
+                RenderDeviceD3D11 device = new RenderDeviceD3D11(
+                    ((SharpDX.Direct3D11.Device)ShevaGame.Instance.GraphicsDevice.Handle).ImmediateContext.NativePointer, false);
+
+                _view.Renderer.Init(device);
+                _view.SetFlags(RenderFlags.LCD | RenderFlags.PPAA);
+            });
         }
 
 
         public void Update(GameTime time)
-        {            
-            View.Update(time.TotalGameTime.TotalSeconds);
+        {
+            _view.Update(time.TotalGameTime.TotalSeconds);
         }
 
         /// <summary>
@@ -51,12 +58,12 @@ namespace ShevaEngine.NoesisUI
 		/// </summary>
 		public void Draw(GameTime time)
         {
-            bool updated = View.Renderer.UpdateRenderTree();
+            _view.Renderer.UpdateRenderTree();
 
-            foreach (Viewport viewport in GetChildrenOfType<Viewport>(View.Content))
+            foreach (Viewport viewport in GetChildrenOfType<Viewport>(_view.Content))
                 viewport.Render(time);
 
-            View.Renderer.Render();
+            _view.Renderer.Render();
         }
 
         /// <summary>
@@ -85,9 +92,9 @@ namespace ShevaEngine.NoesisUI
 		/// </summary>        
 		public void OnWindowResize(int width, int height)
         {
-            _uiWrapper.RunOnUIThread(() =>
+            RunOnUIThread(() =>            
             {
-                View.SetSize(width, height);
+                _view.SetSize(width, height);
             });
         }
 
@@ -117,29 +124,29 @@ namespace ShevaEngine.NoesisUI
 
             if (_previousInputState.MouseState.LeftButton == ButtonState.Released &&
                 state.MouseState.LeftButton == ButtonState.Pressed)
-                eventHandled = eventHandled || View.MouseButtonDown(state.MouseState.X, state.MouseState.Y, MouseButton.Left);
+                eventHandled = eventHandled || _view.MouseButtonDown(state.MouseState.X, state.MouseState.Y, MouseButton.Left);
 
             if (_previousInputState.MouseState.LeftButton == ButtonState.Pressed &&
                 state.MouseState.LeftButton == ButtonState.Released)
-                eventHandled = eventHandled || View.MouseButtonUp(state.MouseState.X, state.MouseState.Y, MouseButton.Left);
+                eventHandled = eventHandled || _view.MouseButtonUp(state.MouseState.X, state.MouseState.Y, MouseButton.Left);
 
             if (_previousInputState.MouseState.RightButton == ButtonState.Released &&
                 state.MouseState.RightButton == ButtonState.Pressed)
-                eventHandled = eventHandled || View.MouseButtonDown(state.MouseState.X, state.MouseState.Y, MouseButton.Right);
+                eventHandled = eventHandled || _view.MouseButtonDown(state.MouseState.X, state.MouseState.Y, MouseButton.Right);
 
             if (_previousInputState.MouseState.RightButton == ButtonState.Pressed &&
                 state.MouseState.RightButton == ButtonState.Released)
-                eventHandled = eventHandled || View.MouseButtonUp(state.MouseState.X, state.MouseState.Y, MouseButton.Right);
+                eventHandled = eventHandled || _view.MouseButtonUp(state.MouseState.X, state.MouseState.Y, MouseButton.Right);
 
             if (state.MouseState.ScrollWheelValue != _previousInputState.MouseState.ScrollWheelValue)
-                eventHandled = eventHandled || View.MouseWheel(state.MouseState.X, state.MouseState.Y, state.MouseState.ScrollWheelValue - _previousInputState.MouseState.ScrollWheelValue);
+                eventHandled = eventHandled || _view.MouseWheel(state.MouseState.X, state.MouseState.Y, state.MouseState.ScrollWheelValue - _previousInputState.MouseState.ScrollWheelValue);
 
             if (state.MouseState.HorizontalScrollWheelValue != _previousInputState.MouseState.HorizontalScrollWheelValue)
-                eventHandled = eventHandled || View.MouseHWheel(state.MouseState.X, state.MouseState.Y, state.MouseState.HorizontalScrollWheelValue - _previousInputState.MouseState.HorizontalScrollWheelValue);
+                eventHandled = eventHandled || _view.MouseHWheel(state.MouseState.X, state.MouseState.Y, state.MouseState.HorizontalScrollWheelValue - _previousInputState.MouseState.HorizontalScrollWheelValue);
 
             if (state.MouseState.X != _previousInputState.MouseState.X ||
                 state.MouseState.Y != _previousInputState.MouseState.Y)
-                eventHandled = eventHandled || View.MouseMove(state.MouseState.X, state.MouseState.Y);
+                eventHandled = eventHandled || _view.MouseMove(state.MouseState.X, state.MouseState.Y);
 
             return eventHandled;
         }
@@ -149,10 +156,33 @@ namespace ShevaEngine.NoesisUI
         /// </summary>
         public Task<IViewport> GetViewport(string name)
         {
-            return _uiWrapper.RunFuncOnUIThread(() =>
+            return RunFuncOnUIThread(() =>
             {             
-                return View?.Content?.FindName(name) as IViewport;
+                return _view?.Content?.FindName(name) as IViewport;
             });           
+        }
+
+        /// <summary>
+        /// Run on UI thread.
+        /// </summary>        
+        public void RunOnUIThread(Action action)
+        {
+            ShevaGame.Instance.SynchronizationContext.Send(_ => action(), null);
+        }
+
+        /// <summary>
+        /// Run on UI thread.
+        /// </summary>        
+        public Task<T> RunFuncOnUIThread<T>(Func<T> function)
+        {
+            TaskCompletionSource<T> taskSource = new TaskCompletionSource<T>();
+
+            ShevaGame.Instance.SynchronizationContext.Send(_ =>
+            {
+                taskSource.SetResult(function());
+            }, null);
+
+            return taskSource.Task;
         }
     }
 }

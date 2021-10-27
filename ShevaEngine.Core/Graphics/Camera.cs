@@ -8,7 +8,7 @@ using System.Linq;
 namespace ShevaEngine.Core
 {
 
-	public enum CameraType
+    public enum CameraType
 	{
 		Perspective,
 		Orthographic
@@ -18,8 +18,7 @@ namespace ShevaEngine.Core
 	/// Camera.
 	/// </summary> 
 	public class Camera : IDisposable
-	{		
-		public string DebugUIPageName { get; private set; }
+	{				
 		public CameraType _cameraType;
 		public CameraType CameraType
 		{

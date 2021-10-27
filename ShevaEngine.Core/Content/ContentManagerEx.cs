@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
+using System.IO;
 
 namespace ShevaEngine.Core
 {
@@ -14,8 +15,6 @@ namespace ShevaEngine.Core
         private readonly ILogger _log;
         private readonly ShevaGame _game;
         private object _lock = new object();
-		//private SortedDictionary<string,Font> _fonts = new SortedDictionary<string, Font>();
-
 
 		/// <summary>
 		/// Constructor.
@@ -37,9 +36,9 @@ namespace ShevaEngine.Core
 		}
 
 		/// <summary>
-		/// Load.
-		/// </summary>
-		public override T Load<T>(string assetName)
+        /// Load.
+        /// </summary>
+        public override T Load<T>(string assetName)
 		{
             try
             {
@@ -47,20 +46,7 @@ namespace ShevaEngine.Core
                 {
                     _log.LogInformation($"Loading: {assetName}, type: {typeof(T)}");
 
-                    //if (typeof(T) == typeof(Font))
-                    //{
-                    //    if (!_fonts.ContainsKey(assetName))
-                    //    {
-                    //        Font newFont = new Font(assetName);
-                    //        newFont.LoadContent(this);
-
-                    //        _fonts.Add(assetName, newFont);
-                    //    }
-
-                    //    return (T)(object)_fonts[assetName];
-                    //}                    
-
-                    T output = base.Load<T>(assetName);                    
+                    T output = base.Load<T>(assetName);
 
                     if ((object)output is Model model)
                     {
@@ -83,6 +69,11 @@ namespace ShevaEngine.Core
             }
 
             return default;
-		}        
-	}
+		}
+
+        /// <summary>
+        /// Open stream method.
+        /// </summary>
+        public Stream OpenStream(string assetName) => base.OpenStream(assetName);
+    }
 }

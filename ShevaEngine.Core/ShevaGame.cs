@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Media;
+using ShevaEngine.Core.Services.EmbeddedFilesService;
 using ShevaEngine.Core.UI;
 using ShevaEngine.Core.UserAccounts;
 using System;
@@ -38,7 +39,7 @@ namespace ShevaEngine.Core
         public IUser User { get; set; }        
         public IUISystem UISystem { get; set; }
         public string LoadingLayerFilename { get; set; }
-        
+		       
 
         /// <summary>
         /// Constructor.
@@ -56,7 +57,7 @@ namespace ShevaEngine.Core
 
 			if (!System.IO.Directory.Exists(dataPath))
 				System.IO.Directory.CreateDirectory(dataPath);
-#endif
+#endif			
 
 			LoggerFactory = Microsoft.Extensions.Logging.LoggerFactory.Create(builder =>
 			{
@@ -68,6 +69,8 @@ namespace ShevaEngine.Core
 					;
 #endif
 			});
+
+			Services.AddService<ILoggerFactory>(LoggerFactory);
 
 			_log = LoggerFactory.CreateLogger<ShevaGame>();            
 
@@ -102,7 +105,9 @@ namespace ShevaEngine.Core
 			Window.AllowUserResizing = true;
 			IsMouseVisible = true;
 			
-			_gameComponents = new Stack<ShevaGameComponent>();			
+			_gameComponents = new Stack<ShevaGameComponent>();
+
+			Services.AddService<IEmbeddedFilesService>(new EmbeddedFilesService());
         }
 
 		/// <summary>
@@ -155,11 +160,11 @@ namespace ShevaEngine.Core
 
 			IsFixedTimeStep = false;			
 
-			Settings.MusicVolume.Subscribe(item =>
-            {
-                MediaPlayer.Volume = item;
+			//Settings.MusicVolume.Subscribe(item =>
+   //         {
+   //             MediaPlayer.Volume = item;
 
-            });            
+   //         });            
 
 			_log.LogInformation("Initialization ended");						
 		}
@@ -177,11 +182,7 @@ namespace ShevaEngine.Core
 
 			_log.LogInformation("Loading content finished");
 
-			_log.LogInformation("Loading loading screen started");
-
-			CreateLoadingScreen();
-
-			_log.LogInformation("Loading loading screen finished");
+			
 
 			_log.LogInformation("Initialize game components");
 
@@ -229,14 +230,13 @@ namespace ShevaEngine.Core
 		/// <summary>
 		/// Create loading screen.
 		/// </summary>
-		private void CreateLoadingScreen()
+		public void CreateLoadingScreen<T>() where T : ILayer, new()
 		{
-            LoadingScreenComponent component = new LoadingScreenComponent()
-            { 
-                XamlFilename = LoadingLayerFilename
-            };
-            
-			PushGameComponent(component);
+			_log.LogInformation("Loading loading screen started");
+
+			PushGameComponent(new LoadingScreenComponent<T>());
+
+			_log.LogInformation("Loading loading screen finished");
 		}
 
 		/// <summary>
@@ -244,7 +244,7 @@ namespace ShevaEngine.Core
 		/// </summary>        
 		protected override void Update(GameTime time)
 		{
-			base.Update(time);
+			base.Update(time);			
 
             Input.Update();
 
@@ -363,5 +363,7 @@ namespace ShevaEngine.Core
 			Settings.Fullscreen.OnNext(fullscreen);
 			ShevaGameSettings.Save(Settings);		
 		}
+
+		
     }        
 }

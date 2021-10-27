@@ -1,15 +1,12 @@
 using ShevaEngine.Core.UI;
-using System.Threading.Tasks;
 
 namespace ShevaEngine.Core
 {
     /// <summary>
     /// Loading screen component.
     /// </summary>
-    public class LoadingScreenComponent : ShevaGameComponent
-    {
-        public string XamlFilename { get; set; }
-
+    public class LoadingScreenComponent<T> : ShevaGameComponent where T : ILayer, new()
+    {        
         /// <summary>
         /// Initialize.
         /// </summary>
@@ -17,10 +14,8 @@ namespace ShevaEngine.Core
         {
             base.LoadContent(game);
 
-            Task<ILayer> task = game.UISystem.GetLayer(XamlFilename);
-            task.Wait();
-
-            Layers.Add(task.Result);
+            Layers.Add(new T());
+            //game.UISystem.GetLayer(XamlFilename).ContinueWith(task => Layers.Add(task.Result));
         }
     }
 }
