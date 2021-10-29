@@ -1,20 +1,62 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace ShevaEngine.Core
 {
     /// <summary>
     /// Filesystem class.
     /// </summary>
-    public class Filesystem
+    public class FileSystemService : IFileSystemService
     {
+        public string UserDataPath { get; }
+
+
+        /// <summary>
+        /// Constructor.
+        /// </summary>
+        public FileSystemService()
+        {
+            if (System.Reflection.Assembly.GetEntryAssembly()?.GetName()?.Name is string assemblyName)
+            {
+                UserDataPath = System.IO.Path.Combine(
+                        Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
+                        assemblyName);
+            }
+            else
+            {
+                throw new Exception("Can't get assembly name!");
+            }
+
+#if WINDOWS || DESKTOPGL            
+            if (!DirectoryExists(UserDataPath))
+                CreateDirectory(UserDataPath);
+#endif
+        }
+
+
+        public bool FileExists(string path)
+        {
+            return System.IO.File.Exists(
+                System.IO.Path.Combine(
+                    Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
+                    UserDataPath,
+                    path));
+        }
+
+        public void DeleteFile(string path)
+        {
+            System.IO.File.Delete(
+                System.IO.Path.Combine(
+                    Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
+                    UserDataPath,
+                    path));
+        }
 
         /// <summary>
         /// Directory exists?
         /// </summary>
-        public static bool DirectoryExists(string subdirectoryPath)
+        public bool DirectoryExists(string subdirectoryPath)
         {
 #if WINDOWS_UAP
             Task<Windows.Storage.IStorageItem> task = Windows.Storage.ApplicationData.Current.RoamingFolder.TryGetItemAsync(subdirectoryPath).AsTask();
@@ -26,7 +68,7 @@ namespace ShevaEngine.Core
             return System.IO.Directory.Exists(
                 System.IO.Path.Combine(
                     Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
-                    System.Reflection.Assembly.GetEntryAssembly().GetName().Name,
+                    UserDataPath,
                     subdirectoryPath));
 #endif         
         }
@@ -34,7 +76,7 @@ namespace ShevaEngine.Core
         /// <summary>
         /// Create directory.
         /// </summary>
-        public static bool CreateDirectory(string subdirectoryPath)
+        public bool CreateDirectory(string subdirectoryPath)
         {
             if (!DirectoryExists(subdirectoryPath))
             {
@@ -48,7 +90,7 @@ namespace ShevaEngine.Core
                 return System.IO.Directory.CreateDirectory(
                     System.IO.Path.Combine(
                         Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
-                        System.Reflection.Assembly.GetEntryAssembly().GetName().Name,
+                        UserDataPath,
                         subdirectoryPath)) != null;
 #endif
             }
@@ -60,7 +102,7 @@ namespace ShevaEngine.Core
         /// Get subdirectories.
         /// </summary>
         /// <returns></returns>
-        public static IEnumerable<string> GetSubdirectories(string subdirectoryPath)
+        public IEnumerable<string> GetSubdirectories(string subdirectoryPath)
         {
 #if WINDOWS_UAP
             Task<Windows.Storage.IStorageItem> task = Windows.Storage.ApplicationData.Current.RoamingFolder.TryGetItemAsync(subdirectoryPath).AsTask();
@@ -90,7 +132,7 @@ namespace ShevaEngine.Core
         /// <summary>
         /// Read file content.
         /// </summary>
-        public static string ReadFileContent(string filename)
+        public string ReadFileContent(string filename)
         {
 #if WINDOWS_UAP
             Task<Windows.Storage.IStorageItem> task = Windows.Storage.ApplicationData.Current.RoamingFolder.TryGetItemAsync(filename).AsTask();
@@ -123,7 +165,7 @@ namespace ShevaEngine.Core
         /// <summary>
         /// Write file content.
         /// </summary>
-        public static void WriteFileContent(string filename, string content)
+        public void WriteFileContent(string filename, string content)
         {
 #if WINDOWS_UAP
             Task<Windows.Storage.StorageFile> task = Windows.Storage.ApplicationData.Current.RoamingFolder.CreateFileAsync(

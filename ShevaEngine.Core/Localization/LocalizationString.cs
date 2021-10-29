@@ -5,15 +5,15 @@
     /// </summary>
     public class LocalizationString
     {
-        public string TextKey { get; set; }
+        public string TextKey { get; set; } = null!;
 
 
         /// <summary>
         /// Constructor.
         /// </summary>
-        public LocalizationString()
+        protected LocalizationString()
         {
-
+            
         }
 
         /// <summary>

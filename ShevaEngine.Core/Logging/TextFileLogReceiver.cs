@@ -4,51 +4,50 @@ using System;
 namespace ShevaEngine.Core
 {
     public class TextFileLogReceiver : ILoggerProvider, IDisposable
-    {
-        private const string LOGS_DIRECTORY = "Logs";
-
-#if WINDOWS_UAP                
+    {        
+#if WINDOWS_UAP
         private Windows.Foundation.Diagnostics.FileLoggingSession _session;
         private Windows.Foundation.Diagnostics.LoggingChannel _channel;
 #else
-        private readonly object _lock = new object();
-        private System.IO.StreamWriter _writer;
+        private object _lock = new object();
+        private string _filename = null!;
 #endif
 
 
         /// <summary>
         /// Constructor.
         /// </summary>		
-        public TextFileLogReceiver(string filename)
+        public TextFileLogReceiver()
         {
-            Initialize(filename);
+            Initialize();
         }
 
         /// <summary>
         /// Initialize.
         /// </summary>
-        public void Initialize(string filename)
+        public void Initialize()
         {
-            if (!Filesystem.DirectoryExists(LOGS_DIRECTORY))
-                Filesystem.CreateDirectory(LOGS_DIRECTORY);
+            if (ShevaServices.GetService<IFileSystemService>() is IFileSystemService service)
+            {                
+#if WINDOWS_UAP
+                _channel = new Windows.Foundation.Diagnostics.LoggingChannel("General", new Windows.Foundation.Diagnostics.LoggingChannelOptions());
 
-#if WINDOWS_UAP            
-            _channel = new Windows.Foundation.Diagnostics.LoggingChannel("General", new Windows.Foundation.Diagnostics.LoggingChannelOptions());
-
-            _session = new Windows.Foundation.Diagnostics.FileLoggingSession("Game");
+                _session = new Windows.Foundation.Diagnostics.FileLoggingSession("Game");
 #if DEBUG
-            _session.AddLoggingChannel(_channel, Windows.Foundation.Diagnostics.LoggingLevel.Verbose);
+                _session.AddLoggingChannel(_channel, Windows.Foundation.Diagnostics.LoggingLevel.Verbose);
 #else
-            _session.AddLoggingChannel(_channel, Windows.Foundation.Diagnostics.LoggingLevel.Information);
+                _session.AddLoggingChannel(_channel, Windows.Foundation.Diagnostics.LoggingLevel.Information);
 #endif
 #else
-            string dataPath = System.IO.Path.Combine(
-                Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
-                System.Reflection.Assembly.GetEntryAssembly().GetName().Name,
-                filename);
+                _filename = System.IO.Path.Combine(
+                    Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
+                    service.UserDataPath,
+                    $"game.log");
 
-            _writer = new System.IO.StreamWriter(dataPath, false);
+                if (service.FileExists(_filename))
+                    service.DeleteFile(_filename);
 #endif
+            }
         }
 
         /// <summary>
@@ -64,11 +63,6 @@ namespace ShevaEngine.Core
 
             _session?.Dispose();
             _session = null;
-#else
-            _writer?.Flush();
-
-            _writer?.Dispose();
-            _writer = null!;
 #endif
         }
 
@@ -90,9 +84,9 @@ namespace ShevaEngine.Core
             
                 _channel.LogEvent("Game", fields, GetLoggingLevel(message));
 #else
-                string formattedMessage = $"{DateTime.Now}\t{logLevel}\t{category}\t{formatter(state, exception)}\t{exception?.ToString()}";
+                string formattedMessage = $"{DateTime.Now}\t{logLevel}\t{category}\t{formatter(state, exception)}\t{exception?.ToString()}\n";
 
-                _writer?.WriteLine(formattedMessage);
+                System.IO.File.AppendAllText(_filename, formattedMessage);
 #endif
             }
         }

@@ -10,7 +10,7 @@ namespace ShevaEngine.Core
     /// </summary>
     public class AnimationsController : IDisposable
     {
-        private readonly ILogger _log = ShevaGame.Instance.LoggerFactory.CreateLogger<AnimationsController>();
+        private readonly ILogger _log = ShevaServices.GetService<ILoggerFactory>().CreateLogger<AnimationsController>();
         private readonly Animations _animations;
         public Clip CurrentClip { get; private set; }
         private Matrix[] _boneTransforms;

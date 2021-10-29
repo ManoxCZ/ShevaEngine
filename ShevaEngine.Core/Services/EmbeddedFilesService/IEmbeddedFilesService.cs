@@ -1,6 +1,6 @@
 ﻿using System.IO;
 
-namespace ShevaEngine.Core.Services.EmbeddedFilesService
+namespace ShevaEngine.Core
 {
     public interface IEmbeddedFilesService
     {

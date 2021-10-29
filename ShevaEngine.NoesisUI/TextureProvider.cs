@@ -1,8 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
-using Microsoft.Xna.Framework.Graphics;
 using Noesis;
 using ShevaEngine.Core;
-using ShevaEngine.Core.Services.EmbeddedFilesService;
 using System;
 using System.IO;
 
@@ -28,7 +26,7 @@ namespace ShevaEngine.NoesisUI
         {
             _log.LogInformation($"Loading file: {filename}");
 
-            if (ShevaGame.Instance.Services.GetService<IEmbeddedFilesService>().TryGetStream(filename.OriginalString, out Stream stream))
+            if (ShevaServices.GetService<IEmbeddedFilesService>().TryGetStream(filename.OriginalString, out Stream stream))
             {
                 _log.LogInformation($"File found and loaded!");
 

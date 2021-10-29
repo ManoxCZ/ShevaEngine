@@ -1,6 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
 using ShevaEngine.Core;
-using ShevaEngine.Core.Services.EmbeddedFilesService;
 using System;
 using System.IO;
 
@@ -29,7 +28,7 @@ namespace ShevaEngine.NoesisUI
         {
             _log.LogInformation($"Loading xaml file: {filename}");
 
-            if (ShevaGame.Instance.Services.GetService<IEmbeddedFilesService>().TryGetStream(filename.OriginalString, out Stream stream))
+            if (ShevaServices.GetService<IEmbeddedFilesService>().TryGetStream(filename.OriginalString, out Stream stream))
             {
                 _log.LogInformation($"Xaml file found and loaded!");
 

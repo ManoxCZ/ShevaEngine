@@ -22,7 +22,7 @@ namespace ShevaEngine.Core
         public ContentManagerEx(ShevaGame game, IServiceProvider serviceProvider)
             : base(serviceProvider)
         {
-            _log = game.LoggerFactory.CreateLogger<ContentManagerEx>();
+            _log = ShevaServices.GetService<ILoggerFactory>().CreateLogger<ContentManagerEx>();
             _game = game;
         }
 

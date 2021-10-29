@@ -24,7 +24,7 @@ namespace ShevaEngine.Core
         /// </summary>
         public ShevaGameComponent()
         {
-            Log = ShevaGame.Instance.LoggerFactory.CreateLogger(GetType());
+            Log = ShevaServices.GetService<ILoggerFactory>().CreateLogger(GetType());
         }
 
         /// <summary>

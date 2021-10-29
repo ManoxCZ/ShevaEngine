@@ -56,7 +56,7 @@ namespace ShevaEngine.Core
         protected Material(Effect effect)
             : base(effect)
         {
-            Log = ShevaGame.Instance.LoggerFactory.CreateLogger(GetType());
+            Log = ShevaServices.GetService<ILoggerFactory>().CreateLogger(GetType());
 
             _viewParameter = GetParameter("ViewMatrix");
             _projParameter = GetParameter("ProjMatrix");

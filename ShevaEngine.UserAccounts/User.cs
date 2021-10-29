@@ -17,7 +17,7 @@ namespace ShevaEngine.UserAccounts
     {
         private const int CANCEL_TIMEOUT = 5000;
 
-        private readonly ILogger _log = ShevaGame.Instance.LoggerFactory.CreateLogger<User>();
+        private readonly ILogger _log = ShevaServices.GetService<ILoggerFactory>().CreateLogger<User>();
         private readonly ShevaGame _game;
 
 #if WINDOWS_UAP

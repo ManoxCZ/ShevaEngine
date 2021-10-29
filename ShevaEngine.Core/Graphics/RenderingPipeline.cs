@@ -38,7 +38,7 @@ namespace ShevaEngine.Core
         {
             Name = name;
 
-            _log = ShevaGame.Instance.LoggerFactory.CreateLogger($"{typeof(RenderingPipeline)} - {Name}");
+            _log = ShevaServices.GetService<ILoggerFactory>().CreateLogger($"{typeof(RenderingPipeline)} - {Name}");
 
             Profile = MaterialProfile.Default;
         }

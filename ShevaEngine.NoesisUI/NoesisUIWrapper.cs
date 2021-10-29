@@ -11,8 +11,7 @@ namespace ShevaEngine.NoesisUI
         public static string LICENSE_NAME = "";
         public static string LICENSE_KEY = "";
 
-        private readonly ILogger _log = ShevaGame.Instance.LoggerFactory.CreateLogger<NoesisUIWrapper>();
-        private readonly Noesis.RenderDeviceD3D11 _device;
+        private readonly ILogger _log = ShevaServices.GetService<ILoggerFactory>().CreateLogger<NoesisUIWrapper>();        
 
         /// <summary>
         /// Constructor.
@@ -38,9 +37,6 @@ namespace ShevaEngine.NoesisUI
                         break;
                 }
             });
-
-            _device = new Noesis.RenderDeviceD3D11(
-                ((SharpDX.Direct3D11.Device)ShevaGame.Instance.GraphicsDevice.Handle).ImmediateContext.NativePointer, false);
 
             Noesis.GUI.SetLicense(LICENSE_NAME, LICENSE_KEY);
             Noesis.GUI.Init();

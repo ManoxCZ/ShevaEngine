@@ -56,7 +56,7 @@ namespace ShevaEngine.Core
         /// </summary>
         public static T Load<T>() where T : ShevaGameSettings, new()
         {
-            string fileContent = Filesystem.ReadFileContent($"{typeof(T).Name}.settings");
+            string fileContent = ShevaServices.GetService<IFileSystemService>().ReadFileContent($"{typeof(T).Name}.settings");
 
             if (string.IsNullOrEmpty(fileContent))
             {
@@ -100,7 +100,7 @@ namespace ShevaEngine.Core
         /// </summary>
         public static void Save<T>(T settings)
         {
-            Filesystem.WriteFileContent($"{typeof(T).Name}.settings", Serializer.Serialize(settings));
+            ShevaServices.GetService<IFileSystemService>().WriteFileContent($"{typeof(T).Name}.settings", Serializer.Serialize(settings));
         }
     }
 }

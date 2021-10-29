@@ -38,7 +38,7 @@ namespace ShevaEngine.NoesisUI
         /// </summary>
         public ModelView()
         {
-            Log = ShevaGame.Instance.LoggerFactory.CreateLogger(GetType());
+            Log = ShevaServices.GetService<ILoggerFactory>().CreateLogger(GetType());
         }
 
         /// <summary>

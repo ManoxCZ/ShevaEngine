@@ -1,8 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework.Media;
-using ShevaEngine.Core.Services.EmbeddedFilesService;
 using ShevaEngine.Core.UI;
 using ShevaEngine.Core.UserAccounts;
 using System;
@@ -24,10 +22,7 @@ namespace ShevaEngine.Core
 
         public SynchronizationContext SynchronizationContext { get; }
 
-        private readonly ILogger _log;
-        public ILoggerFactory LoggerFactory { get; }
-        //private readonly Log _log = new Log(typeof(ShevaGame));
-        //private TextFileLogReceiver _logReceiver;
+        private readonly ILogger _log;        
 
         public GameSettings Settings { get; }
         private Type[] _initialComponentTypes;
@@ -37,8 +32,7 @@ namespace ShevaEngine.Core
         private Stack<ShevaGameComponent> _gameComponents;
         private object _componentsLock = new object();
         public IUser User { get; set; }
-        public IUISystem UISystem { get; set; }
-        public string LoadingLayerFilename { get; set; }
+        public IUISystem UISystem { get; set; }        
 
 
         /// <summary>
@@ -50,29 +44,9 @@ namespace ShevaEngine.Core
             Instance = this;
             SynchronizationContext = SynchronizationContext.Current;
 
-#if WINDOWS || DESKTOPGL
-            string dataPath = System.IO.Path.Combine(
-                Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
-                System.Reflection.Assembly.GetEntryAssembly().GetName().Name);
+            InitializeServices();            
 
-            if (!System.IO.Directory.Exists(dataPath))
-                System.IO.Directory.CreateDirectory(dataPath);
-#endif
-
-            LoggerFactory = Microsoft.Extensions.Logging.LoggerFactory.Create(builder =>
-            {
-                builder
-                    .AddProvider(new TextFileLogReceiver("game.log"))
-#if DEBUG
-                    .SetMinimumLevel(LogLevel.Debug);
-#else
-					;
-#endif
-            });
-
-            Services.AddService<ILoggerFactory>(LoggerFactory);
-
-            _log = LoggerFactory.CreateLogger<ShevaGame>();
+            _log = Services.GetService<ILoggerFactory>().CreateLogger<ShevaGame>();
 
             AppDomain.CurrentDomain.UnhandledException += new UnhandledExceptionEventHandler(UnhandledExceptionHandler);
 
@@ -108,6 +82,25 @@ namespace ShevaEngine.Core
             _gameComponents = new Stack<ShevaGameComponent>();
 
             Services.AddService<IEmbeddedFilesService>(new EmbeddedFilesService());
+        }
+
+        /// <summary>
+        /// Initialize services.
+        /// </summary>
+        private void InitializeServices()
+        {
+            Services.AddService<IFileSystemService>(new FileSystemService());
+
+            Services.AddService<ILoggerFactory>(Microsoft.Extensions.Logging.LoggerFactory.Create(builder =>
+            {
+                builder
+                    .AddProvider(new TextFileLogReceiver())
+#if DEBUG
+                    .SetMinimumLevel(LogLevel.Debug);
+#else
+					;
+#endif
+            }));
         }
 
         /// <summary>
@@ -220,25 +213,11 @@ namespace ShevaEngine.Core
             InputState.Dispose();
             User.Dispose();
             Settings.Dispose();
-            Input.Dispose();
-
-            LoggerFactory.Dispose();
+            Input.Dispose();            
 
             base.OnExiting(sender, args);
         }
-
-        /// <summary>
-        /// Create loading screen.
-        /// </summary>
-        public void CreateLoadingScreen<T>() where T : ILayer, new()
-        {
-            _log.LogInformation("Loading loading screen started");
-
-            PushGameComponent(new LoadingScreenComponent<T>());
-
-            _log.LogInformation("Loading loading screen finished");
-        }
-
+        
         /// <summary>
         /// Update().
         /// </summary>        
