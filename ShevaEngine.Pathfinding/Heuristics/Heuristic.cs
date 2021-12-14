@@ -4,7 +4,7 @@
     public abstract class Heuristic
     {
         /// <summary>End node.</summary>
-        public NavigationGraphNode EndNode;
+        public NavigationGraphNode EndNode { get; set; } = null!;
 
         /// <summary>
         /// Method computes estimate cost.

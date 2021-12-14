@@ -11,15 +11,19 @@ namespace ShevaEngine.Pathfinding
         /// <summary>
         /// Method finds way between start and end.
         /// </summary>
-        public static bool FindPath(NavigationGraphNode startNode, NavigationGraphNode endNode, NavigationPath path, Heuristic heuristic = null)
+        public static bool FindPath(NavigationGraphNode startNode, NavigationGraphNode endNode, NavigationPath path, Heuristic? heuristic = null)
         {
             path.Clear();
 
             if (heuristic == null)
+            {
                 heuristic = new DistanceHeuristic();
+            }
 
             if (startNode == endNode)
+            {
                 return true;
+            }
 
             heuristic.EndNode = endNode;
 

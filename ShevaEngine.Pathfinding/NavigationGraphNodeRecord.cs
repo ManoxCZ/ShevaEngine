@@ -10,12 +10,12 @@ namespace ShevaEngine.Pathfinding
         public NavigationGraphNode Node;
         public float CostSoFar;
         public float EstimatedTotalCost;
-        public NavigationGraphConnection Connection;
+        public NavigationGraphConnection? Connection;
 
         /// <summary>
         /// Constructor.
         /// </summary>
-        public NavigationGraphNodeRecord(NavigationGraphNode node, NavigationGraphConnection connection = null,
+        public NavigationGraphNodeRecord(NavigationGraphNode node, NavigationGraphConnection? connection = null,
             float costSoFar = 0.0f, float estimatedTotalCost = float.MaxValue)
         {
             Node = node;
@@ -35,9 +35,9 @@ namespace ShevaEngine.Pathfinding
         /// <summary>
         /// Method compares two navigation graph node records.
         /// </summary>
-        public bool Equals(NavigationGraphNodeRecord x, NavigationGraphNodeRecord y)
+        public bool Equals(NavigationGraphNodeRecord? x, NavigationGraphNodeRecord? y)
         {
-            return x.Node == y.Node;
+            return x?.Node == y?.Node;
         }
 
         /// <summary>
