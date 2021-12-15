@@ -8,13 +8,13 @@ namespace ShevaEngine.Core
     public abstract class MaterialWithLights : Material
     {
         public const int MaxLightsCount = 4;
-        private EffectParameter _lightCountParameter;
-        private EffectParameter _lightTypesParameter;
-        private EffectParameter _lightPositionsParameter;
-        private EffectParameter _lightColorsParameter;
-        private EffectParameter _lightViewProjMatricesParameter;
-        private EffectParameter _lightShadowMapSizesParameter;
-        private EffectParameter _light1ShadowMapParameter;
+        private EffectParameter? _lightCountParameter;
+        private EffectParameter? _lightTypesParameter;
+        private EffectParameter? _lightPositionsParameter;
+        private EffectParameter? _lightColorsParameter;
+        private EffectParameter? _lightViewProjMatricesParameter;
+        private EffectParameter? _lightShadowMapSizesParameter;
+        private EffectParameter? _light1ShadowMapParameter;
 
         public IEnumerable<Light> Lights
         {
@@ -125,10 +125,12 @@ namespace ShevaEngine.Core
         /// <summary>
         /// Get shadow map size.
         /// </summary>
-        private Texture2D GetShadowMap(Light light)
+        private Texture2D? GetShadowMap(Light light)
         {
             if (light.Shadow is SingleMapShadow singleMapShadow)
+            {
                 return singleMapShadow.GetShadowMap();
+            }
 
             return null;
         }

@@ -7,29 +7,12 @@ namespace ShevaEngine.Core
     /// </summary>
     public class DirectionalLight : Light
     {
-        private Vector3 _direction;
+        private Vector3 _direction = Vector3.Down;
         public Vector3 Direction
         {
             get => _direction;
             set => _direction = Vector3.Normalize(value);
-        }
-
-
-        /// <summary>
-        /// Constructor.
-        /// </summary>
-        public DirectionalLight()
-            : base()
-        {
-        }
-
-        /// <summary>
-        /// Constructor.
-        /// </summary>
-        public DirectionalLight(Vector3 direction, Color color)
-            : base(color)
-        {
-        }
+        }        
 
         /// <summary>
         /// Get light camera position.

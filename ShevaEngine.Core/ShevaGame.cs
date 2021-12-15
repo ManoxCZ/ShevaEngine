@@ -72,7 +72,7 @@ namespace ShevaEngine.Core
 
             GraphicsDeviceManager.ApplyChanges();
 
-            Content = new ContentManagerEx(this, Services);
+            Content = new ContentManagerEx(Services);
 
             Window.Title = @"Sheva Engine MG";
 
@@ -108,16 +108,20 @@ namespace ShevaEngine.Core
         /// </summary>
         private static void UnhandledExceptionHandler(object sender, UnhandledExceptionEventArgs args)
         {
-            string dataPath = Path.Combine(
-                Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
-                System.Reflection.Assembly.GetEntryAssembly().GetName().Name,
-                "crash.log");
-
-            File.WriteAllLines(dataPath, new string[]
+            if (System.Reflection.Assembly.GetEntryAssembly()?.GetName().Name is string assemblyName &&
+                 args.ExceptionObject.ToString() is string exceptionText)
             {
-                 "UnhandledException",
-                 args.ExceptionObject.ToString()
-            });
+                string dataPath = Path.Combine(
+                    Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
+                    assemblyName,
+                    "crash.log");
+
+                File.WriteAllLines(dataPath, new string[]
+                {
+                    "UnhandledException",
+                    exceptionText
+                });
+            }
         }
 
         /// <summary>
@@ -183,9 +187,7 @@ namespace ShevaEngine.Core
             {
                 _log.LogInformation($"Creating new component instance of type: {componentType}");
 
-                object component = Activator.CreateInstance(componentType);
-
-                if (component is ShevaGameComponent gameComponent)
+                if (Activator.CreateInstance(componentType) is ShevaGameComponent gameComponent)
                 {
                     _log.LogInformation($"Component added to game");
 
@@ -207,7 +209,7 @@ namespace ShevaEngine.Core
         /// </summary>
         protected override void OnExiting(object sender, EventArgs args)
         {
-            ShevaGameComponent component = PopGameComponent();
+            ShevaGameComponent? component = PopGameComponent();
             component?.Dispose();
 
             InputState.Dispose();
@@ -314,11 +316,11 @@ namespace ShevaEngine.Core
         /// <summary>
         /// Pop game component.
         /// </summary>        
-        public ShevaGameComponent PopGameComponent()
+        public ShevaGameComponent? PopGameComponent()
         {
             lock (_gameComponents)
             {
-                ShevaGameComponent component = null;
+                ShevaGameComponent? component = null;
 
                 if (_gameComponents.Count > 0)
                     component = _gameComponents.Pop();

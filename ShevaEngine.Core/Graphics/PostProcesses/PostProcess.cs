@@ -10,8 +10,8 @@ namespace ShevaEngine.Core
     public abstract class PostProcess
     {
         public bool Enabled { get; set; } = true;
-        public Texture2D InputTexture { get; internal set; }
-        public Texture2D DepthTexture { get; internal set; }
+        public Texture2D InputTexture { get; internal set; } = null!;
+        public Texture2D? DepthTexture { get; internal set; }
 
 
         /// <summary>

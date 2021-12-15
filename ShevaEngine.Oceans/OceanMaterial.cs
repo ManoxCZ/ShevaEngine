@@ -11,62 +11,121 @@ namespace ShevaEngine.Oceans
     public class OceanMaterial : MaterialWithLights
     {
         private const int MAX_WAVES = 12; //same in shader
-        private EffectParameter _inverseViewProjParameter;
-        private EffectParameter _gerstnerWavesCountParameter;
-        private EffectParameter _gerstnerWavesPinch;
-        private EffectParameter _gerstnerWaveKWDParameter;
-        private EffectParameter _gerstnerWavePAParameter;
-        private EffectParameter _normalTextureParameter;
-        private EffectParameter _refractionTextureParameter;
-        private EffectParameter _depthTextureParameter;
-        private EffectParameter _oceanColorParameter;
-        private EffectParameter _skyColorParameter;
-        private EffectParameter _depthFactorParameter;
-        private EffectParameter _lightFactorParameter;
+        private EffectParameter? _inverseViewProjParameter;
+        private EffectParameter? _gerstnerWavesCountParameter;
+        private EffectParameter? _gerstnerWavesPinch;
+        private EffectParameter? _gerstnerWaveKWDParameter;
+        private EffectParameter? _gerstnerWavePAParameter;
+        private EffectParameter? _normalTextureParameter;
+        private EffectParameter? _refractionTextureParameter;
+        private EffectParameter? _depthTextureParameter;
+        private EffectParameter? _oceanColorParameter;
+        private EffectParameter? _skyColorParameter;
+        private EffectParameter? _depthFactorParameter;
+        private EffectParameter? _lightFactorParameter;
 
-        public Texture2D NormalTexture
+        public Texture2D? NormalTexture
         {
             get => _normalTextureParameter?.GetValueTexture2D();
             set => _normalTextureParameter?.SetValue(value);
         }
 
-        public Texture2D RefractionTexture
+        public Texture2D? RefractionTexture
         {
             get => _refractionTextureParameter?.GetValueTexture2D();
             set => _refractionTextureParameter?.SetValue(value);
         }
 
-        public Texture2D DepthTexture
+        public Texture2D? DepthTexture
         {
             get => _depthTextureParameter?.GetValueTexture2D();
             set => _depthTextureParameter?.SetValue(value);
         }
         private readonly Ocean _ocean;
 
-        public Color OceanColor
+        public Color? OceanColor
         {
-            get => Color.FromNonPremultiplied(_oceanColorParameter.GetValueVector4());
-            set => _oceanColorParameter?.SetValue(value.ToVector4());
+            get
+            {
+                if (_oceanColorParameter is EffectParameter parameter)
+                {
+                    Color.FromNonPremultiplied(parameter.GetValueVector4());
+                }
+
+                return null;
+            }
+            set
+            {
+                if (_oceanColorParameter is EffectParameter parameter &&
+                    value is Color colorValue)
+                {
+                    parameter.SetValue(colorValue.ToVector4());
+                }
+            }
         }
 
-        public Color SkyColor
+        public Color? SkyColor
         {
-            get => Color.FromNonPremultiplied(_skyColorParameter.GetValueVector4());
-            set => _skyColorParameter?.SetValue(value.ToVector4());
+            get
+            {
+                if (_skyColorParameter is EffectParameter parameter)
+                {
+                    Color.FromNonPremultiplied(parameter.GetValueVector4());
+                }
+
+                return null;
+            }
+            set
+            {
+                if (_skyColorParameter is EffectParameter parameter &&
+                    value is Color colorValue)
+                {
+                    parameter.SetValue(colorValue.ToVector4());
+                }
+            }
         }
 
-        public float DepthFactor
+        public float? DepthFactor
         {
-            get => _depthFactorParameter.GetValueSingle();
-            set => _depthFactorParameter?.SetValue(value);
+            get
+            {
+                if (_depthFactorParameter is EffectParameter parameter)
+                {
+                    parameter.GetValueSingle();
+                }
+
+                return null;
+            }
+            set
+            {
+                if (_depthFactorParameter is EffectParameter parameter &&
+                    value is float singleValue)
+                {
+                    parameter.SetValue(singleValue);
+                }
+            }
         }
 
-        public float LightFactor
+        public float? LightFactor
         {
-            get => _lightFactorParameter.GetValueSingle();
-            set => _lightFactorParameter?.SetValue(value);
-        }
+            get
+            {
+                if (_lightFactorParameter is EffectParameter parameter)
+                {
+                    parameter.GetValueSingle();
+                }
 
+                return null;
+            }
+            set
+            {
+                if (_lightFactorParameter is EffectParameter parameter &&
+                    value is float singleValue)
+                {
+                    parameter.SetValue(singleValue);
+                }
+            }
+        }        
 
         /// <summary>
         /// Ocean material.

@@ -156,10 +156,17 @@ namespace ShevaEngine.NoesisUI
         /// </summary>
         public Task<IViewport> GetViewport(string name)
         {
-            return RunFuncOnUIThread(() =>
+            TaskCompletionSource<IViewport> taskSource = new TaskCompletionSource<IViewport>();
+
+            RunOnUIThread(() =>
             {
-                return _view?.Content?.FindName(name) as IViewport;
+                if (_view?.Content?.FindName(name) is IViewport viewport)
+                {
+                    taskSource.SetResult(viewport);
+                }
             });
+
+            return taskSource.Task;
         }
 
         /// <summary>

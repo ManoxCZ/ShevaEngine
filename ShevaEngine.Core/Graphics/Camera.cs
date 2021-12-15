@@ -103,7 +103,7 @@ namespace ShevaEngine.Core
         public List<PostProcess> PostProcesses { get; private set; } = new List<PostProcess>();
         public BlendState BlendState
         {
-            get => _pipeline?.BlendState;
+            get => _pipeline.BlendState;
             set
             {
                 _pipeline.BlendState = value;
@@ -111,7 +111,7 @@ namespace ShevaEngine.Core
         }
         public RasterizerState RasterizerState
         {
-            get => _pipeline?.RasterizerState;
+            get => _pipeline.RasterizerState;
             set
             {
                 _pipeline.RasterizerState = value;
@@ -119,13 +119,13 @@ namespace ShevaEngine.Core
         }
         public DepthStencilState DepthStencilState
         {
-            get => _pipeline?.DepthStencilState;
+            get => _pipeline.DepthStencilState;
             set
             {
                 _pipeline.DepthStencilState = value;
             }
         }
-        private RenderTarget2D _postProcessTarget;
+        private RenderTarget2D? _postProcessTarget;
         private SpriteBatch _spriteBatch;
         private bool _saveScreen = false;
 
@@ -140,6 +140,7 @@ namespace ShevaEngine.Core
             CameraType = CameraType.Perspective;
 
             _spriteBatch = new SpriteBatch(ShevaGame.Instance.GraphicsDevice);
+            
             _pipeline = new RenderingPipeline("Camera pipeline")
             {
                 Profile = matProfile,
@@ -185,7 +186,7 @@ namespace ShevaEngine.Core
         /// <summary>
         /// Draw.
         /// </summary>
-        public void Draw(IScene scene, GameTime gameTime, RenderTarget2D renderTarget, RenderTarget2D depthTarget = null)
+        public void Draw(IScene scene, GameTime gameTime, RenderTarget2D renderTarget, RenderTarget2D? depthTarget = null)
         {
             // Get visible objects.
             _pipeline.Clear();
@@ -311,20 +312,23 @@ namespace ShevaEngine.Core
         /// <summary>
         /// Save image.
         /// </summary>
-        private void SaveImage(RenderTarget2D target, string name = null)
+        private void SaveImage(RenderTarget2D target, string? name = null)
         {
-            string directory = Path.Combine(
-                Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
-                System.Reflection.Assembly.GetEntryAssembly().GetName().Name,
-                "Screens");
+            if (System.Reflection.Assembly.GetEntryAssembly()?.GetName().Name is string assemblyName)
+            {
+                string directory = Path.Combine(
+                    Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
+                    assemblyName,
+                    "Screens");
 
-            if (!Directory.Exists(directory))
-                Directory.CreateDirectory(directory);
+                if (!Directory.Exists(directory))
+                    Directory.CreateDirectory(directory);
 
-            string realName = name == null ? $"screen{DateTime.Now.Ticks.ToString()}.png" : name + ".png";
+                string realName = name == null ? $"screen{DateTime.Now.Ticks}.png" : name + ".png";
 
-            using (Stream stream = File.Create(Path.Combine(directory, realName)))
-                target.SaveAsPng(stream, target.Width, target.Height);
+                using (Stream stream = File.Create(Path.Combine(directory, realName)))
+                    target.SaveAsPng(stream, target.Width, target.Height);
+            }
         }
     }
 }

@@ -5,8 +5,8 @@ namespace ShevaEngine.Core
 
     public class TexturedNormalMaterial : TexturedMaterial
     {
-        private EffectParameter _normalTextureParameter;
-        public Texture2D NormalTexture
+        private EffectParameter? _normalTextureParameter;
+        public Texture2D? NormalTexture
         {
             get => _normalTextureParameter?.GetValueTexture2D();
             set => _normalTextureParameter?.SetValue(value);

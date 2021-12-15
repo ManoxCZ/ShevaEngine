@@ -5,42 +5,50 @@ namespace ShevaEngine.NoesisUI
 {
     public class RelayCommand<T> : ICommand
     {
-        readonly Action<T> m_execute = null;
-        readonly Predicate<T> m_canExecute = null;
-        public event EventHandler CanExecuteChanged;
+        private Action<object?> _execute;
+        private Func<object?, bool>? _canExecute;
+        public event EventHandler? CanExecuteChanged;
 
-        /// <summary>
-        /// Initializes a new instance of <see cref="DelegateCommand{T}"/>.
-        /// </summary>
-        public RelayCommand(Action<T> execute)
-            : this(execute, null)
+
+        public RelayCommand(Action<object?> execute)
         {
+            if (execute == null)
+            {
+                throw new ArgumentNullException("execute");
+            }
+
+            _execute = execute;
         }
 
-        /// <summary>
-        /// Creates a new command.
-        /// </summary>
-        public RelayCommand(Action<T> execute, Predicate<T> canExecute)
-        {
-            m_execute = execute ?? throw new ArgumentNullException("execute");
-
-            m_canExecute = canExecute;
+        public RelayCommand(Action<object?> execute, Func<object?, bool> canExecute)
+            : this(execute)
+        {            
+            if (canExecute == null)
+            {
+                throw new ArgumentNullException("canExecute");
+            }
+            
+            _canExecute = canExecute;            
         }
 
-        ///<summary>
-        /// Defines the method that determines whether the command can execute in its current state.
-        ///</summary>
-        public bool CanExecute(object parameter)
+        public bool CanExecute(object? parameter)
         {
-            return m_canExecute == null ? true : m_canExecute((T)parameter);
+            return _canExecute == null || _canExecute((T)parameter!);
         }
 
-        /// <summary>
-        /// Execute method.
-        /// </summary>        
-        public void Execute(object parameter)
+        public void Execute(object? parameter)
         {
-            m_execute((T)parameter);
+            _execute((T)parameter!);
+        }       
+
+        public void RaiseCanExecuteChanged()
+        {
+            EventHandler? handler = CanExecuteChanged;
+
+            if (handler != null)
+            {
+                handler(this, EventArgs.Empty);
+            }
         }
     }
 }

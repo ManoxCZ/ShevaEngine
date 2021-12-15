@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using System;
 using System.Linq;
 
 namespace ShevaEngine.Core
@@ -23,11 +24,11 @@ namespace ShevaEngine.Core
         public const int SKINNED_EFFECT_MAX_BONES = 72;
         public static Matrix[] BonesIdentity;
 
-        private EffectParameter _viewParameter;
-        private EffectParameter _projParameter;
-        private EffectParameter _cameraPositionParameter;
-        private EffectParameter _gameTimeParameter;
-        private EffectParameter _bonesParameter;
+        private EffectParameter? _viewParameter;
+        private EffectParameter? _projParameter;
+        private EffectParameter? _cameraPositionParameter;
+        private EffectParameter? _gameTimeParameter;
+        private EffectParameter? _bonesParameter;
         public bool Transparent { get; set; } = false;
         public bool CastShadows { get; set; } = false;
         public bool ReceiveShadows { get; set; } = true;
@@ -36,17 +37,37 @@ namespace ShevaEngine.Core
         {
             get
             {
-                if (!Animated || _bonesParameter == null)
-                    Log.LogWarning("Material is not animated");
+                if (!Animated)
+                {
+                    return Array.Empty<Matrix>();
+                }
 
-                return _bonesParameter?.GetValueMatrixArray(SKINNED_EFFECT_MAX_BONES);
+                if (_bonesParameter == null)
+                {
+                    Log.LogWarning("Bones parameter is null");
+
+                    return Array.Empty<Matrix>();
+                }
+                else
+                {
+                    return _bonesParameter.GetValueMatrixArray(SKINNED_EFFECT_MAX_BONES);
+                }
             }
             set
             {
-                if (!Animated || _bonesParameter == null)
-                    Log.LogWarning("Material is not animated");
+                if (!Animated)
+                {
+                    return;
+                }
 
-                _bonesParameter?.SetValue(value);
+                if (_bonesParameter == null)
+                {
+                    Log.LogWarning("Bones parameter is null");
+                }
+                else
+                {
+                    _bonesParameter.SetValue(value);
+                }
             }
         }
 

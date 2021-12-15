@@ -11,12 +11,12 @@ namespace ShevaEngine.NoesisUI
             if (value is Enum)
                 return Enum.GetValues(value.GetType());
 
-            return null;
+            return null!;
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            return null;
+            return null!;
         }
     }
 }

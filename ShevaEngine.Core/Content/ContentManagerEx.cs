@@ -2,8 +2,6 @@
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using System;
-using System.Collections.Generic;
-using System.IO;
 
 namespace ShevaEngine.Core
 {
@@ -12,18 +10,16 @@ namespace ShevaEngine.Core
     /// </summary>
     public class ContentManagerEx : ContentManager
     {
-        private readonly ILogger _log;
-        private readonly ShevaGame _game;
+        private readonly ILogger _log;        
         private object _lock = new object();
 
         /// <summary>
         /// Constructor.
         /// </summary>		
-        public ContentManagerEx(ShevaGame game, IServiceProvider serviceProvider)
+        public ContentManagerEx(IServiceProvider serviceProvider)
             : base(serviceProvider)
         {
-            _log = ShevaServices.GetService<ILoggerFactory>().CreateLogger<ContentManagerEx>();
-            _game = game;
+            _log = ShevaServices.GetService<ILoggerFactory>().CreateLogger<ContentManagerEx>();            
         }
 
         /// <summary>
@@ -56,9 +52,13 @@ namespace ShevaEngine.Core
                     }
 
                     if (output == null)
+                    {
                         _log.LogWarning($"Can't load");
-
-                    _log.LogInformation($"Successfully loaded");
+                    }
+                    else
+                    {
+                        _log.LogInformation($"Successfully loaded");
+                    }
 
                     return output;
                 }
@@ -68,12 +68,7 @@ namespace ShevaEngine.Core
                 _log.LogError($"Can't load content item: {assetName}", ex);
             }
 
-            return default;
-        }
-
-        /// <summary>
-        /// Open stream method.
-        /// </summary>
-        public Stream OpenStream(string assetName) => base.OpenStream(assetName);
+            return default!;
+        }        
     }
 }

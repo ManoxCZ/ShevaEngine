@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Noesis;
 using ShevaEngine.Core;
 using ShevaEngine.Core.UI;
+using System.Reflection;
 
 namespace ShevaEngine.NoesisUI
 {
@@ -71,26 +72,35 @@ namespace ShevaEngine.NoesisUI
                     Name = $"{nameof(Viewport)} - Render target"
                 };
 
-                System.Reflection.FieldInfo info = typeof(RenderTarget2D).GetField("_texture", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic);
-                SharpDX.Direct3D11.Resource handle = info.GetValue(_renderTarget) as SharpDX.Direct3D11.Resource;
-
-                _image.Source = new TextureSource(RenderDeviceD3D11.WrapTexture(_renderTarget, handle.NativePointer, _renderTarget.Width, _renderTarget.Height, 1, false, true));
-
-                _image.Width = finalSize.Width;
-                _image.Height = finalSize.Height;
-
-                _depthTarget?.Dispose();
-
-                _depthTarget = new RenderTarget2D(
-                        ShevaGame.Instance.GraphicsDevice,
-                        (int)finalSize.Width,
-                        (int)finalSize.Height,
-                        false,
-                        SurfaceFormat.Single,
-                        DepthFormat.None)
+                if (typeof(RenderTarget2D).GetField("_texture", BindingFlags.Instance | BindingFlags.NonPublic) is FieldInfo info &&
+                    info.GetValue(_renderTarget) as SharpDX.Direct3D11.Resource is SharpDX.Direct3D11.Resource handle)
                 {
-                    Name = $"{nameof(Viewport)} - Depth render target"
-                };
+                    _image.Source = new TextureSource(
+                        RenderDeviceD3D11.WrapTexture(
+                            _renderTarget, 
+                            handle.NativePointer, 
+                            _renderTarget.Width, 
+                            _renderTarget.Height, 
+                            1, 
+                            false,
+                            true));
+
+                    _image.Width = finalSize.Width;
+                    _image.Height = finalSize.Height;
+
+                    _depthTarget?.Dispose();
+
+                    _depthTarget = new RenderTarget2D(
+                            ShevaGame.Instance.GraphicsDevice,
+                            (int)finalSize.Width,
+                            (int)finalSize.Height,
+                            false,
+                            SurfaceFormat.Single,
+                            DepthFormat.None)
+                    {
+                        Name = $"{nameof(Viewport)} - Depth render target"
+                    };
+                }
             }
 
             if (Camera != null)

@@ -4,19 +4,19 @@ namespace ShevaEngine.Core.Graphics.Materials
 {
     public class PhysicallyBasedMaterial : TexturedNormalMaterial
     {
-        private readonly EffectParameter _metallicTexture;
-        private readonly EffectParameter _roughnessTexture;
-        private readonly EffectParameter _aoTexture;
-        private readonly EffectParameter _enviroTexture;
-        private readonly EffectParameter _irradianceTexture;
-        private readonly EffectParameter _brdfLutTexture;
+        private readonly EffectParameter? _metallicTexture;
+        private readonly EffectParameter? _roughnessTexture;
+        private readonly EffectParameter? _aoTexture;
+        private readonly EffectParameter? _enviroTexture;
+        private readonly EffectParameter? _irradianceTexture;
+        private readonly EffectParameter? _brdfLutTexture;
 
-        private readonly EffectParameter _uniformRoughness;
-        private readonly EffectParameter _uniformMetallic;
+        private readonly EffectParameter? _uniformRoughness;
+        private readonly EffectParameter? _uniformMetallic;
 
-        private readonly EffectParameter _useAOTexture;
-        private readonly EffectParameter _useMetallicTexture;
-        private readonly EffectParameter _useRoughnessTexture;
+        private readonly EffectParameter? _useAOTexture;
+        private readonly EffectParameter? _useMetallicTexture;
+        private readonly EffectParameter? _useRoughnessTexture;
 
         protected PhysicallyBasedMaterial(Effect effect)
             : base(effect)
@@ -59,49 +59,79 @@ namespace ShevaEngine.Core.Graphics.Materials
             set => _useMetallicTexture?.SetValue(value);
         }
 
-        public float UniformRoughness
+        public float? UniformRoughness
         {
-            get => (float)_uniformRoughness?.GetValueSingle();
-            set => _uniformRoughness?.SetValue(value);
-        }
+            get
+            {
+                if (_uniformRoughness is EffectParameter parameter)
+                {
+                    parameter.GetValueSingle();
+                }
 
-        public float UniformMetallic
+                return null;
+            }
+            set
+            {
+                if (_uniformRoughness is EffectParameter parameter &&
+                    value is float singleValue)
+                {
+                    parameter.SetValue(singleValue);
+                }
+            }
+        }        
+
+        public float? UniformMetallic
         {
-            get => (float)_uniformMetallic?.GetValueSingle();
-            set => _uniformMetallic?.SetValue(value);
-        }
+            get
+            {
+                if (_uniformMetallic is EffectParameter parameter)
+                {
+                    parameter.GetValueSingle();
+                }
 
-        public Texture2D MetallicTexture
+                return null;
+            }
+            set
+            {
+                if (_uniformMetallic is EffectParameter parameter &&
+                    value is float singleValue)
+                {
+                    parameter.SetValue(singleValue);
+                }
+            }
+        }       
+
+        public Texture2D? MetallicTexture
         {
             get => _metallicTexture?.GetValueTexture2D();
             set => _metallicTexture?.SetValue(value);
         }
 
-        public Texture2D RoughnessTexture
+        public Texture2D? RoughnessTexture
         {
             get => _roughnessTexture?.GetValueTexture2D();
             set => _roughnessTexture?.SetValue(value);
         }
 
-        public Texture2D AOTexture
+        public Texture2D? AOTexture
         {
             get => _aoTexture?.GetValueTexture2D();
             set => _aoTexture?.SetValue(value);
         }
 
-        public TextureCube EnviroTexture
+        public TextureCube? EnviroTexture
         {
             get => _enviroTexture?.GetValueTextureCube();
             set => _enviroTexture?.SetValue(value);
         }
 
-        public TextureCube IrradianceTexture
+        public TextureCube? IrradianceTexture
         {
             get => _irradianceTexture?.GetValueTextureCube();
             set => _irradianceTexture?.SetValue(value);
         }
 
-        public Texture2D BrdfLutTexture
+        public Texture2D? BrdfLutTexture
         {
             get => _brdfLutTexture?.GetValueTexture2D();
             set => _brdfLutTexture?.SetValue(value);

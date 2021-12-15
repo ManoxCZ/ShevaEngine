@@ -5,8 +5,8 @@ namespace ShevaEngine.Core
 
     public class TexturedMaterial : ColoredMaterial
     {
-        private EffectParameter _textureParameter;
-        public Texture2D Texture
+        private EffectParameter? _textureParameter;
+        public Texture2D? Texture
         {
             get => _textureParameter?.GetValueTexture2D();
             set => _textureParameter?.SetValue(value);
