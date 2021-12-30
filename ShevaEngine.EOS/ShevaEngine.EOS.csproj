@@ -1,0 +1,28 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+  <DefineConstants>EOS_PLATFORM_WINDOWS_64</DefineConstants>
+    <TargetFramework>net5.0-windows</TargetFramework>    
+    <Platforms>x86;x64</Platforms>
+    <OutputType>Library</OutputType>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <MonoGamePlatform>WindowsDX</MonoGamePlatform>
+    <Configurations>Debug;Release</Configurations>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>  
+  <ItemGroup>        
+    <PackageReference Include="MonoGame.Framework.WindowsDX" Version="3.8.0.1641" />
+    <PackageReference Include="Microsoft.Extensions.Logging" Version="5.0.0" />
+  </ItemGroup>  
+  <ItemGroup>
+    <ProjectReference Include="..\ShevaEngine.Core\ShevaEngine.Core.csproj" />
+  </ItemGroup>  
+  <ItemGroup>
+    <None Update="EOSSDK-Win64-Shipping.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="xaudio2_9redist.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+</Project>
