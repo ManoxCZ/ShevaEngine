@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
   <DefineConstants>EOS_PLATFORM_WINDOWS_64</DefineConstants>
-    <TargetFramework>net5.0-windows</TargetFramework>    
+    <TargetFramework>net6.0-windows</TargetFramework>    
     <Platforms>x86;x64</Platforms>
     <OutputType>Library</OutputType>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
@@ -9,6 +9,8 @@
     <Configurations>Debug;Release</Configurations>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <Nullable>enable</Nullable>
+	<EOSSDKPlatform>Win64</EOSSDKPlatform>
+	<XAudio2Platform>x64</XAudio2Platform>
   </PropertyGroup>  
   <ItemGroup>        
     <PackageReference Include="MonoGame.Framework.WindowsDX" Version="3.8.0.1641" />

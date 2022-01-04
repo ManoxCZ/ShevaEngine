@@ -1,5 +1,5 @@
 ﻿using Microsoft.Xna.Framework.Graphics;
-using System;
+using ShevaEngine.Core.UserAccounts;
 using System.Threading.Tasks;
 
 namespace ShevaEngine.UserAccounts
@@ -7,12 +7,12 @@ namespace ShevaEngine.UserAccounts
     /// <summary>
     /// User data.
     /// </summary>
-    public class UserData
+    public class UserData : IUserData
     {
         public static UserData Connecting = new UserData();
 
         public string GamerName { get; internal set; }
-        public Texture2D GamerPicture { get; internal set; }
+        public Texture2D? GamerPicture { get; internal set; }
 #if WINDOWS_UAP
         public Microsoft.Xbox.Services.System.XboxLiveUser XboxLiveUser { get; internal set; }
 #endif

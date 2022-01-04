@@ -24,7 +24,7 @@ namespace ShevaEngine.UserAccounts
         private Microsoft.Xbox.Services.System.XboxLiveUser _xboxLiveUser;
         private Microsoft.Xbox.Services.Statistics.Manager.StatisticManager _statisticManager => Microsoft.Xbox.Services.Statistics.Manager.StatisticManager.SingletonInstance;
 #endif
-        public BehaviorSubject<UserData> Data { get; private set; }
+        public BehaviorSubject<UserData?> UserData { get; private set; }
         public CancellationTokenSource _cancellationTokenSource;
         public readonly object _picturesLock = new object();
         public readonly SortedDictionary<string, Texture2D> _picturesCache = new SortedDictionary<string, Texture2D>();

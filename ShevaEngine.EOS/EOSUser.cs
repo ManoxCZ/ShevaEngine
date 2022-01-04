@@ -2,10 +2,13 @@
 using Epic.OnlineServices.Auth;
 using Epic.OnlineServices.Logging;
 using Epic.OnlineServices.Platform;
+using Epic.OnlineServices.UserInfo;
 using Microsoft.Extensions.Logging;
 using ShevaEngine.Core;
 using ShevaEngine.Core.UserAccounts;
+using System;
 using System.IO;
+using System.Reactive.Subjects;
 using System.Threading.Tasks;
 using System.Timers;
 
@@ -24,7 +27,9 @@ namespace ShevaEngine.EOS
 
         private readonly ILogger _log = null!;
         private readonly PlatformInterface _platformInterface;
-        private readonly Timer _timer = new Timer(100); 
+        private readonly Timer _timer = new Timer(100);
+
+        public BehaviorSubject<IUserData?> UserData { get; } = new BehaviorSubject<IUserData?>(null);
 
 
         public EOSUser(ShevaGame game)
@@ -114,13 +119,15 @@ namespace ShevaEngine.EOS
             }
             else
             {
-                throw new System.Exception("Failed to create platform");
+                throw new Exception("Failed to create platform");
             }            
         }
 
         public Task<bool> ConnectToService(bool silently = false)
         {
             TaskCompletionSource<bool> taskCompletionSource = new TaskCompletionSource<bool>();
+
+            UserData.OnNext(new ConnectingUserData());
 
             Task.Run(() =>
             {
@@ -138,9 +145,40 @@ namespace ShevaEngine.EOS
                     ScopeFlags = AuthScopeFlags.NoFlags,
                 };
 
+                OnQueryUserInfoCallback onUserQueryCallback = (info) =>
+                {
+                    try
+                    {
+                        CopyUserInfoOptions? copyUserInfoOptions = new CopyUserInfoOptions()
+                        {
+                            LocalUserId = info.LocalUserId,
+                            TargetUserId = info.TargetUserId
+                        };
+
+                        Result result = _platformInterface.GetUserInfoInterface().CopyUserInfo(copyUserInfoOptions, out UserInfoData userInfoData);
+
+                        if (userInfoData != null)
+                        {
+                            UserData.OnNext(new EOSUserData(userInfoData));
+                        }
+                    }
+                    catch (MissingMethodException ex)
+                    {
+                        _log.LogError(ex, nameof(MissingMethodException));
+                    }
+                };
+
                 OnLoginCallback loginHandler = (info) => 
                 {
                     taskCompletionSource.SetResult(info.ResultCode == Result.Success);
+
+                    QueryUserInfoOptions userQueryOptions = new QueryUserInfoOptions()
+                    {
+                        LocalUserId = info.LocalUserId,
+                        TargetUserId = info.LocalUserId,
+                    };
+
+                    _platformInterface.GetUserInfoInterface().QueryUserInfo(userQueryOptions, null!, onUserQueryCallback);                    
                 };
 
                 _platformInterface.GetAuthInterface().Login(loginOptions, null!, loginHandler);

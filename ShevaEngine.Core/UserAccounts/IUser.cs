@@ -6,6 +6,8 @@ namespace ShevaEngine.Core.UserAccounts
 {
     public interface IUser : IDisposable
     {
+        BehaviorSubject<IUserData?> UserData { get; }
+
         Task<bool> ConnectToService(bool silently = false);
     }
 }
