@@ -38,3 +38,6 @@ ShevaEngine.NoesisUI/Content/obj/
 ShevaEngine.NoesisUI/Content/bin/
 ShevaEngine.EOS/obj
 ShevaEngine.EOS/bin
+ShevaEngine.NoesisUI/NoesisUIWrapper.cs
+ShevaEngine.Terrain/bin/
+ShevaEngine.Terrain/obj/

@@ -10,6 +10,7 @@ namespace ShevaEngine.NoesisUI
     {
         public static string LICENSE_NAME = "";
         public static string LICENSE_KEY = "";
+        public static string THEME_FILENAME = "Themes.Theme";
 
         private readonly ILogger _log = ShevaServices.GetService<ILoggerFactory>().CreateLogger<NoesisUIWrapper>();        
 
@@ -52,7 +53,7 @@ namespace ShevaEngine.NoesisUI
                 NoesisApp.Theme.DefaultFontStretch,
                 NoesisApp.Theme.DefaultFontStyle);
 
-            Noesis.GUI.LoadApplicationResources("Themes.Theme.xaml");
+            Noesis.GUI.LoadApplicationResources(THEME_FILENAME + ".xaml");
         }
 
         /// <summary>

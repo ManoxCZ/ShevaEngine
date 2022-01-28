@@ -4,7 +4,7 @@
 #include "Skinned.fx"
 
 Texture2D<float4> Texture : register(t1);
-sampler TextureSampler: register(s1)
+sampler2D TextureSampler = sampler_state
 {
 	Texture = <Texture>;
 };

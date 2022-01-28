@@ -33,7 +33,7 @@ namespace ShevaEngine.NoesisUI
                 _log.LogInformation($"Xaml file found and loaded!");
 
                 return stream;
-            }
+            }            
 
             _log.LogError($"Can't find xaml file!");
 

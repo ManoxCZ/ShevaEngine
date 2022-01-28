@@ -1,0 +1,21 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+	<PropertyGroup>
+		<TargetFramework>net6.0-windows</TargetFramework>
+		<Platforms>x86;x64</Platforms>
+		<OutputType>Library</OutputType>
+		<AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+		<MonoGamePlatform>WindowsDX</MonoGamePlatform>
+		<Configurations>Debug;Release</Configurations>
+		<Nullable>enable</Nullable>
+	</PropertyGroup>
+	<ItemGroup>
+		<MonoGameContentReference Include="Content\Content.mgcb" />
+	</ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="MonoGame.Content.Builder.Task" Version="3.8.0.1641" />
+		<PackageReference Include="MonoGame.Framework.WindowsDX" Version="3.8.0.1641" />
+	</ItemGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\ShevaEngine.Core\ShevaEngine.Core.csproj" />
+	</ItemGroup>
+</Project>

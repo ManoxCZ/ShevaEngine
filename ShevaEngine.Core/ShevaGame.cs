@@ -213,7 +213,7 @@ namespace ShevaEngine.Core
             component?.Dispose();
 
             InputState.Dispose();
-            User.Dispose();
+            User?.Dispose();
             Settings.Dispose();
             Input.Dispose();            
 
