@@ -1,54 +1,53 @@
 ﻿using System;
 using System.Windows.Input;
 
-namespace ShevaEngine.NoesisUI
+namespace ShevaEngine.NoesisUI;
+
+public class RelayCommand<T> : ICommand
 {
-    public class RelayCommand<T> : ICommand
+    private Action<object?> _execute;
+    private Func<object?, bool>? _canExecute;
+    public event EventHandler? CanExecuteChanged;
+
+
+    public RelayCommand(Action<object?> execute)
     {
-        private Action<object?> _execute;
-        private Func<object?, bool>? _canExecute;
-        public event EventHandler? CanExecuteChanged;
-
-
-        public RelayCommand(Action<object?> execute)
+        if (execute == null)
         {
-            if (execute == null)
-            {
-                throw new ArgumentNullException("execute");
-            }
-
-            _execute = execute;
+            throw new ArgumentNullException("execute");
         }
 
-        public RelayCommand(Action<object?> execute, Func<object?, bool> canExecute)
-            : this(execute)
-        {            
-            if (canExecute == null)
-            {
-                throw new ArgumentNullException("canExecute");
-            }
-            
-            _canExecute = canExecute;            
+        _execute = execute;
+    }
+
+    public RelayCommand(Action<object?> execute, Func<object?, bool> canExecute)
+        : this(execute)
+    {            
+        if (canExecute == null)
+        {
+            throw new ArgumentNullException("canExecute");
         }
+        
+        _canExecute = canExecute;            
+    }
 
-        public bool CanExecute(object? parameter)
+    public bool CanExecute(object? parameter)
+    {
+        return _canExecute == null || _canExecute((T)parameter!);
+    }
+
+    public void Execute(object? parameter)
+    {
+        _execute((T)parameter!);
+    }       
+
+    public void RaiseCanExecuteChanged()
+    {
+        EventHandler? handler = CanExecuteChanged;
+
+        if (handler != null)
         {
-            return _canExecute == null || _canExecute((T)parameter!);
-        }
-
-        public void Execute(object? parameter)
-        {
-            _execute((T)parameter!);
-        }       
-
-        public void RaiseCanExecuteChanged()
-        {
-            EventHandler? handler = CanExecuteChanged;
-
-            if (handler != null)
-            {
-                handler(this, EventArgs.Empty);
-            }
+            handler(this, EventArgs.Empty);
         }
     }
 }

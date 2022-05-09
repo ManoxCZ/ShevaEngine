@@ -1,26 +1,15 @@
 ﻿using System.Collections.Generic;
 
-namespace ShevaEngine.Pathfinding
+namespace ShevaEngine.Pathfinding;
+
+public abstract class NavigationGraphNode
 {
-    /// <summary>
-    /// Navigation graph node.
-    /// </summary>
-    public abstract class NavigationGraphNode
+    public List<NavigationGraphConnection> Connections;
+
+    protected NavigationGraphNode()
     {
-        /// <summary>Connections.</summary>
-        public List<NavigationGraphConnection> Connections;
-
-        /// <summary>
-        /// Constructor.
-        /// </summary>
-        protected NavigationGraphNode()
-        {
-            Connections = new List<NavigationGraphConnection>();
-        }
-
-        /// <summary>
-        /// Distance to.
-        /// </summary>
-        public abstract float DistanceTo(NavigationGraphNode node);
+        Connections = new List<NavigationGraphConnection>();
     }
+
+    public abstract float DistanceTo(NavigationGraphNode node);
 }

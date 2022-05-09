@@ -1,14 +1,8 @@
-﻿namespace ShevaEngine.Pathfinding
-{
-    /// <summary>Heuristic.</summary>
-    public abstract class Heuristic
-    {
-        /// <summary>End node.</summary>
-        public NavigationGraphNode EndNode { get; set; } = null!;
+﻿namespace ShevaEngine.Pathfinding.Heuristics;
 
-        /// <summary>
-        /// Method computes estimate cost.
-        /// </summary>
-        public abstract float Estimate(NavigationGraphNode node);
-    }
+public abstract class Heuristic
+{
+    public NavigationGraphNode EndNode { get; set; } = null!;
+
+    public abstract float Estimate(NavigationGraphNode node);
 }

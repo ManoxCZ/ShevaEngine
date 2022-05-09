@@ -4,38 +4,31 @@ using ShevaEngine.Core;
 using System;
 using System.IO;
 
-namespace ShevaEngine.NoesisUI
+namespace ShevaEngine.NoesisUI;
+
+internal class TextureProvider : FileTextureProvider
 {
-    public class TextureProvider : FileTextureProvider
+    private readonly ILogger _log;
+
+
+    public TextureProvider()
     {
-        private readonly ILogger _log;
+        _log = ShevaGame.Instance.Services.GetService<ILoggerFactory>().CreateLogger(GetType());
+    }
 
+    public override Stream OpenStream(Uri filename)
+    {
+        _log.LogInformation($"Loading file: {filename}");
 
-        /// <summary>
-        /// Constructor.
-        /// </summary>
-        public TextureProvider()
+        if (ShevaServices.GetService<IEmbeddedFilesService>().TryGetStream(filename.OriginalString, out Stream stream))
         {
-            _log = ShevaGame.Instance.Services.GetService<ILoggerFactory>().CreateLogger(GetType());
+            _log.LogInformation($"File found and loaded!");
+
+            return stream;
         }
 
-        /// <summary>
-        /// Load xaml.
-        /// </summary>
-        public override Stream OpenStream(Uri filename)
-        {
-            _log.LogInformation($"Loading file: {filename}");
+        _log.LogError($"Can't find file!");
 
-            if (ShevaServices.GetService<IEmbeddedFilesService>().TryGetStream(filename.OriginalString, out Stream stream))
-            {
-                _log.LogInformation($"File found and loaded!");
-
-                return stream;
-            }
-
-            _log.LogError($"Can't find file!");
-
-            return null!;
-        }
+        return null!;
     }
 }

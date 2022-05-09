@@ -1,18 +1,9 @@
-﻿using Microsoft.Xna.Framework;
+﻿namespace ShevaEngine.Pathfinding.Heuristics;
 
-namespace ShevaEngine.Pathfinding
+public class DistanceHeuristic : Heuristic
 {
-    /// <summary>
-    /// Distance heuristic.
-    /// </summary>
-    public class DistanceHeuristic : Heuristic
+    public override float Estimate(NavigationGraphNode node)
     {
-        /// <summary>
-        /// Method computes estimate cost.
-        /// </summary>
-        public override float Estimate(NavigationGraphNode node)
-        {
-            return node.DistanceTo(EndNode);
-        }
+        return node.DistanceTo(EndNode);
     }
 }

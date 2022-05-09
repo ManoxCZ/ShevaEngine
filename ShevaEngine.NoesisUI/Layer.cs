@@ -7,189 +7,162 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace ShevaEngine.NoesisUI
+namespace ShevaEngine.NoesisUI;
+
+public class Layer<U> : ILayer where U : UserControl, new()
 {
-    public class Layer<U> : ILayer where U : UserControl, new()
+    public bool IsActive { get; set; } = true;
+    private View _view = null!;
+    public object DataContext
     {
-        public bool IsActive { get; set; } = true;
-        private View _view = null!;
-        public object DataContext
-        {
-            get => _view.Content.DataContext;
-            set
-            {
-                RunOnUIThread(() =>
-                {
-                    if (_view.Content != null)
-                    {
-                        _view.Content.DataContext = value;
-                    }
-                });
-            }
-        }
-        private InputState _previousInputState = null!;
-
-
-        /// <summary>
-        /// Constructor.
-        /// </summary>        
-        public Layer()
+        get => _view.Content.DataContext;
+        set
         {
             RunOnUIThread(() =>
             {
-                _view = GUI.CreateView(new U());
-
-                RenderDeviceD3D11 device = new RenderDeviceD3D11(
-                    ((SharpDX.Direct3D11.Device)ShevaGame.Instance.GraphicsDevice.Handle).ImmediateContext.NativePointer, false);
-
-                _view.Renderer.Init(device);
-                _view.SetFlags(RenderFlags.LCD | RenderFlags.PPAA);
-            });
-        }
-
-
-        public void Update(GameTime time)
-        {
-            _view.Update(time.TotalGameTime.TotalSeconds);
-        }
-
-        /// <summary>
-		/// Method draw UI.
-		/// </summary>
-		public void Draw(GameTime time)
-        {
-            _view.Renderer.UpdateRenderTree();
-
-            foreach (Viewport viewport in GetChildrenOfType<Viewport>(_view.Content))
-                viewport.Render(time);
-
-            _view.Renderer.Render();
-        }
-
-        /// <summary>
-        /// Get children of type.
-        /// </summary>
-        public static IEnumerable<T> GetChildrenOfType<T>(DependencyObject root)
-            where T : DependencyObject
-        {
-            if (root != null)
-            {
-                for (int i = 0; i < VisualTreeHelper.GetChildrenCount(root); i++)
+                if (_view.Content != null)
                 {
-                    DependencyObject child = VisualTreeHelper.GetChild(root, i);
-
-                    if (child is T tInstance)
-                        yield return tInstance;
-
-                    foreach (T instance in GetChildrenOfType<T>(child))
-                        yield return instance;
+                    _view.Content.DataContext = value;
                 }
-            }
-        }
-
-        /// <summary>
-		/// Resize.
-		/// </summary>        
-		public void OnWindowResize(int width, int height)
-        {
-            RunOnUIThread(() =>
-            {
-                _view.SetSize(width, height);
             });
         }
+    }
 
-        /// <summary>
-        /// Update input.
-        /// </summary>        
-        public bool UpdateInput(InputState state)
+    private InputState _previousInputState = null!;
+
+
+    public Layer()
+    {
+        RunOnUIThread(() =>
         {
-            bool eventHandled = false;
+            _view = GUI.CreateView(new U());
 
-            if (_previousInputState == null)
-                _previousInputState = state;
+            RenderDeviceD3D11 device = new RenderDeviceD3D11(
+                ((SharpDX.Direct3D11.Device)ShevaGame.Instance.GraphicsDevice.Handle).ImmediateContext.NativePointer, false);
 
-            eventHandled = eventHandled || UpdateMouse(state);
+            _view.Renderer.Init(device);
+            _view.SetFlags(RenderFlags.LCD | RenderFlags.PPAA);
+        });
+    }
 
+
+    public void Update(GameTime time)
+    {
+        _view.Update(time.TotalGameTime.TotalSeconds);
+    }
+
+    public void Draw(GameTime time)
+    {
+        _view.Renderer.UpdateRenderTree();
+
+        foreach (Viewport viewport in GetChildrenOfType<Viewport>(_view.Content))
+            viewport.Render(time);
+
+        _view.Renderer.Render();
+    }
+
+    public static IEnumerable<T> GetChildrenOfType<T>(DependencyObject root)
+        where T : DependencyObject
+    {
+        if (root != null)
+        {
+            for (int i = 0; i < VisualTreeHelper.GetChildrenCount(root); i++)
+            {
+                DependencyObject child = VisualTreeHelper.GetChild(root, i);
+
+                if (child is T tInstance)
+                    yield return tInstance;
+
+                foreach (T instance in GetChildrenOfType<T>(child))
+                    yield return instance;
+            }
+        }
+    }
+
+    public void OnWindowResize(int width, int height)
+    {
+        RunOnUIThread(() =>
+        {
+            _view.SetSize(width, height);
+        });
+    }
+
+    public bool UpdateInput(InputState state)
+    {
+        bool eventHandled = false;
+
+        if (_previousInputState == null)
             _previousInputState = state;
 
-            return eventHandled;
-        }
+        eventHandled = eventHandled || UpdateMouse(state);
 
-        /// <summary>
-        /// Update mouse.
-        /// </summary>        
-        private bool UpdateMouse(InputState state)
+        _previousInputState = state;
+
+        return eventHandled;
+    }
+
+    private bool UpdateMouse(InputState state)
+    {
+        bool eventHandled = false;
+
+        if (_previousInputState.MouseState.LeftButton == ButtonState.Released &&
+            state.MouseState.LeftButton == ButtonState.Pressed)
+            eventHandled = eventHandled || _view.MouseButtonDown(state.MouseState.X, state.MouseState.Y, MouseButton.Left);
+
+        if (_previousInputState.MouseState.LeftButton == ButtonState.Pressed &&
+            state.MouseState.LeftButton == ButtonState.Released)
+            eventHandled = eventHandled || _view.MouseButtonUp(state.MouseState.X, state.MouseState.Y, MouseButton.Left);
+
+        if (_previousInputState.MouseState.RightButton == ButtonState.Released &&
+            state.MouseState.RightButton == ButtonState.Pressed)
+            eventHandled = eventHandled || _view.MouseButtonDown(state.MouseState.X, state.MouseState.Y, MouseButton.Right);
+
+        if (_previousInputState.MouseState.RightButton == ButtonState.Pressed &&
+            state.MouseState.RightButton == ButtonState.Released)
+            eventHandled = eventHandled || _view.MouseButtonUp(state.MouseState.X, state.MouseState.Y, MouseButton.Right);
+
+        if (state.MouseState.ScrollWheelValue != _previousInputState.MouseState.ScrollWheelValue)
+            eventHandled = eventHandled || _view.MouseWheel(state.MouseState.X, state.MouseState.Y, state.MouseState.ScrollWheelValue - _previousInputState.MouseState.ScrollWheelValue);
+
+        if (state.MouseState.HorizontalScrollWheelValue != _previousInputState.MouseState.HorizontalScrollWheelValue)
+            eventHandled = eventHandled || _view.MouseHWheel(state.MouseState.X, state.MouseState.Y, state.MouseState.HorizontalScrollWheelValue - _previousInputState.MouseState.HorizontalScrollWheelValue);
+
+        if (state.MouseState.X != _previousInputState.MouseState.X ||
+            state.MouseState.Y != _previousInputState.MouseState.Y)
+            eventHandled = eventHandled || _view.MouseMove(state.MouseState.X, state.MouseState.Y);
+
+        return eventHandled;
+    }
+
+    public Task<IViewport> GetViewport(string name)
+    {
+        TaskCompletionSource<IViewport> taskSource = new TaskCompletionSource<IViewport>();
+
+        RunOnUIThread(() =>
         {
-            bool eventHandled = false;
-
-            if (_previousInputState.MouseState.LeftButton == ButtonState.Released &&
-                state.MouseState.LeftButton == ButtonState.Pressed)
-                eventHandled = eventHandled || _view.MouseButtonDown(state.MouseState.X, state.MouseState.Y, MouseButton.Left);
-
-            if (_previousInputState.MouseState.LeftButton == ButtonState.Pressed &&
-                state.MouseState.LeftButton == ButtonState.Released)
-                eventHandled = eventHandled || _view.MouseButtonUp(state.MouseState.X, state.MouseState.Y, MouseButton.Left);
-
-            if (_previousInputState.MouseState.RightButton == ButtonState.Released &&
-                state.MouseState.RightButton == ButtonState.Pressed)
-                eventHandled = eventHandled || _view.MouseButtonDown(state.MouseState.X, state.MouseState.Y, MouseButton.Right);
-
-            if (_previousInputState.MouseState.RightButton == ButtonState.Pressed &&
-                state.MouseState.RightButton == ButtonState.Released)
-                eventHandled = eventHandled || _view.MouseButtonUp(state.MouseState.X, state.MouseState.Y, MouseButton.Right);
-
-            if (state.MouseState.ScrollWheelValue != _previousInputState.MouseState.ScrollWheelValue)
-                eventHandled = eventHandled || _view.MouseWheel(state.MouseState.X, state.MouseState.Y, state.MouseState.ScrollWheelValue - _previousInputState.MouseState.ScrollWheelValue);
-
-            if (state.MouseState.HorizontalScrollWheelValue != _previousInputState.MouseState.HorizontalScrollWheelValue)
-                eventHandled = eventHandled || _view.MouseHWheel(state.MouseState.X, state.MouseState.Y, state.MouseState.HorizontalScrollWheelValue - _previousInputState.MouseState.HorizontalScrollWheelValue);
-
-            if (state.MouseState.X != _previousInputState.MouseState.X ||
-                state.MouseState.Y != _previousInputState.MouseState.Y)
-                eventHandled = eventHandled || _view.MouseMove(state.MouseState.X, state.MouseState.Y);
-
-            return eventHandled;
-        }
-
-        /// <summary>
-        /// Get viewport.
-        /// </summary>
-        public Task<IViewport> GetViewport(string name)
-        {
-            TaskCompletionSource<IViewport> taskSource = new TaskCompletionSource<IViewport>();
-
-            RunOnUIThread(() =>
+            if (_view?.Content?.FindName(name) is IViewport viewport)
             {
-                if (_view?.Content?.FindName(name) is IViewport viewport)
-                {
-                    taskSource.SetResult(viewport);
-                }
-            });
+                taskSource.SetResult(viewport);
+            }
+        });
 
-            return taskSource.Task;
-        }
+        return taskSource.Task;
+    }
 
-        /// <summary>
-        /// Run on UI thread.
-        /// </summary>        
-        public void RunOnUIThread(Action action)
+    public void RunOnUIThread(Action action)
+    {
+        ShevaGame.Instance.SynchronizationContext.Send(_ => action(), null);
+    }
+
+    public Task<T> RunFuncOnUIThread<T>(Func<T> function)
+    {
+        TaskCompletionSource<T> taskSource = new TaskCompletionSource<T>();
+
+        ShevaGame.Instance.SynchronizationContext.Send(_ =>
         {
-            ShevaGame.Instance.SynchronizationContext.Send(_ => action(), null);
-        }
+            taskSource.SetResult(function());
+        }, null);
 
-        /// <summary>
-        /// Run on UI thread.
-        /// </summary>        
-        public Task<T> RunFuncOnUIThread<T>(Func<T> function)
-        {
-            TaskCompletionSource<T> taskSource = new TaskCompletionSource<T>();
-
-            ShevaGame.Instance.SynchronizationContext.Send(_ =>
-            {
-                taskSource.SetResult(function());
-            }, null);
-
-            return taskSource.Task;
-        }
+        return taskSource.Task;
     }
 }

@@ -1,11 +1,7 @@
 ﻿using System.Collections.Generic;
 
-namespace ShevaEngine.Pathfinding
+namespace ShevaEngine.Pathfinding;
+
+public class NavigationPath : Stack<NavigationGraphNode>
 {
-    /// <summary>
-    /// Navigation path.
-    /// </summary>
-    public class NavigationPath : Stack<NavigationGraphNode>
-    {
-    }
 }
