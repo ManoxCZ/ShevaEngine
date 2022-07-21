@@ -11,7 +11,7 @@ namespace ShevaEngine.Core
         bool DirectoryExists(string subdirectoryPath);
         bool CreateDirectory(string subdirectoryPath);
         IEnumerable<string> GetSubdirectories(string subdirectoryPath);
-        string ReadFileContent(string filename);
+        string? ReadFileContent(string filename);
         void WriteFileContent(string filename, string content);
     }
 }

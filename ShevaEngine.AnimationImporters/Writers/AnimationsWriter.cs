@@ -1,7 +1,6 @@
 using Microsoft.Xna.Framework.Content.Pipeline;
 using Microsoft.Xna.Framework.Content.Pipeline.Serialization.Compiler;
 using System.Collections.Generic;
-using System.Reflection;
 
 namespace AnimationImporters
 {
