@@ -1,10 +1,9 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>net7.0-windows</TargetFramework>
+	  <TargetFramework>net6.0-windows</TargetFramework>
     <Platforms>x86;x64</Platforms>
     <OutputType>Library</OutputType>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
-    <MonoGamePlatform>WindowsDX</MonoGamePlatform>
     <Configurations>Debug;Release</Configurations>
     <Nullable>enable</Nullable>
   </PropertyGroup>

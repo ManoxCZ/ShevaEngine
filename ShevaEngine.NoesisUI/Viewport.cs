@@ -66,9 +66,12 @@ public sealed class Viewport : Grid, IViewport
                 Name = $"{nameof(Viewport)} - Render target"
             };
 
-            if (typeof(RenderTarget2D).GetField("_texture", BindingFlags.Instance | BindingFlags.NonPublic) is FieldInfo info &&
-                info.GetValue(_renderTarget) as SharpDX.Direct3D11.Resource is SharpDX.Direct3D11.Resource handle)
+            if (typeof(RenderTarget2D).GetField("_renderTargetViews", BindingFlags.Instance | BindingFlags.NonPublic) is FieldInfo info &&
+                info.GetValue(_renderTarget) is SharpDX.Direct3D11.RenderTargetView[] targets &&
+                targets.Length > 0 &&
+                targets[0].Resource is SharpDX.Direct3D11.Resource handle)
             {
+
                 _image.Source = new TextureSource(
                     RenderDeviceD3D11.WrapTexture(
                         _renderTarget, 

@@ -19,12 +19,6 @@
 /processorParam:DebugMode=Auto
 /build:Effects/Colored.fx
 
-#begin Effects/PBR.fx
-/importer:EffectImporter
-/processor:EffectProcessor
-/processorParam:DebugMode=Auto
-/build:Effects/PBR.fx
-
 #begin Effects/Textured.fx
 /importer:EffectImporter
 /processor:EffectProcessor
