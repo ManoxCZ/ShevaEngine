@@ -13,7 +13,7 @@
 	<XAudio2Platform>x64</XAudio2Platform>
   </PropertyGroup>  
   <ItemGroup>        
-    <PackageReference Include="MonoGame.Framework.WindowsDX" Version="3.8.0.1641" />
+    <PackageReference Include="MonoGame.Framework.WindowsDX" Version="3.8.1.303" />
     <PackageReference Include="Microsoft.Extensions.Logging" Version="6.0.0" />
   </ItemGroup>  
   <ItemGroup>
