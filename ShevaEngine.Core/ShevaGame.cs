@@ -30,7 +30,7 @@ namespace ShevaEngine.Core
         public Input Input { get; private set; }
         public ReplaySubject<InputState> InputState { get; private set; } = new ReplaySubject<InputState>();
         private Stack<ShevaGameComponent> _gameComponents;
-        private object _componentsLock = new object();
+        private object _componentsLock = new();
         public IUser User { get; set; }
         public IUISystem UISystem { get; set; }        
 
@@ -233,8 +233,12 @@ namespace ShevaEngine.Core
             InputState.OnNext(inputState);
 
             lock (_gameComponents)
+            {
                 if (_gameComponents.Count > 0)
+                {
                     _gameComponents.Peek().Update(time, inputState);
+                }
+            }
         }
 
         /// <summary>
