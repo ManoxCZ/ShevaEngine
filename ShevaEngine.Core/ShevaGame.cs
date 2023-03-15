@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using ShevaEngine.Core.Profiler;
 using ShevaEngine.Core.UI;
 using ShevaEngine.Core.UserAccounts;
 using System;
@@ -32,7 +33,7 @@ namespace ShevaEngine.Core
         private Stack<ShevaGameComponent> _gameComponents;
         private object _componentsLock = new();
         public IUser User { get; set; }
-        public IUISystem UISystem { get; set; }        
+        public IUISystem UISystem { get; set; }
 
 
         /// <summary>
@@ -90,8 +91,7 @@ namespace ShevaEngine.Core
         private void InitializeServices()
         {
             Services.AddService<IFileSystemService>(new FileSystemService());
-
-            Services.AddService<ILoggerFactory>(Microsoft.Extensions.Logging.LoggerFactory.Create(builder =>
+            Services.AddService(LoggerFactory.Create(builder =>
             {
                 builder
                     .AddProvider(new TextFileLogReceiver())
@@ -101,6 +101,7 @@ namespace ShevaEngine.Core
 					;
 #endif
             }));
+            Services.AddService<ProfilerService>(new ProfilerService());
         }
 
         /// <summary>
@@ -258,10 +259,16 @@ namespace ShevaEngine.Core
             }
 
             lock (_gameComponents)
+            {
                 if (_gameComponents.Count > 0)
+                {
                     _gameComponents.Peek().Draw(gameTime);
+                }
                 else
+                {
                     GraphicsDevice.Clear(Color.Black);
+                }
+            }
         }
 
         /// <summary>

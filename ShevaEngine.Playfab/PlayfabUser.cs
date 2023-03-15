@@ -27,6 +27,16 @@ public class PlayfabUser : IUser
 
         if (await PlayFabClientAPI.LoginWithCustomIDAsync(request) is PlayFabResult<LoginResult> result)
         {
+            GetUserDataRequest userDataRequest = new()
+            {
+                PlayFabId = result.Result.PlayFabId
+            };
+
+            if (await PlayFabClientAPI.GetUserDataAsync(userDataRequest) is PlayFabResult<GetUserDataResult> userDataResult)
+            {
+
+            }
+
             return true;
         }
 
