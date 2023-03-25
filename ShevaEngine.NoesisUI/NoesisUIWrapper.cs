@@ -2,7 +2,6 @@
 using ShevaEngine.Core;
 using ShevaEngine.Core.UI;
 using System;
-using System.Threading.Tasks;
 
 namespace ShevaEngine.NoesisUI;
 
@@ -55,18 +54,6 @@ public class NoesisUIWrapper : IUISystem
 
     public void RunOnUIThread(Action action)
     {
-        ShevaGame.Instance.SynchronizationContext.Send(_ => action(), null);
-    }
-
-    public Task<T> RunFuncOnUIThread<T>(Func<T> function)
-    {
-        TaskCompletionSource<T> taskSource = new TaskCompletionSource<T>();
-
-        ShevaGame.Instance.SynchronizationContext.Send(_ =>
-        {
-            taskSource.SetResult(function());
-        }, null);
-
-        return taskSource.Task;
-    }
+        ShevaGame.Instance.SynchronizationContext?.Send(_ => action(), null);
+    }    
 }

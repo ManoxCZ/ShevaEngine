@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework.Graphics;
 using Noesis;
 using ShevaEngine.Core;
+using ShevaEngine.Core.Profiler;
 using ShevaEngine.Core.UI;
 using System.Reflection;
 
@@ -108,7 +109,11 @@ public sealed class Viewport : Grid, IViewport
 
     public void Render(GameTime gameTime)
     {
+        using var _ = ShevaServices.GetService<ProfilerService>().BeginScope(Name);
+        
         lock (_lock)
+        {
             Camera?.Draw(Scene, gameTime, _renderTarget, _depthTarget);
+        }
     }
 }

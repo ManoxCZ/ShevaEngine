@@ -6,23 +6,23 @@ internal class TimeBuffer
 {
     private double[] _buffer;
     private int _actualId;
+    public double Time;
 
 
     public TimeBuffer(int bufferSize)
     {
-        _buffer= new double[bufferSize];
+        _buffer = new double[bufferSize];
     }
 
-    public void Add(double value) 
+    public void Add(double value)
     {
         _buffer[_actualId] = value;
 
-        _actualId = _actualId++ % _buffer.Length;
-    }
+        _actualId = (_actualId + 1) % _buffer.Length;
 
-
-    public double Average()
-    {
-        return _buffer.Average();
+        if (_actualId == 0)
+        {
+            Time = _buffer.Average();
+        }
     }
 }

@@ -1,9 +1,11 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using ShevaEngine.Core.Profiler;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Xml.Linq;
 
 namespace ShevaEngine.Core
 {
@@ -253,6 +255,8 @@ namespace ShevaEngine.Core
 
                 foreach (PostProcess postProcess in PostProcesses)
                 {
+                    using var _ = ShevaServices.GetService<ProfilerService>().BeginScope(postProcess.GetType().Name);
+
                     if (postProcess.Enabled)
                     {
                         if (postProcessAsTarget)

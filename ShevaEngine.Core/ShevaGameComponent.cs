@@ -115,8 +115,12 @@ namespace ShevaEngine.Core
             ShevaGame.Instance.GraphicsDevice.Clear(ClearOptions.Target | ClearOptions.DepthBuffer | ClearOptions.Stencil, Color.Orange, 1, 0);
 
             for (int i = 0; i < Layers.Count; i++)
+            {
                 if (Layers[i].IsActive)
+                {
                     Layers[i].Draw(gameTime);
+                }
+            }
         }
     }
 }

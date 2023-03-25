@@ -1,16 +1,23 @@
 ﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Noesis;
 using ShevaEngine.Core;
+using ShevaEngine.Core.Profiler;
 using ShevaEngine.Core.UI;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using System.Xml.Linq;
 
 namespace ShevaEngine.NoesisUI;
 
 public class Layer<U> : ILayer where U : UserControl, new()
 {
+    private static RenderDeviceD3D11 _device = new(
+        ((SharpDX.Direct3D11.Device)ShevaGame.Instance.GraphicsDevice.Handle).ImmediateContext.NativePointer, false);
+
+
     public bool IsActive { get; set; } = true;
     private View _view = null!;
     public object DataContext
@@ -37,10 +44,8 @@ public class Layer<U> : ILayer where U : UserControl, new()
         {
             _view = GUI.CreateView(new U());
 
-            RenderDeviceD3D11 device = new RenderDeviceD3D11(
-                ((SharpDX.Direct3D11.Device)ShevaGame.Instance.GraphicsDevice.Handle).ImmediateContext.NativePointer, false);
-
-            _view.Renderer.Init(device);
+            _view.Renderer.Init(_device);
+            
             _view.SetFlags(RenderFlags.LCD | RenderFlags.PPAA);
         });
     }
@@ -53,12 +58,24 @@ public class Layer<U> : ILayer where U : UserControl, new()
 
     public void Draw(GameTime time)
     {
-        _view.Renderer.UpdateRenderTree();
+        using var profilerScope = ShevaServices.GetService<ProfilerService>().BeginScope(typeof(U).Name);
+
+        using (D3X11RenderState _ = new (ShevaGame.Instance.GraphicsDevice))
+        {
+            _view.Renderer.UpdateRenderTree();
+
+            _view.Renderer.RenderOffscreen();
+        }
 
         foreach (Viewport viewport in GetChildrenOfType<Viewport>(_view.Content))
+        {
             viewport.Render(time);
+        }
 
-        _view.Renderer.Render();
+        using (D3X11RenderState _ = new (ShevaGame.Instance.GraphicsDevice))
+        {
+            _view.Renderer.Render();
+        }
     }
 
     public static IEnumerable<T> GetChildrenOfType<T>(DependencyObject root)

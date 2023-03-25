@@ -19,12 +19,14 @@ namespace ShevaEngine.Core
     /// </summary>
     public class ShevaGame : Game
     {
-        public static ShevaGame Instance { get; set; }
+        public static ShevaGame Instance { get; private set; }
 
-        public SynchronizationContext SynchronizationContext { get; }
+        public SynchronizationContext? SynchronizationContext;
 
-        private readonly ILogger _log;        
+        private readonly ILogger _log;
 
+        private readonly ProfilerService _profilerService = new();
+        private readonly ProfilerDataDraw _profilerDraw = new();
         public GameSettings Settings { get; }
         private Type[] _initialComponentTypes;
         public GraphicsDeviceManager GraphicsDeviceManager { get; private set; }
@@ -43,6 +45,7 @@ namespace ShevaEngine.Core
             : base()
         {
             Instance = this;
+
             SynchronizationContext = SynchronizationContext.Current;
 
             InitializeServices();            
@@ -82,7 +85,7 @@ namespace ShevaEngine.Core
 
             _gameComponents = new Stack<ShevaGameComponent>();
 
-            Services.AddService<IEmbeddedFilesService>(new EmbeddedFilesService());
+            Services.AddService<IEmbeddedFilesService>(new EmbeddedFilesService());            
         }
 
         /// <summary>
@@ -100,8 +103,8 @@ namespace ShevaEngine.Core
 #else
 					;
 #endif
-            }));
-            Services.AddService<ProfilerService>(new ProfilerService());
+            }));            
+            Services.AddService(_profilerService);
         }
 
         /// <summary>
@@ -162,7 +165,7 @@ namespace ShevaEngine.Core
             //         {
             //             MediaPlayer.Volume = item;
 
-            //         });            
+            //         });                        
 
             _log.LogInformation("Initialization ended");
         }
@@ -200,7 +203,7 @@ namespace ShevaEngine.Core
                 }
             }
 
-
+            _profilerDraw.LoadContent(this);
 
             _log.LogInformation("All game components initialized");
         }
@@ -226,6 +229,8 @@ namespace ShevaEngine.Core
         /// </summary>        
         protected override void Update(GameTime time)
         {
+            using var _ = _profilerService.BeginScope("Update");
+            
             base.Update(time);
 
             Input.Update();
@@ -247,28 +252,33 @@ namespace ShevaEngine.Core
         /// </summary>
         protected override void Draw(GameTime gameTime)
         {
-            if (Settings.Fullscreen.Value != GraphicsDeviceManager.IsFullScreen)
+            using (var _ = _profilerService.BeginScope("Draw"))
             {
-                DisplayMode displayMode = GraphicsAdapter.DefaultAdapter.CurrentDisplayMode;
+                if (Settings.Fullscreen.Value != GraphicsDeviceManager.IsFullScreen)
+                {
+                    DisplayMode displayMode = GraphicsAdapter.DefaultAdapter.CurrentDisplayMode;
 
-                GraphicsDeviceManager.IsFullScreen = Settings.Fullscreen.Value;
-                GraphicsDeviceManager.PreferredBackBufferWidth = Settings.Fullscreen.Value ? displayMode.Width : Settings.Resolution.Value.Width;
-                GraphicsDeviceManager.PreferredBackBufferHeight = Settings.Fullscreen.Value ? displayMode.Height : Settings.Resolution.Value.Height;
+                    GraphicsDeviceManager.IsFullScreen = Settings.Fullscreen.Value;
+                    GraphicsDeviceManager.PreferredBackBufferWidth = Settings.Fullscreen.Value ? displayMode.Width : Settings.Resolution.Value.Width;
+                    GraphicsDeviceManager.PreferredBackBufferHeight = Settings.Fullscreen.Value ? displayMode.Height : Settings.Resolution.Value.Height;
 
-                GraphicsDeviceManager.ApplyChanges();
+                    GraphicsDeviceManager.ApplyChanges();
+                }
+
+                lock (_gameComponents)
+                {
+                    if (_gameComponents.Count > 0)
+                    {
+                        _gameComponents.Peek().Draw(gameTime);
+                    }
+                    else
+                    {
+                        GraphicsDevice.Clear(Color.Black);
+                    }
+                }
             }
 
-            lock (_gameComponents)
-            {
-                if (_gameComponents.Count > 0)
-                {
-                    _gameComponents.Peek().Draw(gameTime);
-                }
-                else
-                {
-                    GraphicsDevice.Clear(Color.Black);
-                }
-            }
+            _profilerDraw.Draw();
         }
 
         /// <summary>

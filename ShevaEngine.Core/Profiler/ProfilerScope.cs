@@ -1,23 +1,26 @@
 ﻿using System;
+using System.Diagnostics;
 
 namespace ShevaEngine.Core.Profiler;
 
 internal struct ProfilerScope : IDisposable
-{
-	public ProfilerService _profilerService;
-    public readonly string Name;
-	public readonly DateTime StartTime;
+{	
+	private readonly ProfilerService _profilerService;
+	private readonly Stopwatch _stopwatch;
 
 
-	public ProfilerScope(ProfilerService profilerService, string name)
+	public ProfilerScope(ProfilerService profilerService, Stopwatch stopwatch)
 	{
 		_profilerService = profilerService;
-		Name = name;
-		StartTime = DateTime.Now;
+		_stopwatch = stopwatch;
+
+		_stopwatch.Restart();
 	}
 
 	public void Dispose()
 	{
-		_profilerService.EndScope();
+		_stopwatch.Stop();
+
+		_profilerService.EndScope(_stopwatch);
 	}
 }
