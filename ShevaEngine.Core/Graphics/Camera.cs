@@ -5,7 +5,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Xml.Linq;
 
 namespace ShevaEngine.Core
 {
@@ -154,7 +153,7 @@ namespace ShevaEngine.Core
         /// </summary>
         public void Dispose()
         {
-
+            _spriteBatch.Dispose();
         }
 
         /// <summary>

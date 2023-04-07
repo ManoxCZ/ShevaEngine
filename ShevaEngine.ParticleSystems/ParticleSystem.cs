@@ -17,7 +17,7 @@ namespace ShevaEngine.ParticleSystems
         private readonly List<float> _particleLifetimes;
         private readonly List<float> _particleRandoms;
         private ParticleMaterial _graphicsMaterial;
-        private ModelMesh _particleModel;
+        private ModelMesh _particleModel = null!;
         private readonly List<Matrix> _matrices;
 
         public Vector3 Position { get; set; }
@@ -46,7 +46,7 @@ namespace ShevaEngine.ParticleSystems
             get => _graphicsMaterial.EndSize;
             set => _graphicsMaterial.EndSize = value;
         }
-        public Texture2D Texture
+        public Texture2D? Texture
         {
             get => _graphicsMaterial.Texture;
             set => _graphicsMaterial.Texture = value;
@@ -54,7 +54,7 @@ namespace ShevaEngine.ParticleSystems
         public float SpawnRatio { get; set; }
         public Vector3 StartVelocity { get; set; }
         public Vector3 EndVelocity { get; set; }
-        public Func<Vector3> GetStartPositionFunction { get; set; }
+        public Func<Vector3>? GetStartPositionFunction { get; set; }
 
 
 

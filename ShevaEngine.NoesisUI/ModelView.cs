@@ -29,13 +29,15 @@ public class ModelView : INotifyPropertyChanged, IDisposable
     public virtual void Dispose()
     {
         foreach (IDisposable disposable in Disposables)
+        {
             disposable.Dispose();
+        }
 
         Disposables.Clear();
     }
 
     protected void RunOnUIThread(Action action)
     {
-        ShevaGame.Instance.SynchronizationContext.Send(_ => action(), null);
+        ShevaGame.Instance.SynchronizationContext?.Send(_ => action(), null);
     }
 }

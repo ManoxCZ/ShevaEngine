@@ -15,7 +15,7 @@ internal class XamlProvider : Noesis.XamlProvider
         _log = ShevaGame.Instance.Services.GetService<ILoggerFactory>().CreateLogger(GetType());
     }
 
-    public override Stream LoadXaml(Uri filename)
+    public override Stream? LoadXaml(Uri filename)
     {
         _log.LogInformation($"Loading xaml file: {filename}");
 
@@ -28,6 +28,6 @@ internal class XamlProvider : Noesis.XamlProvider
 
         _log.LogError($"Can't find xaml file!");
 
-        return null!;
+        return null;
     }
 }

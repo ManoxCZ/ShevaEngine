@@ -5,7 +5,7 @@ namespace ShevaEngine.NoesisUI;
 
 internal class FontProvider : Noesis.FontProvider
 {
-    public override Stream OpenFont(Uri folder, string id)
+    public override Stream? OpenFont(Uri folder, string id)
     {
         string filePath = Path.Combine(
             Directory.GetCurrentDirectory(),

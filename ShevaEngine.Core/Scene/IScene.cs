@@ -16,6 +16,6 @@ namespace ShevaEngine.Core
         /// <summary>
         /// Get lights
         /// </summary>
-        IEnumerable<Light> GetLights();
+        IReadOnlyCollection<Light> GetLights();
     }
 }

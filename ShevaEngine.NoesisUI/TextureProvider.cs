@@ -16,7 +16,7 @@ internal class TextureProvider : FileTextureProvider
         _log = ShevaGame.Instance.Services.GetService<ILoggerFactory>().CreateLogger(GetType());
     }
 
-    public override Stream OpenStream(Uri filename)
+    public override Stream? OpenStream(Uri filename)
     {
         _log.LogInformation($"Loading file: {filename}");
 
@@ -29,6 +29,6 @@ internal class TextureProvider : FileTextureProvider
 
         _log.LogError($"Can't find file!");
 
-        return null!;
+        return null;
     }
 }

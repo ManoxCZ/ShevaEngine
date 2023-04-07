@@ -1,5 +1,4 @@
 ﻿using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Noesis;
 using ShevaEngine.Core;
@@ -8,16 +7,11 @@ using ShevaEngine.Core.UI;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using System.Xml.Linq;
 
 namespace ShevaEngine.NoesisUI;
 
 public class Layer<U> : ILayer where U : UserControl, new()
 {
-    private static RenderDeviceD3D11 _device = new(
-        ((SharpDX.Direct3D11.Device)ShevaGame.Instance.GraphicsDevice.Handle).ImmediateContext.NativePointer, false);
-
-
     public bool IsActive { get; set; } = true;
     private View _view = null!;
     public object DataContext
@@ -44,8 +38,11 @@ public class Layer<U> : ILayer where U : UserControl, new()
         {
             _view = GUI.CreateView(new U());
 
-            _view.Renderer.Init(_device);
-            
+            RenderDeviceD3D11 device = new(
+                ((SharpDX.Direct3D11.Device)ShevaGame.Instance.GraphicsDevice.Handle).ImmediateContext.NativePointer, false);
+
+            _view.Renderer.Init(device);
+
             _view.SetFlags(RenderFlags.LCD | RenderFlags.PPAA);
         });
     }
@@ -53,6 +50,8 @@ public class Layer<U> : ILayer where U : UserControl, new()
 
     public void Update(GameTime time)
     {
+        using var profilerScope = ShevaServices.GetService<ProfilerService>().BeginScope(typeof(U).Name);
+
         _view.Update(time.TotalGameTime.TotalSeconds);
     }
 
@@ -60,7 +59,7 @@ public class Layer<U> : ILayer where U : UserControl, new()
     {
         using var profilerScope = ShevaServices.GetService<ProfilerService>().BeginScope(typeof(U).Name);
 
-        using (D3X11RenderState _ = new (ShevaGame.Instance.GraphicsDevice))
+        using (D3X11RenderState _ = new(ShevaGame.Instance.GraphicsDevice))
         {
             _view.Renderer.UpdateRenderTree();
 
@@ -72,7 +71,7 @@ public class Layer<U> : ILayer where U : UserControl, new()
             viewport.Render(time);
         }
 
-        using (D3X11RenderState _ = new (ShevaGame.Instance.GraphicsDevice))
+        using (D3X11RenderState _ = new(ShevaGame.Instance.GraphicsDevice))
         {
             _view.Renderer.Render();
         }
@@ -109,7 +108,9 @@ public class Layer<U> : ILayer where U : UserControl, new()
         bool eventHandled = false;
 
         if (_previousInputState == null)
+        {
             _previousInputState = state;
+        }
 
         eventHandled = eventHandled || UpdateMouse(state);
 
@@ -153,7 +154,7 @@ public class Layer<U> : ILayer where U : UserControl, new()
 
     public Task<IViewport> GetViewport(string name)
     {
-        TaskCompletionSource<IViewport> taskSource = new TaskCompletionSource<IViewport>();
+        TaskCompletionSource<IViewport> taskSource = new();
 
         RunOnUIThread(() =>
         {
@@ -168,18 +169,6 @@ public class Layer<U> : ILayer where U : UserControl, new()
 
     public void RunOnUIThread(Action action)
     {
-        ShevaGame.Instance.SynchronizationContext.Send(_ => action(), null);
-    }
-
-    public Task<T> RunFuncOnUIThread<T>(Func<T> function)
-    {
-        TaskCompletionSource<T> taskSource = new TaskCompletionSource<T>();
-
-        ShevaGame.Instance.SynchronizationContext.Send(_ =>
-        {
-            taskSource.SetResult(function());
-        }, null);
-
-        return taskSource.Task;
+        ShevaGame.Instance.SynchronizationContext?.Send(_ => action(), null);
     }
 }

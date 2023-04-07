@@ -102,7 +102,9 @@ public sealed class Viewport : Grid, IViewport
         }
 
         if (Camera != null)
+        {
             Camera.Size = new Resolution((int)finalSize.Width, (int)finalSize.Height);
+        }
 
         return base.ArrangeOverride(finalSize);
     }

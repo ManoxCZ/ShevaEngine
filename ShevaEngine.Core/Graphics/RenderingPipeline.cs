@@ -20,8 +20,8 @@ namespace ShevaEngine.Core
         public MaterialProfile Profile { get; set; }
         public GameTime GameTime { get; set; }
         public List<Light> Lights { get; private set; } = new List<Light>();
-        private readonly Dictionary<Effect, Dictionary<ModelMeshPart, List<Matrix>>> OpaqueDrawCalls = new Dictionary<Effect, Dictionary<ModelMeshPart, List<Matrix>>>();
-        private readonly List<Tuple<Material, ModelMeshPart, Matrix>> TransparentDrawCalls = new List<Tuple<Material, ModelMeshPart, Matrix>>();
+        private readonly Dictionary<Effect, Dictionary<ModelMeshPart, List<Matrix>>> OpaqueDrawCalls = new();
+        private readonly List<Tuple<Material, ModelMeshPart, Matrix>> TransparentDrawCalls = new();
         private VertexBuffer _instancesBuffer;
         private int _instancesCount = 0;
         private int _instancesAllocatedCount = 0;
@@ -98,7 +98,9 @@ namespace ShevaEngine.Core
         public void AddObject(Model model, Matrix worldMatrix, AnimationsController? controller = null)
         {
             foreach (ModelMesh mesh in model.Meshes)
+            {
                 AddObject(mesh, worldMatrix, controller);
+            }
         }
 
         /// <summary>
@@ -109,7 +111,9 @@ namespace ShevaEngine.Core
             int count = modelPart.MeshParts.Count;
 
             for (int i = 0; i < count; i++)
+            {
                 AddObject(modelPart.MeshParts[i], worldMatrix, controller);
+            }
         }
 
         /// <summary>
@@ -132,10 +136,7 @@ namespace ShevaEngine.Core
                     }
                     else
                     {
-                        _log.LogError($"Material {material} is animated, but Animation Controller is null");
-
-                        if (material is TexturedMaterial textured)
-                            _log.LogError($"Used texture: {textured.Texture.Name}");
+                        _log.LogError($"Material {material} is animated, but Animation Controller is null");                        
                     }
                 }
 
@@ -147,12 +148,16 @@ namespace ShevaEngine.Core
                 else
                 {
                     if (!OpaqueDrawCalls.ContainsKey(modelMeshPart.Effect))
+                    {
                         OpaqueDrawCalls.Add(modelMeshPart.Effect, new Dictionary<ModelMeshPart, List<Matrix>>());
+                    }
 
                     Dictionary<ModelMeshPart, List<Matrix>> meshes = OpaqueDrawCalls[modelMeshPart.Effect];
 
                     if (!meshes.ContainsKey(modelMeshPart))
+                    {
                         meshes.Add(modelMeshPart, new List<Matrix>());
+                    }
 
                     meshes[modelMeshPart].Add(worldMatrix);
                 }
@@ -162,32 +167,38 @@ namespace ShevaEngine.Core
         /// <summary>
         /// Add object.
         /// </summary>
-        public void AddObject(Model model, IEnumerable<Matrix> worldMatrices)
+        public void AddObject(Model model, IReadOnlyCollection<Matrix> worldMatrices)
         {
             foreach (ModelMesh mesh in model.Meshes)
+            {
                 AddObject(mesh, worldMatrices);
+            }
         }
 
         /// <summary>
         /// Add object.
         /// </summary>
-        public void AddObject(ModelMesh modelPart, IEnumerable<Matrix> worldMatrices)
+        public void AddObject(ModelMesh modelPart, IReadOnlyCollection<Matrix> worldMatrices)
         {
             int count = modelPart.MeshParts.Count;
 
             for (int i = 0; i < count; i++)
+            {
                 AddObject(modelPart.MeshParts[i], worldMatrices);
+            }
         }
 
         /// <summary>
         /// Add object.
         /// </summary>
-        public void AddObject(ModelMeshPart modelMeshPart, IEnumerable<Matrix> worldMatrices)
+        public void AddObject(ModelMeshPart modelMeshPart, IReadOnlyCollection<Matrix> worldMatrices)
         {
             if (modelMeshPart.Effect is ColoredMaterial material)
             {
                 if (Profile == MaterialProfile.Shadows && !material.CastShadows)
+                {
                     return;
+                }
 
                 if (material.Transparent)
                 {
@@ -200,12 +211,16 @@ namespace ShevaEngine.Core
                 else
                 {
                     if (!OpaqueDrawCalls.ContainsKey(modelMeshPart.Effect))
+                    {
                         OpaqueDrawCalls.Add(modelMeshPart.Effect, new Dictionary<ModelMeshPart, List<Matrix>>());
+                    }
 
                     Dictionary<ModelMeshPart, List<Matrix>> meshes = OpaqueDrawCalls[modelMeshPart.Effect];
 
                     if (!meshes.ContainsKey(modelMeshPart))
-                        meshes.Add(modelMeshPart, new List<Matrix>());
+                    {
+                        meshes.Add(modelMeshPart, new List<Matrix>(worldMatrices.Count));
+                    }
 
                     meshes[modelMeshPart].AddRange(worldMatrices);
                 }
