@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ShevaEngine.Core.Profiler;
+using ShevaEngine.Core.Graphics;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -22,9 +23,9 @@ namespace ShevaEngine.Core
         public GameTime GameTime { get; set; }
         public List<Light> Lights { get; private set; } = new List<Light>();
         private readonly Dictionary<Effect, Dictionary<ModelMeshPart, List<Matrix>>> OpaqueDrawCalls = new();
-        private readonly List<Tuple<Material, ModelMeshPart, Matrix>> TransparentDrawCalls = new();
-        private VertexBuffer _instancesBuffer;
-        private int _instancesCount = 0;
+        private readonly List<DrawCall> _transparentDrawCalls = new();
+        private readonly List<Tuple<Material, ModelMeshPart, Matrix>> OldTransparentDrawCalls = new();
+        private VertexBuffer _instancesBuffer;        
         private int _instancesAllocatedCount = 0;
         public BlendState BlendState { get; set; } = BlendState.Opaque;
         public RasterizerState RasterizerState { get; set; } = RasterizerState.CullNone;
@@ -53,7 +54,8 @@ namespace ShevaEngine.Core
 
             ClearLights();
 
-            TransparentDrawCalls.Clear();
+            _transparentDrawCalls.Clear();
+            OldTransparentDrawCalls.Clear();
 
             foreach (KeyValuePair<Effect, Dictionary<ModelMeshPart, List<Matrix>>> model in OpaqueDrawCalls)
             {
@@ -143,7 +145,7 @@ namespace ShevaEngine.Core
 
                 if (material.Transparent)
                 {
-                    TransparentDrawCalls.Add(new Tuple<Material, ModelMeshPart, Matrix>(
+                    OldTransparentDrawCalls.Add(new Tuple<Material, ModelMeshPart, Matrix>(
                         material, modelMeshPart, worldMatrix));
                 }
                 else
@@ -205,7 +207,7 @@ namespace ShevaEngine.Core
                 {
                     foreach (Matrix worldMatrix in worldMatrices)
                     {
-                        TransparentDrawCalls.Add(new Tuple<Material, ModelMeshPart, Matrix>(
+                        OldTransparentDrawCalls.Add(new Tuple<Material, ModelMeshPart, Matrix>(
                             material, modelMeshPart, worldMatrix));
                     }
                 }
@@ -260,7 +262,7 @@ namespace ShevaEngine.Core
 
                                         material.Apply(Profile, Camera, (float)GameTime.TotalGameTime.TotalSeconds, modelPart.Key.VertexBuffer.VertexDeclaration);
 
-                                        UpdateInstancesData(Device, modelPart.Value);
+                                        int instancesCount = UpdateInstancesData(Device, modelPart.Value);
 
                                         Device.SetVertexBuffers(
                                                 new VertexBufferBinding(modelPart.Key.VertexBuffer, 0, 0),
@@ -268,7 +270,11 @@ namespace ShevaEngine.Core
                                         Device.Indices = modelPart.Key.IndexBuffer;
 
                                         Device.DrawInstancedPrimitives(
-                                            PrimitiveType.TriangleList, modelPart.Key.VertexOffset, modelPart.Key.StartIndex, modelPart.Key.PrimitiveCount, _instancesCount);
+                                            PrimitiveType.TriangleList,
+                                            modelPart.Key.VertexOffset,
+                                            modelPart.Key.StartIndex,
+                                            modelPart.Key.PrimitiveCount,
+                                            instancesCount);
                                     }
                                 }
                                 else
@@ -278,30 +284,7 @@ namespace ShevaEngine.Core
                     }
                 }
 
-                Device.BlendState = BlendState.AlphaBlend;
-                Device.DepthStencilState = DepthStencilState.DepthRead;
-
-                // Transparent materials, don't render to the shadow map.
-                if (Profile != MaterialProfile.Shadows)
-                {
-                    using var _ = ShevaServices.GetService<ProfilerService>().BeginScope("Transparent Materials");
-
-                    foreach (var transparentMesh in
-                        TransparentDrawCalls.OrderByDescending(item => Vector3.DistanceSquared(item.Item3.Translation, Camera.Position)))
-                    {
-                        transparentMesh.Item1.Apply(Profile, Camera, GameTime.TotalGameTime.Seconds, transparentMesh.Item2.VertexBuffer.VertexDeclaration);
-
-                        UpdateInstancesData(Device, new[] { transparentMesh.Item3 });
-
-                        Device.SetVertexBuffers(
-                                new VertexBufferBinding(transparentMesh.Item2.VertexBuffer, 0, 0),
-                                new VertexBufferBinding(_instancesBuffer, 0, 1));
-                        Device.Indices = transparentMesh.Item2.IndexBuffer;
-
-                        Device.DrawInstancedPrimitives(
-                            PrimitiveType.TriangleList, transparentMesh.Item2.VertexOffset, transparentMesh.Item2.StartIndex, transparentMesh.Item2.PrimitiveCount, _instancesCount);
-                    }
-                }
+                OldDrawTransparentObjects();
             }
             catch (Exception ex)
             {
@@ -311,20 +294,87 @@ namespace ShevaEngine.Core
             _log.LogDebug($"Draw ended");
         }
 
+
+        private void OldDrawTransparentObjects()
+        {
+            Device.BlendState = BlendState.AlphaBlend;
+            Device.DepthStencilState = DepthStencilState.DepthRead;
+
+            // Transparent materials, don't render to the shadow map.
+            if (Profile != MaterialProfile.Shadows)
+            {
+                foreach (Tuple<Material, ModelMeshPart, Matrix>? transparentMesh in
+                    OldTransparentDrawCalls.OrderByDescending(item => Vector3.DistanceSquared(item.Item3.Translation, Camera.Position)))
+                {
+                    transparentMesh.Item1.Apply(Profile, Camera, GameTime.TotalGameTime.Seconds, transparentMesh.Item2.VertexBuffer.VertexDeclaration);
+
+                    int instancesCount = UpdateInstancesData(Device, new[] { transparentMesh.Item3 });
+
+                    Device.SetVertexBuffers(
+                            new VertexBufferBinding(transparentMesh.Item2.VertexBuffer, 0, 0),
+                            new VertexBufferBinding(_instancesBuffer, 0, 1));
+                    Device.Indices = transparentMesh.Item2.IndexBuffer;
+
+                    Device.DrawInstancedPrimitives(
+                        PrimitiveType.TriangleList, 
+                        transparentMesh.Item2.VertexOffset,
+                        transparentMesh.Item2.StartIndex, 
+                        transparentMesh.Item2.PrimitiveCount, 
+                        instancesCount);
+                }
+            }
+        }
+
+        //private void DrawTransparentObjects()
+        //{
+        //    Device.BlendState = BlendState.AlphaBlend;
+        //    Device.DepthStencilState = DepthStencilState.DepthRead;
+
+        //    Matrix[] instances = new Matrix[1];
+
+        //    // Transparent materials, don't render to the shadow map.
+        //    if (Profile != MaterialProfile.Shadows)
+        //    {
+        //        foreach (DrawCall transparentMesh in
+        //            _transparentDrawCalls.OrderByDescending(item => Vector3.DistanceSquared(item.Transform.Translation, Camera.Position)))
+        //        {
+        //            transparentMesh.Item1.Apply(Profile, Camera, GameTime.TotalGameTime.Seconds, transparentMesh.Item2.VertexBuffer.VertexDeclaration);
+
+        //            instances[0] = transparentMesh.Transform;
+        //            int instancesCount = UpdateInstancesData(Device, instances); 
+
+        //            Device.SetVertexBuffers(
+        //                    new VertexBufferBinding(transparentMesh.Item2.VertexBuffer, 0, 0),
+        //                    new VertexBufferBinding(_instancesBuffer, 0, 1));
+        //            Device.Indices = transparentMesh.Item2.IndexBuffer;
+
+        //            Device.DrawInstancedPrimitives(
+        //                PrimitiveType.TriangleList, 
+        //                transparentMesh.Item2.VertexOffset, 
+        //                transparentMesh.Item2.StartIndex, 
+        //                transparentMesh.Item2.PrimitiveCount, 
+        //                instancesCount);
+        //        }
+        //    }
+        //}
+
         /// <summary>
         /// Update instances buffer.
         /// </summary>        
-        private void UpdateInstancesData(GraphicsDevice graphicsDevice, IList<Matrix> worldMatrices)
+        private int UpdateInstancesData(GraphicsDevice graphicsDevice, IReadOnlyList<Matrix> worldMatrices)
         {
             if (_instancesAllocatedCount < worldMatrices.Count)
             {
                 _instancesAllocatedCount = worldMatrices.Count;
+                
+                _instancesBuffer?.Dispose();
 
                 _instancesBuffer = new VertexBuffer(graphicsDevice, typeof(VertexMatrix), _instancesAllocatedCount, BufferUsage.WriteOnly);
             }
 
             _instancesBuffer.SetData(worldMatrices.ToArray());
-            _instancesCount = worldMatrices.Count;
+            
+            return worldMatrices.Count;
         }
     }
 }
