@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using ShevaEngine.Core.Profiler;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -240,36 +241,39 @@ namespace ShevaEngine.Core
                 Device.RasterizerState = RasterizerState;
                 Device.DepthStencilState = DepthStencilState;
 
-                foreach (KeyValuePair<Effect, Dictionary<ModelMeshPart, List<Matrix>>> effectMeshes in OpaqueDrawCalls)
+                using (var _ = ShevaServices.GetService<ProfilerService>().BeginScope("Opaque Materials"))
                 {
-                    foreach (KeyValuePair<ModelMeshPart, List<Matrix>> modelPart in effectMeshes.Value)
+                    foreach (KeyValuePair<Effect, Dictionary<ModelMeshPart, List<Matrix>>> effectMeshes in OpaqueDrawCalls)
                     {
-                        if (modelPart.Value.Count > 0)
+                        foreach (KeyValuePair<ModelMeshPart, List<Matrix>> modelPart in effectMeshes.Value)
                         {
-                            if (effectMeshes.Key is MaterialWithLights material)
+                            if (modelPart.Value.Count > 0)
                             {
-                                if (Profile != MaterialProfile.Shadows || material.CastShadows)
+                                if (effectMeshes.Key is MaterialWithLights material)
                                 {
-                                    _log.LogDebug($"Applying material {material}");
+                                    if (Profile != MaterialProfile.Shadows || material.CastShadows)
+                                    {
+                                        _log.LogDebug($"Applying material {material}");
 
-                                    if (Profile != MaterialProfile.Shadows)
-                                        material.Lights = Lights;
+                                        if (Profile != MaterialProfile.Shadows)
+                                            material.Lights = Lights;
 
-                                    material.Apply(Profile, Camera, (float)GameTime.TotalGameTime.TotalSeconds, modelPart.Key.VertexBuffer.VertexDeclaration);
+                                        material.Apply(Profile, Camera, (float)GameTime.TotalGameTime.TotalSeconds, modelPart.Key.VertexBuffer.VertexDeclaration);
 
-                                    UpdateInstancesData(Device, modelPart.Value);
+                                        UpdateInstancesData(Device, modelPart.Value);
 
-                                    Device.SetVertexBuffers(
-                                            new VertexBufferBinding(modelPart.Key.VertexBuffer, 0, 0),
-                                            new VertexBufferBinding(_instancesBuffer, 0, 1));
-                                    Device.Indices = modelPart.Key.IndexBuffer;
+                                        Device.SetVertexBuffers(
+                                                new VertexBufferBinding(modelPart.Key.VertexBuffer, 0, 0),
+                                                new VertexBufferBinding(_instancesBuffer, 0, 1));
+                                        Device.Indices = modelPart.Key.IndexBuffer;
 
-                                    Device.DrawInstancedPrimitives(
-                                        PrimitiveType.TriangleList, modelPart.Key.VertexOffset, modelPart.Key.StartIndex, modelPart.Key.PrimitiveCount, _instancesCount);
+                                        Device.DrawInstancedPrimitives(
+                                            PrimitiveType.TriangleList, modelPart.Key.VertexOffset, modelPart.Key.StartIndex, modelPart.Key.PrimitiveCount, _instancesCount);
+                                    }
                                 }
+                                else
+                                    _log.LogError($"Invalid material: {effectMeshes.Key.GetType()}");
                             }
-                            else
-                                _log.LogError($"Invalid material: {effectMeshes.Key.GetType()}");
                         }
                     }
                 }
@@ -280,6 +284,8 @@ namespace ShevaEngine.Core
                 // Transparent materials, don't render to the shadow map.
                 if (Profile != MaterialProfile.Shadows)
                 {
+                    using var _ = ShevaServices.GetService<ProfilerService>().BeginScope("Transparent Materials");
+
                     foreach (var transparentMesh in
                         TransparentDrawCalls.OrderByDescending(item => Vector3.DistanceSquared(item.Item3.Translation, Camera.Position)))
                     {

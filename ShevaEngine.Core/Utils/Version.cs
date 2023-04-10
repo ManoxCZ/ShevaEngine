@@ -1,5 +1,4 @@
-﻿using System;
-using System.Reflection;
+﻿using System.Reflection;
 
 namespace ShevaEngine.Core
 {
@@ -11,14 +10,9 @@ namespace ShevaEngine.Core
         /// <returns></returns>
         public static string GetVersion()
         {
-#if WINDOWS_UAP                         
-            Windows.ApplicationModel.PackageVersion version = Windows.ApplicationModel.Package.Current.Id.Version;
-            return $"{version.Major}.{version.Minor}.{version.Revision}";
-#else
-            return System.Reflection.Assembly.GetEntryAssembly()
-                .GetCustomAttribute<System.Reflection.AssemblyInformationalVersionAttribute>()
-                .InformationalVersion;
-#endif
+            return Assembly.GetEntryAssembly()?
+                .GetCustomAttribute<AssemblyInformationalVersionAttribute>()?
+                .InformationalVersion!;
         }
     }
 }

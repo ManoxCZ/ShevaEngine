@@ -60,10 +60,6 @@ namespace ShevaEngine.Core
 
             _log.LogInformation($"Sheva Engine {Version.GetVersion()}");
 
-#if WINDOWS_UAP
-            Settings.Resolution.OnNext(new Resolution(Window.ClientBounds.Width, Window.ClientBounds.Height));
-#endif
-
             DisplayMode displayMode = GraphicsAdapter.DefaultAdapter.CurrentDisplayMode;
 
             GraphicsDeviceManager = new GraphicsDeviceManager(this)

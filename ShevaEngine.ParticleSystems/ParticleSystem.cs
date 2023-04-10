@@ -68,7 +68,7 @@ namespace ShevaEngine.ParticleSystems
             _particleLifetimes = new List<float>(maxParticles);
             _particleRandoms = new List<float>(maxParticles);
 
-            Random random = new Random();
+            Random random = new();
 
             for (int i = 0; i < maxParticles; i++)
             {
@@ -90,10 +90,10 @@ namespace ShevaEngine.ParticleSystems
             _particleModel = ModelMeshExtensions.CreateModelMesh(
                 new VertexPositionTexture[]
                 {
-                    new VertexPositionTexture() {Position = new Vector3(-0.5f, -0.5f, 0), TextureCoordinate = new Vector2(0,0) },
-                    new VertexPositionTexture() {Position = new Vector3(-0.5f, 0.5f, 0), TextureCoordinate = new Vector2(0,1) },
-                    new VertexPositionTexture() {Position = new Vector3(0.5f, 0.5f, 0), TextureCoordinate = new Vector2(1,1) },
-                    new VertexPositionTexture() {Position = new Vector3(0.5f, -0.5f, 0), TextureCoordinate = new Vector2(1,0) }
+                    new () {Position = new (-0.5f, -0.5f, 0), TextureCoordinate = new (0,0) },
+                    new () {Position = new (-0.5f, 0.5f, 0), TextureCoordinate = new (0,1) },
+                    new () {Position = new (0.5f, 0.5f, 0), TextureCoordinate = new (1,1) },
+                    new () {Position = new (0.5f, -0.5f, 0), TextureCoordinate = new (1,0) }
                 },
                 new ushort[] { 0, 1, 2, 0, 2, 3 },
                 _graphicsMaterial);

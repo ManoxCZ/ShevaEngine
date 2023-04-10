@@ -15,10 +15,10 @@ namespace ShevaEngine.Core
             _receiver = receiver;
 
             string[] parts = category.Split('.');
-            _category = parts[parts.Length - 1];
+            _category = parts[^1];
         }
 
-        public IDisposable BeginScope<TState>(TState state)
+        public IDisposable? BeginScope<TState>(TState state) where TState : notnull
         {
             throw new NotImplementedException();
         }
@@ -26,7 +26,7 @@ namespace ShevaEngine.Core
         public bool IsEnabled(LogLevel logLevel) => true;
 
 
-        public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception exception, Func<TState, Exception, string> formatter)
+        public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception? exception, Func<TState, Exception?, string> formatter)
         {
             _receiver.OnNewMessage(logLevel, _category, eventId, state, exception, formatter);
         }
