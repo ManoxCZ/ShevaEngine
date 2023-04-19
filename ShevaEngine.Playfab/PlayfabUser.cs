@@ -16,27 +16,54 @@ public class PlayfabUser : IUser
 
     public async Task<bool> ConnectToService(bool silently = false)
     {
+        UserData.OnNext(ConnectingUserData.Instance);
+
         PlayFabSettings.staticSettings.TitleId = TITLE_ID;
 
         LoginWithCustomIDRequest request = new()
         {
             CreateAccount = true,
-            CustomId = "User" 
+            CustomId = "User"
         };
 
-        if (await PlayFabClientAPI.LoginWithCustomIDAsync(request) is PlayFabResult<LoginResult> result)
+        //LoginWithPlayFabRequest request2 = new()
+        //{
+        //    Username = "ManoxCZ",
+        //    TitleId = TITLE_ID,
+        //    Password = "passwd",            
+        //};
+
+        //if (await PlayFabClientAPI.LoginWithCustomIDAsync(request) is PlayFabResult<LoginResult> result)
+        //{
+        //    GetUserDataRequest userDataRequest = new()
+        //    {
+        //        PlayFabId = result.Result.PlayFabId
+        //    };
+
+        //    if (await PlayFabClientAPI.GetUserDataAsync(userDataRequest) is PlayFabResult<GetUserDataResult> userDataResult)
+        //    {
+        //       // UserData.OnNext(new PlayfabUserData(userDataResult));
+        //    }
+
+        //    return true;
+        //}
+
+        UserData.OnNext(null);
+
+        return false;
+    }
+
+    public async Task<bool> RegisterToServiceAsync(string username)
+    {
+        RegisterPlayFabUserRequest request = new()
         {
-            GetUserDataRequest userDataRequest = new()
-            {
-                PlayFabId = result.Result.PlayFabId
-            };
+            Username = username,
+            
+        };
 
-            if (await PlayFabClientAPI.GetUserDataAsync(userDataRequest) is PlayFabResult<GetUserDataResult> userDataResult)
-            {
-
-            }
-
-            return true;
+        if (await PlayFabClientAPI.RegisterPlayFabUserAsync(request) is PlayFabResult<RegisterPlayFabUserResult> result)
+        {
+            
         }
 
         return false;

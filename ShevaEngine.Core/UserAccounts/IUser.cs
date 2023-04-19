@@ -9,5 +9,7 @@ namespace ShevaEngine.Core.UserAccounts
         BehaviorSubject<IUserData?> UserData { get; }
 
         Task<bool> ConnectToService(bool silently = false);
+
+        Task<bool> RegisterToServiceAsync(string username);
     }
 }
