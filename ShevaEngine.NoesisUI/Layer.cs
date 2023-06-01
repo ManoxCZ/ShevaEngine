@@ -169,6 +169,6 @@ public class Layer<U> : ILayer where U : UserControl, new()
 
     public void RunOnUIThread(Action action)
     {
-        ShevaGame.Instance.SynchronizationContext?.Send(_ => action(), null);
+        ShevaGame.Instance.SynchronizationContext.Send(_ => action(), null);
     }
 }

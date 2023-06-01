@@ -6,19 +6,26 @@ using System.Threading.Tasks;
 
 namespace ShevaEngine.Playfab;
 
-public class PlayfabUser : IUser
+public class PlayfabUserService : IUserService
 {
-    public static string TITLE_ID = "";
-
-
     public BehaviorSubject<IUserData?> UserData { get; } = new(null);
 
+
+    public PlayfabUserService(string titleId)
+    {
+        PlayFabSettings.staticSettings.TitleId = titleId;
+    }
+
+    public void Dispose()
+    {
+
+    }
 
     public async Task<bool> ConnectToService(bool silently = false)
     {
         UserData.OnNext(ConnectingUserData.Instance);
 
-        PlayFabSettings.staticSettings.TitleId = TITLE_ID;
+        
 
         LoginWithCustomIDRequest request = new()
         {
@@ -67,10 +74,5 @@ public class PlayfabUser : IUser
         }
 
         return false;
-    }
-
-    public void Dispose()
-    {
-        
     }
 }

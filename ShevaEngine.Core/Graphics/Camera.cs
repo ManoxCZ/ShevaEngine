@@ -134,13 +134,16 @@ namespace ShevaEngine.Core
         /// <summary>
         /// Constructor.
         /// </summary>
-        public Camera(string name, MaterialProfile matProfile = MaterialProfile.Default)
+        public Camera(GraphicsDevice graphicsDevice, MaterialProfile matProfile = MaterialProfile.Default)
             : base()
         {
             ViewMatrix = Matrix.Identity;
-            CameraType = CameraType.Perspective;
+            CameraType = CameraType.Perspective;            
 
-            _spriteBatch = new SpriteBatch(ShevaGame.Instance.GraphicsDevice);
+            lock (graphicsDevice)
+            {
+                _spriteBatch = new SpriteBatch(graphicsDevice);
+            }
             
             _pipeline = new RenderingPipeline("Camera pipeline")
             {
@@ -187,7 +190,7 @@ namespace ShevaEngine.Core
         /// <summary>
         /// Draw.
         /// </summary>
-        public void Draw(IScene scene, GameTime gameTime, RenderTarget2D renderTarget, RenderTarget2D? depthTarget = null)
+        public void Draw(GraphicsDevice graphicsDevice, IScene scene, GameTime gameTime, RenderTarget2D renderTarget, RenderTarget2D? depthTarget = null)
         {
             // Get visible objects.
             _pipeline.Clear();
@@ -205,19 +208,19 @@ namespace ShevaEngine.Core
                     light.Shadow?.Update(gameTime, scene, light, this);
 
             // Attach render targets.			
-            ShevaGame.Instance.GraphicsDevice.SetRenderTarget(renderTarget);
+            graphicsDevice.SetRenderTarget(renderTarget);
 
-            ShevaGame.Instance.GraphicsDevice.Clear(
+            graphicsDevice.Clear(
                 ClearOptions.Target | ClearOptions.DepthBuffer, ClearValue, 1, 0);
 
             if (depthTarget != null)
             {
-                ShevaGame.Instance.GraphicsDevice.SetRenderTarget(depthTarget);
+                graphicsDevice.SetRenderTarget(depthTarget);
 
-                ShevaGame.Instance.GraphicsDevice.Clear(
+                graphicsDevice.Clear(
                     ClearOptions.Target, new Vector4(float.MaxValue, 0.0f, 0.0f, 0.0f), 1, 0);
 
-                ShevaGame.Instance.GraphicsDevice.SetRenderTargets(new[]
+                graphicsDevice.SetRenderTargets(new[]
                 {
                     new RenderTargetBinding(renderTarget),
                     new RenderTargetBinding(depthTarget)
@@ -227,7 +230,7 @@ namespace ShevaEngine.Core
             // Render scene.
             _pipeline.Draw();
 
-            ShevaGame.Instance.GraphicsDevice.SetRenderTarget(null);
+            graphicsDevice.SetRenderTarget(null);
 
             // Apply post processes.
             if (PostProcesses.Count > 0)
@@ -239,7 +242,7 @@ namespace ShevaEngine.Core
                     _postProcessTarget?.Dispose();
 
                     _postProcessTarget = new RenderTarget2D(
-                        ShevaGame.Instance.GraphicsDevice,
+                        graphicsDevice,
                         renderTarget.Width,
                         renderTarget.Height,
                         false,
@@ -263,22 +266,22 @@ namespace ShevaEngine.Core
                             postProcess.InputTexture = renderTarget;
                             postProcess.DepthTexture = depthTarget;
 
-                            ShevaGame.Instance.GraphicsDevice.SetRenderTarget(_postProcessTarget);
+                            graphicsDevice.SetRenderTarget(_postProcessTarget);
                         }
                         else
                         {
                             postProcess.InputTexture = _postProcessTarget;
                             postProcess.DepthTexture = depthTarget;
 
-                            ShevaGame.Instance.GraphicsDevice.SetRenderTarget(renderTarget);
+                            graphicsDevice.SetRenderTarget(renderTarget);
                         }
 
-                        ShevaGame.Instance.GraphicsDevice.Clear(
+                        graphicsDevice.Clear(
                             ClearOptions.Target | ClearOptions.DepthBuffer, Color.White, 1, 0);
 
                         postProcess.Apply(this, gameTime, scene);
 
-                        ShevaGame.Instance.GraphicsDevice.SetRenderTarget(null);
+                        graphicsDevice.SetRenderTarget(null);
 
                         if (_saveScreen)
                         {
@@ -294,13 +297,13 @@ namespace ShevaEngine.Core
 
                 if (PostProcesses.Where(item => item.Enabled).Count() % 2 != 0)
                 {
-                    ShevaGame.Instance.GraphicsDevice.SetRenderTarget(renderTarget);
+                    graphicsDevice.SetRenderTarget(renderTarget);
 
                     _spriteBatch.Begin();
                     _spriteBatch.Draw(_postProcessTarget, new Rectangle(0, 0, renderTarget.Width, renderTarget.Height), Color.White);
                     _spriteBatch.End();
 
-                    ShevaGame.Instance.GraphicsDevice.SetRenderTarget(null);
+                    graphicsDevice.SetRenderTarget(null);
                 }
             }
 

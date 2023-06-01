@@ -36,7 +36,7 @@ namespace ShevaEngine.Core
 
                 _camera?.Dispose();
 
-                _camera = new Camera("ShadowMap", MaterialProfile.Shadows)
+                _camera = new Camera(ShevaGame.Instance.GraphicsDevice, MaterialProfile.Shadows)
                 {
                     CameraType = CameraType.Orthographic,
                     Size = Size,
@@ -56,7 +56,7 @@ namespace ShevaEngine.Core
 
             _camera.OrthographicSize = (dim, dim);
 
-            _camera.Draw(scene, gameTime, _shadowMap);
+            _camera.Draw(ShevaGame.Instance.GraphicsDevice, scene, gameTime, _shadowMap);
 
             ShevaGame.Instance.GraphicsDevice.SetRenderTarget(null);
         }

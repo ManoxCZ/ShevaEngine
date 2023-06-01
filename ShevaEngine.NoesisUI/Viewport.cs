@@ -115,7 +115,7 @@ public sealed class Viewport : Grid, IViewport
         
         lock (_lock)
         {
-            Camera?.Draw(Scene, gameTime, _renderTarget, _depthTarget);
+            Camera?.Draw(ShevaGame.Instance.GraphicsDevice, Scene, gameTime, _renderTarget, _depthTarget);
         }
     }
 }

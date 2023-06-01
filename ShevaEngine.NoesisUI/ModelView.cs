@@ -38,6 +38,6 @@ public class ModelView : INotifyPropertyChanged, IDisposable
 
     protected void RunOnUIThread(Action action)
     {
-        ShevaGame.Instance.SynchronizationContext?.Send(_ => action(), null);
+        ShevaGame.Instance.SynchronizationContext.Send(_ => action(), null);
     }
 }

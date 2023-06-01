@@ -6,8 +6,5 @@
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
     <Configurations>Debug;Release</Configurations>
     <Nullable>enable</Nullable>
-  </PropertyGroup>
-  <ItemGroup>   
-    <PackageReference Include="MonoGame.Framework.WindowsDX" Version="3.8.1.303" />
-  </ItemGroup> 
+  </PropertyGroup> 
 </Project>

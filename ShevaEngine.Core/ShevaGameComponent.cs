@@ -13,10 +13,10 @@ namespace ShevaEngine.Core
     public abstract class ShevaGameComponent : IDisposable
     {
         protected readonly ILogger Log;
-        public List<ILayer> Layers { get; } = new List<ILayer>();
+        public List<ILayer> Layers { get; } = new();
         public bool IsInitialized { get; private set; } = false;
         public bool IsContentLoaded { get; private set; } = false;
-        protected List<IDisposable> Disposables { get; } = new List<IDisposable>();
+        protected List<IDisposable> Disposables { get; } = new();
 
 
         /// <summary>
@@ -33,7 +33,9 @@ namespace ShevaEngine.Core
         public virtual void Dispose()
         {
             foreach (IDisposable item in Disposables)
+            {
                 item.Dispose();
+            }
         }
 
         /// <summary>
@@ -96,10 +98,8 @@ namespace ShevaEngine.Core
                 if (layer.IsActive)
                 {
                     if (!eventHandled)
+                    { 
                         eventHandled = eventHandled || layer.UpdateInput(inputState);
-                    else
-                    {
-
                     }
 
                     layer.Update(time);

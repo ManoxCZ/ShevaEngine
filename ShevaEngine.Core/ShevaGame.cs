@@ -2,8 +2,6 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ShevaEngine.Core.Profiler;
-using ShevaEngine.Core.UI;
-using ShevaEngine.Core.UserAccounts;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -20,8 +18,9 @@ namespace ShevaEngine.Core
     public class ShevaGame : Game
     {
         public static ShevaGame Instance { get; private set; }
+        private const string WINDOW_TITLE = "Sheva Engine MG";
 
-        public SynchronizationContext? SynchronizationContext;
+        public readonly SynchronizationContext SynchronizationContext;
 
         private readonly ILogger _log;
 
@@ -30,23 +29,20 @@ namespace ShevaEngine.Core
         public GameSettings Settings { get; }
         private Type[] _initialComponentTypes;
         public GraphicsDeviceManager GraphicsDeviceManager { get; private set; }
-        public Input Input { get; private set; }
-        public ReplaySubject<InputState> InputState { get; private set; } = new ReplaySubject<InputState>();
-        private Stack<ShevaGameComponent> _gameComponents;
-        private object _componentsLock = new();
-        public IUser User { get; set; }
-        public IUISystem UISystem { get; set; }
+        public Input Input { get; } = new();
+        public ReplaySubject<InputState> InputState { get; } = new ReplaySubject<InputState>();
+        private readonly Stack<ShevaGameComponent> _gameComponents = new();        
 
 
         /// <summary>
         /// Constructor.
         /// </summary>
-        public ShevaGame(params Type[] initialComponents)
+        public ShevaGame(Type[] initialComponents, string windowTitle = WINDOW_TITLE)
             : base()
         {
             Instance = this;
 
-            SynchronizationContext = SynchronizationContext.Current;
+            SynchronizationContext = SynchronizationContext.Current!;
 
             InitializeServices();            
 
@@ -58,7 +54,7 @@ namespace ShevaEngine.Core
 
             _initialComponentTypes = initialComponents;
 
-            _log.LogInformation($"Sheva Engine {Version.GetVersion()}");
+            _log.LogInformation($"Sheva Engine {VersionUtils.GetVersion()}");
 
             DisplayMode displayMode = GraphicsAdapter.DefaultAdapter.CurrentDisplayMode;
 
@@ -74,12 +70,10 @@ namespace ShevaEngine.Core
 
             Content = new ContentManagerEx(Services);
 
-            Window.Title = @"Sheva Engine MG";
-
+            Window.Title = windowTitle;
             Window.AllowUserResizing = true;
-            IsMouseVisible = true;
 
-            _gameComponents = new Stack<ShevaGameComponent>();
+            IsMouseVisible = true;            
 
             Services.AddService<IEmbeddedFilesService>(new EmbeddedFilesService());            
         }
@@ -129,9 +123,7 @@ namespace ShevaEngine.Core
         /// </summary>
         protected override void Initialize()
         {
-            _log.LogInformation("Initialization started");
-
-            Input = new Input();
+            _log.LogInformation("Initialization started");            
 
             base.Initialize();
 
@@ -212,8 +204,7 @@ namespace ShevaEngine.Core
             ShevaGameComponent? component = PopGameComponent();
             component?.Dispose();
 
-            InputState.Dispose();
-            User?.Dispose();
+            InputState.Dispose();            
             Settings.Dispose();
             Input.Dispose();            
 

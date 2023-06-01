@@ -1,41 +1,35 @@
 ﻿using Microsoft.Extensions.Logging;
 using ShevaEngine.Core;
-using ShevaEngine.Core.UI;
-using System;
 
 namespace ShevaEngine.NoesisUI;
 
-public class NoesisUIWrapper : IUISystem
-{
-    public static string LICENSE_NAME = "";
-    public static string LICENSE_KEY = "";
-    public static string THEME_FILENAME = "Themes.Theme";
-
-    private readonly ILogger _log = ShevaServices.GetService<ILoggerFactory>().CreateLogger<NoesisUIWrapper>();        
-
-    public NoesisUIWrapper()
+public class NoesisUIWrapper
+{    
+    public static void Initialize(string licenseName, string licenseKey, string themeFilename = "Themes.Theme")
     {
+        ILogger log = ShevaServices.GetService<ILoggerFactory>().CreateLogger<NoesisUIWrapper>();
+
         Noesis.Log.SetLogCallback((level, channel, message) =>
         {
             switch (level)
             {
                 case Noesis.LogLevel.Trace:
                 case Noesis.LogLevel.Debug:
-                    _log.LogDebug(message);
+                    log.LogDebug(message);
                     break;
                 case Noesis.LogLevel.Info:
-                    _log.LogInformation(message);
+                    log.LogInformation(message);
                     break;
                 case Noesis.LogLevel.Warning:
-                    _log.LogWarning(message);
+                    log.LogWarning(message);
                     break;
                 case Noesis.LogLevel.Error:
-                    _log.LogError(message);
+                    log.LogError(message);
                     break;
             }
         });
 
-        Noesis.GUI.SetLicense(LICENSE_NAME, LICENSE_KEY);
+        Noesis.GUI.SetLicense(licenseName, licenseKey);
         Noesis.GUI.Init();
 
         Noesis.GUI.SetXamlProvider(new XamlProvider());
@@ -49,11 +43,6 @@ public class NoesisUIWrapper : IUISystem
             NoesisApp.Theme.DefaultFontStretch,
             NoesisApp.Theme.DefaultFontStyle);
 
-        Noesis.GUI.LoadApplicationResources(THEME_FILENAME + ".xaml");
-    }
-
-    public void RunOnUIThread(Action action)
-    {
-        ShevaGame.Instance.SynchronizationContext?.Send(_ => action(), null);
+        Noesis.GUI.LoadApplicationResources(themeFilename + ".xaml");
     }    
 }

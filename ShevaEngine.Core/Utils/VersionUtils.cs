@@ -2,7 +2,7 @@
 
 namespace ShevaEngine.Core
 {
-    public class Version
+    public class VersionUtils
     {
         /// <summary>
         /// Get version.

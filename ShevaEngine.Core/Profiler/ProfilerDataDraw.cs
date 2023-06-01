@@ -1,6 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System.Windows.Forms.VisualStyles;
 
 namespace ShevaEngine.Core.Profiler;
 
@@ -22,7 +21,11 @@ internal class ProfilerDataDraw
             _profilerService = profilerService;
         }
 
-        _spriteBatch = new SpriteBatch(game.GraphicsDevice);
+        lock (game.GraphicsDevice)
+        {
+            _spriteBatch = new SpriteBatch(game.GraphicsDevice);
+        }
+
         _spriteFont = game.Content.Load<SpriteFont>(@"Content\\Fonts\\Arial");
     }
 

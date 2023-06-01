@@ -9,8 +9,6 @@
 		<Nullable>enable</Nullable>
 	</PropertyGroup>
 	<ItemGroup>
-		<PackageReference Include="MonoGame.Framework.WindowsDX" Version="3.8.1.303" />
-		<PackageReference Include="Microsoft.Extensions.Logging" Version="7.0.0" />
 		<PackageReference Include="PlayFabAllSDK" Version="1.150.230403" />
 	</ItemGroup>
 	<ItemGroup>

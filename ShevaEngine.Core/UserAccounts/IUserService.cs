@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 
 namespace ShevaEngine.Core.UserAccounts
 {
-    public interface IUser : IDisposable
+    public interface IUserService : IDisposable
     {
         BehaviorSubject<IUserData?> UserData { get; }
 

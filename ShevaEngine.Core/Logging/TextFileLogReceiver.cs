@@ -27,7 +27,7 @@ namespace ShevaEngine.Core
                 _filename = System.IO.Path.Combine(
                     Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
                     service.UserDataPath,
-                    $"game.log");
+                    "game.log");
 
                 if (service.FileExists(_filename))
                 {
