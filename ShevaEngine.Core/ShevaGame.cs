@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ShevaEngine.Core.Profiler;
+using ShevaEngine.Core.Settings;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -25,9 +26,9 @@ namespace ShevaEngine.Core
         private readonly ILogger _log;
 
         private readonly ProfilerService _profilerService = new();
-        private readonly ProfilerDataDraw _profilerDraw = new();
-        public GameSettings Settings { get; }
+        private readonly ProfilerDataDraw _profilerDraw = new();        
         private Type[] _initialComponentTypes;
+        private readonly GameSettings _gameSettings = null!;
         public GraphicsDeviceManager GraphicsDeviceManager { get; private set; }
         public Input Input { get; } = new();
         public ReplaySubject<InputState> InputState { get; } = new ReplaySubject<InputState>();
@@ -50,7 +51,10 @@ namespace ShevaEngine.Core
 
             AppDomain.CurrentDomain.UnhandledException += new UnhandledExceptionEventHandler(UnhandledExceptionHandler);
 
-            Settings = ShevaGameSettings.Load<GameSettings>();
+            if (ShevaServices.GetService<SettingsService>().GetSettings<GameSettings>() is GameSettings gameSettings)
+            {
+                _gameSettings = gameSettings;
+            }            
 
             _initialComponentTypes = initialComponents;
 
@@ -61,8 +65,8 @@ namespace ShevaEngine.Core
             GraphicsDeviceManager = new GraphicsDeviceManager(this)
             {
                 IsFullScreen = false,
-                PreferredBackBufferWidth = Settings.Resolution.Value.Width,
-                PreferredBackBufferHeight = Settings.Resolution.Value.Height,
+                PreferredBackBufferWidth = _gameSettings.Resolution.Value.Width,
+                PreferredBackBufferHeight = _gameSettings.Resolution.Value.Height,
                 GraphicsProfile = GraphicsProfile.HiDef
             };
 
@@ -95,6 +99,7 @@ namespace ShevaEngine.Core
 #endif
             }));            
             Services.AddService(_profilerService);
+            Services.AddService<SettingsService>(new());
         }
 
         /// <summary>
@@ -127,7 +132,7 @@ namespace ShevaEngine.Core
 
             base.Initialize();
 
-            Settings.Resolution.OnNext(new Resolution(Window.ClientBounds.Width, Window.ClientBounds.Height));
+            _gameSettings.Resolution.OnNext(new Resolution(Window.ClientBounds.Width, Window.ClientBounds.Height));
 
             Observable.FromEventPattern<EventArgs>(
                 handler => Window.ClientSizeChanged += handler,
@@ -137,9 +142,9 @@ namespace ShevaEngine.Core
 
                     if (Window.ClientBounds.Width != 0 && Window.ClientBounds.Height != 0)
                     {
-                        Settings.Resolution.OnNext(new Resolution(Window.ClientBounds.Width, Window.ClientBounds.Height));
+                        _gameSettings.Resolution.OnNext(new Resolution(Window.ClientBounds.Width, Window.ClientBounds.Height));
 
-                        ShevaGameSettings.Save(Settings);
+                        ShevaGameSettings.Save(_gameSettings);
                     }
                     else
                     {
@@ -204,8 +209,7 @@ namespace ShevaEngine.Core
             ShevaGameComponent? component = PopGameComponent();
             component?.Dispose();
 
-            InputState.Dispose();            
-            Settings.Dispose();
+            InputState.Dispose();                        
             Input.Dispose();            
 
             base.OnExiting(sender, args);
@@ -241,13 +245,13 @@ namespace ShevaEngine.Core
         {
             using (var _ = _profilerService.BeginScope("Draw"))
             {
-                if (Settings.Fullscreen.Value != GraphicsDeviceManager.IsFullScreen)
+                if (_gameSettings.Fullscreen.Value != GraphicsDeviceManager.IsFullScreen)
                 {
                     DisplayMode displayMode = GraphicsAdapter.DefaultAdapter.CurrentDisplayMode;
 
-                    GraphicsDeviceManager.IsFullScreen = Settings.Fullscreen.Value;
-                    GraphicsDeviceManager.PreferredBackBufferWidth = Settings.Fullscreen.Value ? displayMode.Width : Settings.Resolution.Value.Width;
-                    GraphicsDeviceManager.PreferredBackBufferHeight = Settings.Fullscreen.Value ? displayMode.Height : Settings.Resolution.Value.Height;
+                    GraphicsDeviceManager.IsFullScreen = _gameSettings.Fullscreen.Value;
+                    GraphicsDeviceManager.PreferredBackBufferWidth = _gameSettings.Fullscreen.Value ? displayMode.Width : _gameSettings.Resolution.Value.Width;
+                    GraphicsDeviceManager.PreferredBackBufferHeight = _gameSettings.Fullscreen.Value ? displayMode.Height : _gameSettings.Resolution.Value.Height;
 
                     GraphicsDeviceManager.ApplyChanges();
                 }
@@ -349,10 +353,9 @@ namespace ShevaEngine.Core
         /// </summary>		
         public void SetFullscreen(bool fullscreen)
         {
-            Settings.Fullscreen.OnNext(fullscreen);
-            ShevaGameSettings.Save(Settings);
+            _gameSettings.Fullscreen.OnNext(fullscreen);
+
+            ShevaGameSettings.Save(_gameSettings);
         }
-
-
     }
 }

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Windows.Input;
 
-namespace ShevaEngine.NoesisUI;
+namespace ShevaEngine.Core.UI;
 
 public class RelayCommand<T> : ICommand
 {
@@ -22,13 +22,13 @@ public class RelayCommand<T> : ICommand
 
     public RelayCommand(Action<object?> execute, Func<object?, bool> canExecute)
         : this(execute)
-    {            
+    {
         if (canExecute == null)
         {
             throw new ArgumentNullException("canExecute");
         }
-        
-        _canExecute = canExecute;            
+
+        _canExecute = canExecute;
     }
 
     public bool CanExecute(object? parameter)
@@ -39,7 +39,7 @@ public class RelayCommand<T> : ICommand
     public void Execute(object? parameter)
     {
         _execute((T)parameter!);
-    }       
+    }
 
     public void RaiseCanExecuteChanged()
     {

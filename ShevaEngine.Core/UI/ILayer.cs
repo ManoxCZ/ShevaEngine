@@ -1,22 +1,21 @@
 ﻿using Microsoft.Xna.Framework;
 using System.Threading.Tasks;
 
-namespace ShevaEngine.Core.UI
+namespace ShevaEngine.Core.UI;
+
+public interface ILayer
 {
-    public interface ILayer
-    {
-        object DataContext { get; set; }
+    object DataContext { get; set; }
 
-        bool IsActive { get; set; }
+    bool IsActive { get; set; }
 
-        void OnWindowResize(int width, int height);
+    void OnWindowResize(int width, int height);
 
-        void Update(GameTime time);
+    void Update(GameTime time);
 
-        public bool UpdateInput(InputState state);
+    public bool UpdateInput(InputState state);
 
-        public void Draw(GameTime time);
+    public void Draw(GameTime time);
 
-        Task<IViewport> GetViewport(string name);
-    }
+    Task<IViewport> GetViewport(string name);
 }

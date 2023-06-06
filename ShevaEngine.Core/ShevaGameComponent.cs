@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using ShevaEngine.Core.Settings;
 using ShevaEngine.Core.UI;
 using System;
 using System.Collections.Generic;
@@ -45,11 +46,16 @@ namespace ShevaEngine.Core
         {
             IsInitialized = true;
 
-            Disposables.Add(game.Settings.Resolution.Subscribe(item =>
+            if (ShevaServices.GetService<SettingsService>().GetSettings<GameSettings>() is GameSettings gameSettings)
             {
-                foreach (ILayer layer in Layers)
-                    layer.OnWindowResize(item.Width, item.Height);
-            }));
+                Disposables.Add(gameSettings.Resolution.Subscribe(item =>
+                {
+                    foreach (ILayer layer in Layers)
+                    {
+                        layer.OnWindowResize(item.Width, item.Height);
+                    }
+                }));
+            }
         }
 
         /// <summary>
@@ -73,8 +79,13 @@ namespace ShevaEngine.Core
         /// </summary>
         public virtual void Activate(ShevaGame game)
         {
-            foreach (ILayer layer in Layers)
-                layer.OnWindowResize(game.Settings.Resolution.Value.Width, game.Settings.Resolution.Value.Height);
+            if (ShevaServices.GetService<SettingsService>().GetSettings<GameSettings>() is GameSettings gameSettings)
+            {
+                foreach (ILayer layer in Layers)
+                {
+                    layer.OnWindowResize(gameSettings.Resolution.Value.Width, gameSettings.Resolution.Value.Height);
+                }
+            }
         }
 
         /// <summary>
