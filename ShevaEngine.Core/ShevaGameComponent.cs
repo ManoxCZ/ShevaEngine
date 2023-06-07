@@ -1,5 +1,4 @@
-﻿using Microsoft.Extensions.Logging;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ShevaEngine.Core.Settings;
 using ShevaEngine.Core.UI;
@@ -11,34 +10,17 @@ namespace ShevaEngine.Core
     /// <summary>
     /// Game component.
     /// </summary>
-    public abstract class ShevaGameComponent : IDisposable
-    {
-        protected readonly ILogger Log;
-        public List<ILayer> Layers { get; } = new();
+    public abstract class ShevaGameComponent : ViewModel, IDisposable
+    {        
+        private readonly List<ILayer> _layers = new();
         public bool IsInitialized { get; private set; } = false;
         public bool IsContentLoaded { get; private set; } = false;
-        protected List<IDisposable> Disposables { get; } = new();
+     
 
-
-        /// <summary>
-        /// Constructor.
-        /// </summary>
         public ShevaGameComponent()
-        {
-            Log = ShevaServices.GetService<ILoggerFactory>().CreateLogger(GetType());
+        {            
         }
-
-        /// <summary>
-        /// Dispose.
-        /// </summary>
-        public virtual void Dispose()
-        {
-            foreach (IDisposable item in Disposables)
-            {
-                item.Dispose();
-            }
-        }
-
+        
         /// <summary>
         /// Initialize method.
         /// </summary>
@@ -50,7 +32,7 @@ namespace ShevaEngine.Core
             {
                 Disposables.Add(gameSettings.Resolution.Subscribe(item =>
                 {
-                    foreach (ILayer layer in Layers)
+                    foreach (ILayer layer in _layers)
                     {
                         layer.OnWindowResize(item.Width, item.Height);
                     }
@@ -74,6 +56,27 @@ namespace ShevaEngine.Core
 
         }
 
+        public void AddLayer(ILayer layer)
+        {
+            if (!_layers.Contains(layer))
+            {
+                _layers.Add(layer);
+
+                if (ShevaServices.GetService<SettingsService>().GetSettings<GameSettings>() is GameSettings gameSettings)
+                {
+                        layer.OnWindowResize(gameSettings.Resolution.Value.Width, gameSettings.Resolution.Value.Height);
+                 }
+            }
+        }
+
+        public void RemoveLayer(ILayer layer)
+        {
+            if (_layers.Contains(layer))
+            {
+                _layers.Remove(layer);
+            }
+        }
+
         /// <summary>
         /// Activate method.
         /// </summary>
@@ -81,7 +84,7 @@ namespace ShevaEngine.Core
         {
             if (ShevaServices.GetService<SettingsService>().GetSettings<GameSettings>() is GameSettings gameSettings)
             {
-                foreach (ILayer layer in Layers)
+                foreach (ILayer layer in _layers)
                 {
                     layer.OnWindowResize(gameSettings.Resolution.Value.Width, gameSettings.Resolution.Value.Height);
                 }
@@ -102,9 +105,9 @@ namespace ShevaEngine.Core
         {
             bool eventHandled = false;
 
-            for (int i = Layers.Count - 1; i >= 0; i--)
+            for (int i = _layers.Count - 1; i >= 0; i--)
             {
-                ILayer layer = Layers[i];
+                ILayer layer = _layers[i];
 
                 if (layer.IsActive)
                 {
@@ -125,11 +128,11 @@ namespace ShevaEngine.Core
         {
             ShevaGame.Instance.GraphicsDevice.Clear(ClearOptions.Target | ClearOptions.DepthBuffer | ClearOptions.Stencil, Color.Orange, 1, 0);
 
-            for (int i = 0; i < Layers.Count; i++)
+            for (int i = 0; i < _layers.Count; i++)
             {
-                if (Layers[i].IsActive)
+                if (_layers[i].IsActive)
                 {
-                    Layers[i].Draw(gameTime);
+                    _layers[i].Draw(gameTime);
                 }
             }
         }

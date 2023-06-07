@@ -1,5 +1,4 @@
 ﻿using Microsoft.Xna.Framework;
-using System.Threading.Tasks;
 
 namespace ShevaEngine.Core.UI;
 
@@ -15,7 +14,5 @@ public interface ILayer
 
     public bool UpdateInput(InputState state);
 
-    public void Draw(GameTime time);
-
-    Task<IViewport> GetViewport(string name);
+    public void Draw(GameTime time);    
 }

@@ -8,7 +8,7 @@
 		<Nullable>enable</Nullable>
 	</PropertyGroup>
 	<ItemGroup>
-		<PackageReference Include="Noesis.App" Version="3.2.1" />
+		<PackageReference Include="Noesis.App" Version="3.2.1" />		
 	</ItemGroup>
 	<ItemGroup>
 		<ProjectReference Include="..\ShevaEngine.Core\ShevaEngine.Core.csproj" />

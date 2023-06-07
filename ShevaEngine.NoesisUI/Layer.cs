@@ -6,7 +6,6 @@ using ShevaEngine.Core.Profiler;
 using ShevaEngine.Core.UI;
 using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 
 namespace ShevaEngine.NoesisUI;
 
@@ -151,22 +150,7 @@ public class Layer<U> : ILayer where U : UserControl, new()
 
         return eventHandled;
     }
-
-    public Task<IViewport> GetViewport(string name)
-    {
-        TaskCompletionSource<IViewport> taskSource = new();
-
-        RunOnUIThread(() =>
-        {
-            if (_view?.Content?.FindName(name) is IViewport viewport)
-            {
-                taskSource.SetResult(viewport);
-            }
-        });
-
-        return taskSource.Task;
-    }
-
+   
     public void RunOnUIThread(Action action)
     {
         ShevaGame.Instance.SynchronizationContext.Send(_ => action(), null);

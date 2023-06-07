@@ -4,6 +4,7 @@ using Noesis;
 using ShevaEngine.Core;
 using ShevaEngine.Core.Profiler;
 using ShevaEngine.Core.UI;
+using System;
 using System.Reflection;
 
 namespace ShevaEngine.NoesisUI;
@@ -16,19 +17,48 @@ public sealed class Viewport : Grid, IViewport
     public static readonly DependencyProperty SceneProperty = DependencyProperty.Register(
         nameof(Scene), typeof(IScene), typeof(Viewport), new PropertyMetadata(null));
 
+    public static readonly DependencyProperty MouseMoveCommandProperty = DependencyProperty.Register(
+        nameof(MouseMoveCommand), typeof(RelayCommand<MouseEventArgs>), typeof(Viewport), new PropertyMetadata(null));
+
+    public static readonly DependencyProperty MouseWheelCommandProperty = DependencyProperty.Register(
+        nameof(MouseWheelCommand), typeof(RelayCommand<MouseWheelEventArgs>), typeof(Viewport), new PropertyMetadata(null));
+
+    public static readonly DependencyProperty MouseButtonClickCommandProperty = DependencyProperty.Register(
+        nameof(MouseButtonClickCommand), typeof(RelayCommand<MouseButtonEventArgs>), typeof(Viewport), new PropertyMetadata(null));
+
     public Camera Camera
     {
         get => (Camera)GetValue(CameraProperty);
         set => SetValue(CameraProperty, value);
     }
+    
     public IScene Scene
     {
         get => (IScene)GetValue(SceneProperty);
         set => SetValue(SceneProperty, value);
     }
+
+    public RelayCommand<MouseEventArgs>? MouseMoveCommand
+    {
+        get => (RelayCommand<MouseEventArgs>?)GetValue(MouseMoveCommandProperty);
+        set => SetValue(MouseMoveCommandProperty, value);
+    }
+
+    public RelayCommand<MouseWheelEventArgs>? MouseWheelCommand
+    {
+        get => (RelayCommand<MouseWheelEventArgs>?)GetValue(MouseWheelCommandProperty);
+        set => SetValue(MouseWheelCommandProperty, value);
+    }
+
+    public RelayCommand<MouseButtonEventArgs>? MouseButtonClickCommand
+    {
+        get => (RelayCommand<MouseButtonEventArgs>?)GetValue(MouseButtonClickCommandProperty);
+        set => SetValue(MouseButtonClickCommandProperty, value);
+    }
+
     private RenderTarget2D _renderTarget = null!;
     private RenderTarget2D _depthTarget = null!;
-    private object _lock = new object();
+    private object _lock = new();
     private readonly Image _image;
 
 
@@ -45,6 +75,18 @@ public sealed class Viewport : Grid, IViewport
         {
             Children.Add(_image);
         };
+
+        MouseMove += (sender, args) => MouseMoveCommand?.Execute(args);
+        MouseWheel += (sender, args) => MouseWheelCommand?.Execute(args);
+        MouseLeftButtonUp += (sender, args) => MouseButtonClickCommand?.Execute(args);
+        MouseLeftButtonDown += (sender, args) => MouseButtonClickCommand?.Execute(args);
+        MouseRightButtonUp += (sender, args) => MouseButtonClickCommand?.Execute(args);
+        MouseRightButtonDown += (sender, args) => MouseButtonClickCommand?.Execute(args);
+    }
+
+    private void Viewport_MouseMove(object sender, MouseEventArgs args)
+    {
+        throw new NotImplementedException();
     }
 
     protected override Size ArrangeOverride(Size finalSize)
@@ -107,7 +149,7 @@ public sealed class Viewport : Grid, IViewport
         }
 
         return base.ArrangeOverride(finalSize);
-    }
+    }    
 
     public void Render(GameTime gameTime)
     {
