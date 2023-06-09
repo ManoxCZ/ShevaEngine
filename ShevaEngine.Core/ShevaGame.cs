@@ -43,7 +43,11 @@ namespace ShevaEngine.Core
         {
             Instance = this;
 
+#if WINDOWSDX
             SynchronizationContext = SynchronizationContext.Current!;
+#elif DESKTOPGL
+            SynchronizationContext = new SynchronizationContext();
+#endif
 
             InitializeServices();            
 
@@ -59,7 +63,7 @@ namespace ShevaEngine.Core
             _initialComponentTypes = initialComponents;
 
             _log.LogInformation($"Sheva Engine {VersionUtils.GetVersion()}");
-
+            
             DisplayMode displayMode = GraphicsAdapter.DefaultAdapter.CurrentDisplayMode;
 
             GraphicsDeviceManager = new GraphicsDeviceManager(this)

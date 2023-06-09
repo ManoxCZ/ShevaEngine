@@ -12,6 +12,7 @@ public class Texture2DToImageSource : IValueConverter
     {
         if (value is Texture2D texture)
         {
+#if WINDOWSDX
             if (typeof(Texture2D).GetField("_texture", BindingFlags.Instance | BindingFlags.NonPublic) is FieldInfo info &&
                 info.GetValue(texture) as SharpDX.Direct3D11.Resource is SharpDX.Direct3D11.Resource handle)
             {
@@ -25,6 +26,9 @@ public class Texture2DToImageSource : IValueConverter
                         false,
                         true));
             }
+#elif DESKTOPGL
+            throw new NotImplementedException();
+#endif
         }
 
         return null!;

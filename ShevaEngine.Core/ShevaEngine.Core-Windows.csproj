@@ -6,6 +6,8 @@
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
     <Configurations>Debug;Release</Configurations>
     <Nullable>enable</Nullable>
+    <AssemblyName>ShevaEngine.Core</AssemblyName>
+    <RootNamespace>ShevaEngine.Core</RootNamespace>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x86'">
     <WarningLevel>7</WarningLevel>

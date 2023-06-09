@@ -82,12 +82,7 @@ public sealed class Viewport : Grid, IViewport
         MouseLeftButtonDown += (sender, args) => MouseButtonClickCommand?.Execute(args);
         MouseRightButtonUp += (sender, args) => MouseButtonClickCommand?.Execute(args);
         MouseRightButtonDown += (sender, args) => MouseButtonClickCommand?.Execute(args);
-    }
-
-    private void Viewport_MouseMove(object sender, MouseEventArgs args)
-    {
-        throw new NotImplementedException();
-    }
+    }    
 
     protected override Size ArrangeOverride(Size finalSize)
     {
@@ -109,6 +104,7 @@ public sealed class Viewport : Grid, IViewport
                 Name = $"{nameof(Viewport)} - Render target"
             };
 
+#if WINDOWSDX
             if (typeof(RenderTarget2D).GetField("_renderTargetViews", BindingFlags.Instance | BindingFlags.NonPublic) is FieldInfo info &&
                 info.GetValue(_renderTarget) is SharpDX.Direct3D11.RenderTargetView[] targets &&
                 targets.Length > 0 &&
@@ -141,6 +137,9 @@ public sealed class Viewport : Grid, IViewport
                     Name = $"{nameof(Viewport)} - Depth render target"
                 };
             }
+#elif DESKTOPGL
+            throw new NotImplementedException();
+#endif
         }
 
         if (Camera != null)

@@ -6,6 +6,8 @@
 		<AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
 		<Configurations>Debug;Release</Configurations>
 		<Nullable>enable</Nullable>
+		<AssemblyName>ShevaEngine.ParticleSystems</AssemblyName>
+		<RootNamespace>ShevaEngine.ParticleSystems</RootNamespace>
 	</PropertyGroup>
 	<ItemGroup>
 		<MonoGameContentReference Include="Content\Content.mgcb" />
@@ -15,6 +17,6 @@
 		<PackageReference Include="MonoGame.Framework.WindowsDX" Version="3.8.1.303" />
 	</ItemGroup>
 	<ItemGroup>
-		<ProjectReference Include="..\ShevaEngine.Core\ShevaEngine.Core.csproj" />
+		<ProjectReference Include="..\ShevaEngine.Core\ShevaEngine.Core-Windows.csproj" />
 	</ItemGroup>
 </Project>

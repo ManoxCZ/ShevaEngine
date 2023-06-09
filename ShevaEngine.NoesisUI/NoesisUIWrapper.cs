@@ -29,9 +29,12 @@ public class NoesisUIWrapper
             }
         });
 
+        NoesisApp.RenderContextGLX contextWGL = new();        
+        //contextWGL.Init(1, ShevaGame.Instance.Window.Handle, 1, false, false);
+        
         Noesis.GUI.SetLicense(licenseName, licenseKey);
         Noesis.GUI.Init();
-
+        
         Noesis.GUI.SetXamlProvider(new XamlProvider());
         Noesis.GUI.SetFontProvider(new FontProvider());
         Noesis.GUI.SetTextureProvider(new TextureProvider());
@@ -43,6 +46,7 @@ public class NoesisUIWrapper
             NoesisApp.Theme.DefaultFontStretch,
             NoesisApp.Theme.DefaultFontStyle);
 
+        NoesisApp.Application.SetThemeProviders();
         Noesis.GUI.LoadApplicationResources(themeFilename + ".xaml");
     }    
 }

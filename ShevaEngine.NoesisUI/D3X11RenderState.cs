@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿#if WINDOWSDX
+using System.Collections.Generic;
 using SharpDX.Direct3D;
 using SharpDX.Direct3D11;
 using SharpDX.Mathematics.Interop;
@@ -120,3 +121,4 @@ namespace ShevaEngine.NoesisUI
         }
     }
 }
+#endif

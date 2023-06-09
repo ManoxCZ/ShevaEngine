@@ -6,15 +6,13 @@
 		<AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
 		<Configurations>Debug;Release</Configurations>
 		<Nullable>enable</Nullable>
+		<AssemblyName>ShevaEngine.NoesisUI</AssemblyName>
+		<RootNamespace>ShevaEngine.NoesisUI</RootNamespace>
 	</PropertyGroup>
 	<ItemGroup>
-		<MonoGameContentReference Include="Content\Content.mgcb" />
+		<PackageReference Include="Noesis.App" Version="3.2.1" />		
 	</ItemGroup>
 	<ItemGroup>
-		<PackageReference Include="MonoGame.Content.Builder.Task" Version="3.8.1.303" />
-		<PackageReference Include="MonoGame.Framework.WindowsDX" Version="3.8.1.303" />
-	</ItemGroup>
-	<ItemGroup>
-		<ProjectReference Include="..\ShevaEngine.Core\ShevaEngine.Core.csproj" />
+		<ProjectReference Include="..\ShevaEngine.Core\ShevaEngine.Core-Windows.csproj" />
 	</ItemGroup>
 </Project>
