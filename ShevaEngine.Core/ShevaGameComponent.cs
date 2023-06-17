@@ -64,8 +64,8 @@ namespace ShevaEngine.Core
 
                 if (ShevaServices.GetService<SettingsService>().GetSettings<GameSettings>() is GameSettings gameSettings)
                 {
-                        layer.OnWindowResize(gameSettings.Resolution.Value.Width, gameSettings.Resolution.Value.Height);
-                 }
+                    layer.OnWindowResize(gameSettings.Resolution.Value.Width, gameSettings.Resolution.Value.Height);
+                }
             }
         }
 

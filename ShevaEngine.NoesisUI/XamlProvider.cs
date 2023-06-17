@@ -17,16 +17,12 @@ internal class XamlProvider : Noesis.XamlProvider
 
     public override Stream? LoadXaml(Uri filename)
     {
-        _log.LogInformation($"Loading xaml file: {filename}");
-
         if (ShevaServices.GetService<IEmbeddedFilesService>().TryGetStream(filename.OriginalString, out Stream stream))
         {
-            _log.LogInformation($"Xaml file found and loaded!");
-
             return stream;
         }            
 
-        _log.LogError($"Can't find xaml file!");
+        _log.LogError($"Can't find xaml file: {filename}");
 
         return null;
     }

@@ -28,9 +28,6 @@ public class NoesisUIWrapper
                     break;
             }
         });
-
-        NoesisApp.RenderContextGLX contextWGL = new();        
-        //contextWGL.Init(1, ShevaGame.Instance.Window.Handle, 1, false, false);
         
         Noesis.GUI.SetLicense(licenseName, licenseKey);
         Noesis.GUI.Init();
@@ -46,7 +43,7 @@ public class NoesisUIWrapper
             NoesisApp.Theme.DefaultFontStretch,
             NoesisApp.Theme.DefaultFontStyle);
 
-        NoesisApp.Application.SetThemeProviders();
+        //NoesisApp.Application.SetThemeProviders();
         Noesis.GUI.LoadApplicationResources(themeFilename + ".xaml");
     }    
 }

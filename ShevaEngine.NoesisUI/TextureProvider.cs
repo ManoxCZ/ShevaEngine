@@ -18,16 +18,12 @@ internal class TextureProvider : FileTextureProvider
 
     public override Stream? OpenStream(Uri filename)
     {
-        _log.LogInformation($"Loading file: {filename}");
-
         if (ShevaServices.GetService<IEmbeddedFilesService>().TryGetStream(filename.OriginalString, out Stream stream))
         {
-            _log.LogInformation($"File found and loaded!");
-
             return stream;
         }
 
-        _log.LogError($"Can't find file!");
+        _log.LogError($"Can't find or load file: {filename}");
 
         return null;
     }

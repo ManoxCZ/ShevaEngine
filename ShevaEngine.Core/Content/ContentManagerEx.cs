@@ -40,25 +40,17 @@ namespace ShevaEngine.Core
             {
                 lock (_lock)
                 {
-                    _log.LogInformation($"Loading: {assetName}, type: {typeof(T)}");
-
                     T output = base.Load<T>(assetName);
 
                     if ((object)output is Model model)
                     {
-                        _log.LogInformation($"Updating materials");
-
                         MaterialsManager.UpdateMaterials(model);
                     }
 
                     if (output == null)
                     {
-                        _log.LogWarning($"Can't load");
-                    }
-                    else
-                    {
-                        _log.LogInformation($"Successfully loaded");
-                    }
+                        _log.LogWarning($"Can't load asset: {assetName}");
+                    }                    
 
                     return output;
                 }
