@@ -33,6 +33,14 @@ sampler DepthTextureSampler  : register(s3)
   	MagFilter = Point; 
 };
 
+Texture2D<float4> CausticsTexture: register(t4);
+sampler CausticsTextureSampler  : register(s4)
+{	
+	Texture = <CausticsTexture>;
+	AddressU = Wrap;
+    AddressV = Wrap;	
+};
+
 float4 OceanColor;
 float4 SkyColor;
 float DepthFactor;
@@ -112,14 +120,18 @@ float4 MainPSPN(VertexShaderOutputPNTWD input) : COLOR
 	float3 sky2 = SkyColor.xyz * 0.6;
 	float3 refl = lerp(sky2, sky1, fres);
 
-	float2 refrUV = input.TextureCoordinates0 + ((normal.xz - 0.25) * 0.04);	
+	float2 refrUV = input.TextureCoordinates0 + ((normal.xz - 0.25) * 0.04);		
 	depth = tex2D(DepthTextureSampler, refrUV).x;
 	
 	float3 refr = OceanColor.xyz;	
+	float3 emission = float3(0,0,0);
 
 	if (input.Depth.x < (depth + 0.5))		
 	{
 		refr = tex2D(RefractionTextureSampler, refrUV).xyz;			
+
+		emission = tex2D(CausticsTextureSampler, input.WorldPosition.xz * 0.5).xyz * float3(0.5,0.40,0.25) * 0.5f;
+		emission = lerp(emission, float3(0,0,0), min(1, abs(depth - input.Depth.x) * DepthFactor));		
 
 		refr = lerp(refr, OceanColor.xyz, min(1, abs(depth - input.Depth.x) * DepthFactor));		
 	}	 	
@@ -130,9 +142,9 @@ float4 MainPSPN(VertexShaderOutputPNTWD input) : COLOR
 		depth = tex2D(DepthTextureSampler, input.TextureCoordinates0).x;
 
 		refr = lerp(refr, OceanColor.xyz, min(1, abs(depth - input.Depth.x) * DepthFactor));		
-	}	 		
-	
-	return float4(saturate(AmbientLight + light) * lerp(refr, refl, 0 + fres) + saturate(specular), 1);	
+	}	 						
+
+	return float4(saturate(AmbientLight + light) * lerp(refr, refl, 0 + fres) + emission + saturate(specular), 1);	
 }
 
 technique Default

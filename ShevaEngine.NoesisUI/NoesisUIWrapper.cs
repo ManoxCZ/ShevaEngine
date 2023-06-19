@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using ShevaEngine.Core;
+using System.Text;
 
 namespace ShevaEngine.NoesisUI;
 
@@ -11,20 +12,22 @@ public class NoesisUIWrapper
 
         Noesis.Log.SetLogCallback((level, channel, message) =>
         {
+            string completeMessage = string.Join(' ', channel, message);
+
             switch (level)
             {
                 case Noesis.LogLevel.Trace:
                 case Noesis.LogLevel.Debug:
-                    log.LogDebug(message);
+                    log.LogDebug(completeMessage);
                     break;
                 case Noesis.LogLevel.Info:
-                    log.LogInformation(message);
+                    log.LogInformation(completeMessage);
                     break;
                 case Noesis.LogLevel.Warning:
-                    log.LogWarning(message);
+                    log.LogWarning(completeMessage);
                     break;
                 case Noesis.LogLevel.Error:
-                    log.LogError(message);
+                    log.LogError(completeMessage);
                     break;
             }
         });
@@ -34,16 +37,8 @@ public class NoesisUIWrapper
         
         Noesis.GUI.SetXamlProvider(new XamlProvider());
         Noesis.GUI.SetFontProvider(new FontProvider());
-        Noesis.GUI.SetTextureProvider(new TextureProvider());
-
-        Noesis.GUI.SetFontFallbacks(NoesisApp.Theme.FontFallbacks);
-        Noesis.GUI.SetFontDefaultProperties(
-            NoesisApp.Theme.DefaultFontSize,
-            NoesisApp.Theme.DefaultFontWeight,
-            NoesisApp.Theme.DefaultFontStretch,
-            NoesisApp.Theme.DefaultFontStyle);
-
-        //NoesisApp.Application.SetThemeProviders();
+        Noesis.GUI.SetTextureProvider(new TextureProvider());        
+        
         Noesis.GUI.LoadApplicationResources(themeFilename + ".xaml");
     }    
 }

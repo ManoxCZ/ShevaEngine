@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using ShevaEngine.Core;
+using System.Linq;
 
 namespace ShevaEngine.Oceans
 {
@@ -81,6 +82,8 @@ namespace ShevaEngine.Oceans
             _oceanMaterial = new OceanMaterial(_ocean)
             {
                 NormalTexture = content.Load<Texture2D>(@"Content\Graphics\OceanNormalMap"),
+                CausticsTexture = content.Load<Texture2D>(@"Content\Graphics\Caustics_001"),
+                CausticsTextures = Enumerable.Range(1, 32).Select(item => content.Load<Texture2D>($@"Content\Graphics\Caustics_{item:000}")).ToArray(),
                 OceanColor = OceanColor,
                 SkyColor = SkyColor,
                 DepthFactor = DepthFactor,

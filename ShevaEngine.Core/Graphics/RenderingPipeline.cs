@@ -50,8 +50,6 @@ namespace ShevaEngine.Core
         /// </summary>
         public void Clear()
         {
-            _log.LogDebug("Clear");
-
             ClearLights();
 
             _transparentDrawCalls.Clear();
@@ -71,8 +69,6 @@ namespace ShevaEngine.Core
         /// </summary>
         public void ClearLights()
         {
-            _log.LogDebug("Lights cleared");
-
             Lights.Clear();
         }
 
@@ -80,8 +76,7 @@ namespace ShevaEngine.Core
         /// Set camera.
         /// </summary>		
         public void SetCamera(Camera camera)
-        {
-            _log.LogDebug("Set camera");
+        {            
             Camera = camera;
         }
 
@@ -90,8 +85,6 @@ namespace ShevaEngine.Core
         /// </summary>		
         public void AddLight(Light light)
         {
-            _log.LogDebug("Light added");
-
             Lights.Add(light);
         }
 
@@ -235,8 +228,6 @@ namespace ShevaEngine.Core
         /// </summary>		
         public void Draw()
         {
-            _log.LogDebug($"Draw started with {Profile} profile");
-
             try
             {
                 Device.BlendState = BlendState;
@@ -255,8 +246,6 @@ namespace ShevaEngine.Core
                                 {
                                     if (Profile != MaterialProfile.Shadows || material.CastShadows)
                                     {
-                                        _log.LogDebug($"Applying material {material}");
-
                                         if (Profile != MaterialProfile.Shadows)
                                             material.Lights = Lights;
 
@@ -289,9 +278,7 @@ namespace ShevaEngine.Core
             catch (Exception ex)
             {
                 _log.LogError(ex.Message, ex);
-            }
-
-            _log.LogDebug($"Draw ended");
+            }            
         }
 
 

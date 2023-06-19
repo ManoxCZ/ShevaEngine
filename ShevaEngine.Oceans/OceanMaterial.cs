@@ -19,6 +19,7 @@ namespace ShevaEngine.Oceans
         private EffectParameter? _normalTextureParameter;
         private EffectParameter? _refractionTextureParameter;
         private EffectParameter? _depthTextureParameter;
+        private EffectParameter? _causticsTextureParameter;
         private EffectParameter? _oceanColorParameter;
         private EffectParameter? _skyColorParameter;
         private EffectParameter? _depthFactorParameter;
@@ -41,6 +42,14 @@ namespace ShevaEngine.Oceans
             get => _depthTextureParameter?.GetValueTexture2D();
             set => _depthTextureParameter?.SetValue(value);
         }
+
+        public Texture2D? CausticsTexture
+        {
+            get => _causticsTextureParameter?.GetValueTexture2D();
+            set => _causticsTextureParameter?.SetValue(value);
+        }
+        public Texture2D[] CausticsTextures { get; set; }   
+
         private readonly Ocean _ocean;
 
         public Color? OceanColor
@@ -145,6 +154,7 @@ namespace ShevaEngine.Oceans
             _normalTextureParameter = GetParameter("NormalTexture");
             _refractionTextureParameter = GetParameter("RefractionTexture");
             _depthTextureParameter = GetParameter("DepthTexture");
+            _causticsTextureParameter = GetParameter("CausticsTexture");
 
             _oceanColorParameter = GetParameter("OceanColor");
             _skyColorParameter = GetParameter("SkyColor");
@@ -154,9 +164,7 @@ namespace ShevaEngine.Oceans
             UpdateGerstnerWaves(1.0f);
 
             OceanColor = Color.FromNonPremultiplied(new Vector4(0.4f, 0.35f, 0.06f, 1));
-            SkyColor = Color.FromNonPremultiplied(new Vector4(0.6f, 0.47f, 0.26f, 1));
-            //OceanColor = Color.FromNonPremultiplied(new Vector4(0.13f, 0.44f, 0.47f, 1));	
-            //SkyColor = Color.FromNonPremultiplied(new Vector4(0.8490f, 0.9019f, 1.0f, 1));
+            SkyColor = Color.FromNonPremultiplied(new Vector4(0.6f, 0.47f, 0.26f, 1));            
             DepthFactor = 0.1f;
             LightFactor = 1.0f;
         }
@@ -177,6 +185,8 @@ namespace ShevaEngine.Oceans
         public override void Apply(MaterialProfile matProfile, Camera camera, float gameTime, VertexDeclaration declaration)
         {
             _inverseViewProjParameter?.SetValue(Matrix.Invert(camera.ViewMatrix * camera.ProjectionMatrix));
+
+            CausticsTexture = CausticsTextures[(int)(gameTime / 0.05f) % CausticsTextures.Length];
 
             base.Apply(matProfile, camera, gameTime, declaration);
         }

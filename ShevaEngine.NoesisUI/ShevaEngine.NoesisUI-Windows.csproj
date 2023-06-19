@@ -11,7 +11,7 @@
 		<DefineConstants>WINDOWSDX</DefineConstants>
 	</PropertyGroup>
 	<ItemGroup>
-		<PackageReference Include="Noesis.App" Version="3.2.1" />		
+	  <PackageReference Include="Noesis.GUI" Version="3.2.1" />
 	</ItemGroup>
 	<ItemGroup>
 		<ProjectReference Include="..\ShevaEngine.Core\ShevaEngine.Core-Windows.csproj" />

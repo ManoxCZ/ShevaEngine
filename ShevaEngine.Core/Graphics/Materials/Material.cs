@@ -105,7 +105,9 @@ namespace ShevaEngine.Core
             EffectParameter? parameter = Parameters.FirstOrDefault(item => item.Name == name);
 
             if (parameter == null)
+            {
                 Log.LogError($"Effect parameter {name} doesn't exist");
+            }
 
             return parameter;
         }
