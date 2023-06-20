@@ -9,7 +9,7 @@ namespace ShevaEngine.Core
 {
     public class EmbeddedFilesService : IEmbeddedFilesService
     {
-        public readonly Dictionary<string, EmbeddedFileProvider> _files = new Dictionary<string, EmbeddedFileProvider>();
+        public readonly Dictionary<string, EmbeddedFileProvider> _files = new();
 
         public EmbeddedFilesService()
         {
@@ -18,7 +18,7 @@ namespace ShevaEngine.Core
 
         private void Initialize()
         {
-            foreach (Assembly assembly in AppDomain.CurrentDomain.GetAssemblies()
+            foreach (Assembly assembly in GetListOfEntryAssemblyWithReferences()
                 .Where(item =>
                 {
                     if (item.FullName is string fullname)
@@ -29,7 +29,7 @@ namespace ShevaEngine.Core
                     return false;
                 }))
             {
-                EmbeddedFileProvider embeddedFileProvider = new EmbeddedFileProvider(assembly);
+                EmbeddedFileProvider embeddedFileProvider = new(assembly);
 
                 IDirectoryContents content = embeddedFileProvider.GetDirectoryContents(string.Empty);
 
@@ -52,6 +52,23 @@ namespace ShevaEngine.Core
             stream = null!;
 
             return false;
+        }
+
+        private static List<Assembly> GetListOfEntryAssemblyWithReferences()
+        {
+            List<Assembly> listOfAssemblies = new();
+            
+            if (Assembly.GetEntryAssembly() is Assembly mainAssembly)
+            {
+                listOfAssemblies.Add(mainAssembly);
+
+                foreach (var refAsmName in mainAssembly.GetReferencedAssemblies())
+                {
+                    listOfAssemblies.Add(Assembly.Load(refAsmName));
+                }
+            }
+
+            return listOfAssemblies;
         }
     }
 }
