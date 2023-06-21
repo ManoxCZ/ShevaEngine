@@ -1,11 +1,15 @@
 ﻿using Microsoft.Extensions.Logging;
+using Noesis;
 using ShevaEngine.Core;
-using System.Text;
 
 namespace ShevaEngine.NoesisUI;
 
 public class NoesisUIWrapper
-{    
+{
+#if DESKTOPGL          
+    public static RenderDeviceGL Device { get; private set; } = null!;
+#endif                     
+
     public static void Initialize(string licenseName, string licenseKey, string themeFilename = "Themes.Theme")
     {
         ILogger log = ShevaServices.GetService<ILoggerFactory>().CreateLogger<NoesisUIWrapper>();
@@ -31,14 +35,18 @@ public class NoesisUIWrapper
                     break;
             }
         });
-        
-        Noesis.GUI.SetLicense(licenseName, licenseKey);
-        Noesis.GUI.Init();
-        
-        Noesis.GUI.SetXamlProvider(new XamlProvider());
-        Noesis.GUI.SetFontProvider(new FontProvider());
-        Noesis.GUI.SetTextureProvider(new TextureProvider());        
-        
-        Noesis.GUI.LoadApplicationResources(themeFilename + ".xaml");
+
+        GUI.SetLicense(licenseName, licenseKey);
+        GUI.Init();
+
+        GUI.SetXamlProvider(new XamlProvider());
+        GUI.SetFontProvider(new FontProvider());
+        GUI.SetTextureProvider(new TextureProvider());
+
+        GUI.LoadApplicationResources(themeFilename + ".xaml");
+
+#if DESKTOPGL
+        Device = new RenderDeviceGL(false);
+#endif
     }    
 }

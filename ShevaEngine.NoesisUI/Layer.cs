@@ -41,7 +41,7 @@ public class Layer<U> : ILayer where U : UserControl, new()
             RenderDeviceD3D11 device = new(
                 ((SharpDX.Direct3D11.Device)ShevaGame.Instance.GraphicsDevice.Handle).ImmediateContext.NativePointer, false);
 #elif DESKTOPGL
-            RenderDeviceGL device = new(false);
+            RenderDeviceGL device = NoesisUIWrapper.Device;
 #endif                        
             _view.Renderer.Init(device);
             
@@ -64,7 +64,7 @@ public class Layer<U> : ILayer where U : UserControl, new()
 #if WINDOWSDX
         using (D3X11RenderState _ = new(ShevaGame.Instance.GraphicsDevice))
 #elif DESKTOPGL
-        throw new NotImplementedException();
+        
 #endif
         {
             _view.Renderer.UpdateRenderTree();
@@ -80,7 +80,7 @@ public class Layer<U> : ILayer where U : UserControl, new()
 #if WINDOWSDX
         using (D3X11RenderState _ = new(ShevaGame.Instance.GraphicsDevice))
 #elif DESKTOPGL
-        throw new NotImplementedException();
+        
 #endif
         {
             _view.Renderer.Render();

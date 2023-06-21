@@ -138,7 +138,36 @@ public sealed class Viewport : Grid, IViewport
                 };
             }
 #elif DESKTOPGL
-            throw new NotImplementedException();
+            if (typeof(RenderTarget2D).GetField("_selfReference", BindingFlags.Instance | BindingFlags.NonPublic) is FieldInfo info &&
+                info.GetValue(_renderTarget) is WeakReference reference)
+            {
+
+                //_image.Source = new TextureSource(
+                //    RenderDeviceGL.WrapTexture(
+                //        _renderTarget,
+                //        reference.NativePointer,
+                //        _renderTarget.Width,
+                //        _renderTarget.Height,
+                //        1,
+                //        false,
+                //        true));
+
+                //_image.Width = finalSize.Width;
+                //_image.Height = finalSize.Height;
+
+                //_depthTarget?.Dispose();
+
+                //_depthTarget = new RenderTarget2D(
+                //        ShevaGame.Instance.GraphicsDevice,
+                //        (int)finalSize.Width,
+                //        (int)finalSize.Height,
+                //        false,
+                //        SurfaceFormat.Single,
+                //        DepthFormat.None)
+                //{
+                //    Name = $"{nameof(Viewport)} - Depth render target"
+                //};
+            }
 #endif
         }
 
