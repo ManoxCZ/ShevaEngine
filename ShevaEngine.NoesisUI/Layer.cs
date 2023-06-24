@@ -6,6 +6,7 @@ using ShevaEngine.Core.Profiler;
 using ShevaEngine.Core.UI;
 using System;
 using System.Collections.Generic;
+using System.Threading;
 
 namespace ShevaEngine.NoesisUI;
 
@@ -159,6 +160,6 @@ public class Layer<U> : ILayer where U : UserControl, new()
    
     public void RunOnUIThread(Action action)
     {
-        NoesisUIWrapper.Dispatcher.Invoke(action);
+        ShevaGame.Instance.SynchronizationContext.Send((_) => action(), null);
     }
 }

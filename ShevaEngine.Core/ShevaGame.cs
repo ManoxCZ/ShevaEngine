@@ -33,7 +33,7 @@ namespace ShevaEngine.Core
         public Input Input { get; } = new();
         public ReplaySubject<InputState> InputState { get; } = new ReplaySubject<InputState>();
         private readonly Stack<ShevaGameComponent> _gameComponents = new();
-        private bool _showProfilerInfo = false;
+        private bool _showProfilerInfo = true;
 
 
         /// <summary>
