@@ -138,35 +138,34 @@ public sealed class Viewport : Grid, IViewport
                 };
             }
 #elif DESKTOPGL
-            if (typeof(RenderTarget2D).GetField("_selfReference", BindingFlags.Instance | BindingFlags.NonPublic) is FieldInfo info &&
-                info.GetValue(_renderTarget) is WeakReference reference)
-            {
+            if (typeof(RenderTarget2D).GetField("glTexture", BindingFlags.Instance | BindingFlags.NonPublic) is FieldInfo info &&
+                info.GetValue(_renderTarget) is int textureId)
+            {                
+                _image.Source = new TextureSource(
+                    RenderDeviceGL.WrapTexture(
+                        _renderTarget,
+                        textureId,
+                        _renderTarget.Width,
+                        _renderTarget.Height,
+                        1,
+                        false,
+                        true));
 
-                //_image.Source = new TextureSource(
-                //    RenderDeviceGL.WrapTexture(
-                //        _renderTarget,
-                //        reference.NativePointer,
-                //        _renderTarget.Width,
-                //        _renderTarget.Height,
-                //        1,
-                //        false,
-                //        true));
+                _image.Width = finalSize.Width;
+                _image.Height = finalSize.Height;
 
-                //_image.Width = finalSize.Width;
-                //_image.Height = finalSize.Height;
+                _depthTarget?.Dispose();
 
-                //_depthTarget?.Dispose();
-
-                //_depthTarget = new RenderTarget2D(
-                //        ShevaGame.Instance.GraphicsDevice,
-                //        (int)finalSize.Width,
-                //        (int)finalSize.Height,
-                //        false,
-                //        SurfaceFormat.Single,
-                //        DepthFormat.None)
-                //{
-                //    Name = $"{nameof(Viewport)} - Depth render target"
-                //};
+                _depthTarget = new RenderTarget2D(
+                        ShevaGame.Instance.GraphicsDevice,
+                        (int)finalSize.Width,
+                        (int)finalSize.Height,
+                        false,
+                        SurfaceFormat.Single,
+                        DepthFormat.None)
+                {
+                    Name = $"{nameof(Viewport)} - Depth render target"
+                };
             }
 #endif
         }
@@ -185,7 +184,7 @@ public sealed class Viewport : Grid, IViewport
         
         lock (_lock)
         {
-            Camera?.Draw(ShevaGame.Instance.GraphicsDevice, Scene, gameTime, _renderTarget, _depthTarget);
+            Camera?.Draw(ShevaGame.Instance.GraphicsDevice, Scene, gameTime, _renderTarget, _depthTarget);            
         }
     }
 }

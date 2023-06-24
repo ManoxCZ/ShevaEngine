@@ -11,8 +11,9 @@ namespace ShevaEngine.NoesisUI;
 
 public class Layer<U> : ILayer where U : UserControl, new()
 {
-    public bool IsActive { get; set; } = true;
+    public bool IsActive { get; set; } = true;    
     private View _view = null!;
+    
     public object DataContext
     {
         get => _view.Content.DataContext;
@@ -37,14 +38,8 @@ public class Layer<U> : ILayer where U : UserControl, new()
         {
             _view = GUI.CreateView(new U());
 
-#if WINDOWSDX
-            RenderDeviceD3D11 device = new(
-                ((SharpDX.Direct3D11.Device)ShevaGame.Instance.GraphicsDevice.Handle).ImmediateContext.NativePointer, false);
-#elif DESKTOPGL
-            RenderDeviceGL device = NoesisUIWrapper.Device;
-#endif                        
-            _view.Renderer.Init(device);
-            
+            _view.Renderer.Init(NoesisUIWrapper.Device);
+
             _view.SetFlags(RenderFlags.LCD | RenderFlags.PPAA);
         });
     }
@@ -64,13 +59,13 @@ public class Layer<U> : ILayer where U : UserControl, new()
 #if WINDOWSDX
         using (D3X11RenderState _ = new(ShevaGame.Instance.GraphicsDevice))
 #elif DESKTOPGL
-        
+        throw new NotImplementedException();
 #endif
         {
             _view.Renderer.UpdateRenderTree();
 
             _view.Renderer.RenderOffscreen();
-        }
+        }        
 
         foreach (Viewport viewport in GetChildrenOfType<Viewport>(_view.Content))
         {
@@ -80,11 +75,11 @@ public class Layer<U> : ILayer where U : UserControl, new()
 #if WINDOWSDX
         using (D3X11RenderState _ = new(ShevaGame.Instance.GraphicsDevice))
 #elif DESKTOPGL
-        
+        throw new NotImplementedException();
 #endif
         {
             _view.Renderer.Render();
-        }
+        }        
     }
 
     public static IEnumerable<T> GetChildrenOfType<T>(DependencyObject root)
@@ -164,6 +159,6 @@ public class Layer<U> : ILayer where U : UserControl, new()
    
     public void RunOnUIThread(Action action)
     {
-        ShevaGame.Instance.SynchronizationContext.Send(_ => action(), null);
+        NoesisUIWrapper.Dispatcher.Invoke(action);
     }
 }

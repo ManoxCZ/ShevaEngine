@@ -204,8 +204,12 @@ namespace ShevaEngine.Core
 
             // Update shadows.
             if (_pipeline.Profile == MaterialProfile.Default)
+            {
                 foreach (Light light in _pipeline.Lights)
+                {
                     light.Shadow?.Update(gameTime, scene, light, this);
+                }
+            }
 
             // Attach render targets.			
             graphicsDevice.SetRenderTarget(renderTarget);
@@ -305,7 +309,7 @@ namespace ShevaEngine.Core
 
                     graphicsDevice.SetRenderTarget(null);
                 }
-            }
+            }            
 
             if (_saveScreen)
             {

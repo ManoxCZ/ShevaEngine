@@ -19,9 +19,9 @@ namespace ShevaEngine.Core
     public class ShevaGame : Game
     {
         public static ShevaGame Instance { get; private set; }
-        private const string WINDOW_TITLE = "Sheva Engine MG";
+        private const string WINDOW_TITLE = "Sheva Engine MonoGame";
 
-        public readonly SynchronizationContext SynchronizationContext;
+        public SynchronizationContext SynchronizationContext { get; private set; }
 
         private readonly ILogger _log;
 
@@ -47,7 +47,8 @@ namespace ShevaEngine.Core
 #if WINDOWSDX
             SynchronizationContext = SynchronizationContext.Current!;
 #elif DESKTOPGL
-            SynchronizationContext = new SynchronizationContext();
+            SynchronizationContext.SetSynchronizationContext(new());
+            SynchronizationContext = SynchronizationContext.Current!;
 #endif
 
             InitializeServices();            
@@ -135,7 +136,7 @@ namespace ShevaEngine.Core
             _log.LogInformation("Initialization started");            
 
             base.Initialize();
-
+            
             _gameSettings.Resolution.OnNext(new Resolution(Window.ClientBounds.Width, Window.ClientBounds.Height));
 
             Observable.FromEventPattern<EventArgs>(

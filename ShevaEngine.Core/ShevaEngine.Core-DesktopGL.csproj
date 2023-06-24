@@ -30,6 +30,7 @@
 		<PackageReference Include="Microsoft.Extensions.Logging" Version="7.0.0" />
 		<PackageReference Include="MonoGame.Content.Builder.Task" Version="3.8.1.303" />
 		<PackageReference Include="MonoGame.Framework.DesktopGL" Version="3.8.1.303" />
+		<PackageReference Include="Noesis.App.RenderContexts.WGL" Version="3.2.1" />
 		<PackageReference Include="System.Reactive" Version="6.0.0" />
 	</ItemGroup>
 </Project>
