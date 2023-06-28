@@ -4,6 +4,7 @@ using ShevaEngine.Core.Settings;
 using ShevaEngine.Core.UI;
 using System;
 using System.Collections.Generic;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.TaskbarClock;
 
 namespace ShevaEngine.Core
 {
@@ -89,19 +90,86 @@ namespace ShevaEngine.Core
                     layer.OnWindowResize(gameSettings.Resolution.Value.Width, gameSettings.Resolution.Value.Height);
                 }
             }
-        }
+
+            if (game.Window is GameWindow gameWindow)
+            {
+                gameWindow.KeyDown += Window_KeyDown;
+                gameWindow.KeyUp += Window_KeyUp;
+                gameWindow.TextInput += Window_TextInput;
+            }
+        }        
 
         /// <summary>
         /// Deactivate method.
         /// </summary>
         public virtual void Deactivate(ShevaGame game)
         {
+            if (game.Window is GameWindow gameWindow)
+            {
+                gameWindow.KeyDown -= Window_KeyDown;
+                gameWindow.KeyUp -= Window_KeyUp;
+                gameWindow.TextInput -= Window_TextInput;
+            }
+        }
+
+        private void Window_KeyUp(object? sender, InputKeyEventArgs e)
+        {
+            bool eventHandled = false;
+
+            for (int i = _layers.Count - 1; i >= 0; i--)
+            {
+                ILayer layer = _layers[i];
+
+                if (layer.IsActive)
+                {
+                    if (!eventHandled)
+                    {
+                        eventHandled = eventHandled || layer.UpdateKeyUpEvent(e.Key);
+                    }                    
+                }
+            }
+        }
+
+        private void Window_KeyDown(object? sender, InputKeyEventArgs e)
+        {
+            bool eventHandled = false;
+
+            for (int i = _layers.Count - 1; i >= 0; i--)
+            {
+                ILayer layer = _layers[i];
+
+                if (layer.IsActive)
+                {
+                    if (!eventHandled)
+                    {
+                        eventHandled = eventHandled || layer.UpdateKeyDownEvent(e.Key);
+                    }
+                }
+            }
+        }
+
+        private void Window_TextInput(object? sender, TextInputEventArgs e)
+        {
+            bool eventHandled = false;
+
+            for (int i = _layers.Count - 1; i >= 0; i--)
+            {
+                ILayer layer = _layers[i];
+
+                if (layer.IsActive)
+                {
+                    if (!eventHandled)
+                    {
+                        eventHandled = eventHandled || layer.UpdateInputTextEvent(e.Character);
+                    }
+                }
+            }
         }
 
         /// <summary>
         /// Update method.
         /// </summary>		
-        public virtual void Update(GameTime time, InputState inputState)
+        public virtual void Update(GameTime time, in InputState inputState)
         {
             bool eventHandled = false;
 

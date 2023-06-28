@@ -4,7 +4,7 @@ namespace ShevaEngine.Core.UserAccounts
 {
     public interface IUserData
     {        
-        public string GamerName { get; }
-        public Texture2D? GamerPicture { get; }
+        public string GamerName { get; set; }
+        public Texture2D? GamerPicture { get; set; }
     }
 }

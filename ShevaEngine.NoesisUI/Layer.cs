@@ -6,7 +6,6 @@ using ShevaEngine.Core.Profiler;
 using ShevaEngine.Core.UI;
 using System;
 using System.Collections.Generic;
-using System.Threading;
 
 namespace ShevaEngine.NoesisUI;
 
@@ -30,7 +29,7 @@ public class Layer<U> : ILayer where U : UserControl, new()
         }
     }
 
-    private InputState _previousInputState = null!;
+    private InputState _previousInputState;
 
 
     public Layer()
@@ -109,14 +108,9 @@ public class Layer<U> : ILayer where U : UserControl, new()
         });
     }
 
-    public bool UpdateInput(InputState state)
+    public bool UpdateInput(in InputState state)
     {
-        bool eventHandled = false;
-
-        if (_previousInputState == null)
-        {
-            _previousInputState = state;
-        }
+        bool eventHandled = false;        
 
         eventHandled = eventHandled || UpdateMouse(state);
 
@@ -125,7 +119,7 @@ public class Layer<U> : ILayer where U : UserControl, new()
         return eventHandled;
     }
 
-    private bool UpdateMouse(InputState state)
+    private bool UpdateMouse(in InputState state)
     {
         bool eventHandled = false;
 
@@ -157,9 +151,24 @@ public class Layer<U> : ILayer where U : UserControl, new()
 
         return eventHandled;
     }
-   
+
+    public bool UpdateKeyUpEvent(Keys key)
+    {
+        return _view.KeyUp(KeyConverter.Convert(key));
+    }
+
+    public bool UpdateKeyDownEvent(Keys key)
+    {
+        return _view.KeyDown(KeyConverter.Convert(key));
+    }
+
+    public bool UpdateInputTextEvent(char key)
+    {
+        return _view.Char(key);
+    }
+    
     public void RunOnUIThread(Action action)
     {
         ShevaGame.Instance.SynchronizationContext.Send((_) => action(), null);
-    }
+    }    
 }

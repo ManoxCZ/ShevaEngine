@@ -54,6 +54,19 @@ namespace ShevaEngine.Core
             return false;
         }
 
+        public IReadOnlyList<string> GetAllResourcesWithExtension(string extension)
+        {
+            return GetAllResourcesWithExtensions(extension);
+        }
+
+        public IReadOnlyList<string> GetAllResourcesWithExtensions(params string[] extensions)
+        {
+            return _files
+                .Where(file => extensions.Contains(Path.GetExtension(file.Key)))
+                .Select(file => file.Key)
+                .ToList();
+        }
+
         private static List<Assembly> GetListOfEntryAssemblyWithReferences()
         {
             List<Assembly> listOfAssemblies = new();

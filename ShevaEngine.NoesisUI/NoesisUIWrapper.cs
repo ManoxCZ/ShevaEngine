@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using Noesis;
+using NoesisApp;
 using ShevaEngine.Core;
 
 namespace ShevaEngine.NoesisUI;
@@ -42,9 +43,11 @@ public class NoesisUIWrapper
         GUI.Init();        
         
         GUI.SetXamlProvider(new XamlProvider());
-        GUI.SetFontProvider(new FontProvider());
+        GUI.SetFontProvider(new EmbeddedFontProvider());        
         GUI.SetTextureProvider(new TextureProvider());
-
+        GUI.SetFontFallbacks(new[] { "Agdasima" });
+        GUI.SetFontDefaultProperties(17, FontWeight.Normal, FontStretch.Normal, FontStyle.Normal);
+        
         GUI.LoadApplicationResources(themeFilename + ".xaml");
 
 #if WINDOWSDX

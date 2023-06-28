@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Input;
 
 namespace ShevaEngine.Core.UI;
 
@@ -12,7 +13,13 @@ public interface ILayer
 
     void Update(GameTime time);
 
-    public bool UpdateInput(InputState state);
+    bool UpdateInput(in InputState state);
 
-    public void Draw(GameTime time);    
+    bool UpdateKeyUpEvent(Keys key);
+
+    bool UpdateKeyDownEvent(Keys key);
+
+    bool UpdateInputTextEvent(char key);
+
+    void Draw(GameTime time);    
 }

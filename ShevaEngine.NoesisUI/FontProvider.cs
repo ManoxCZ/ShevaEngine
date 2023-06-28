@@ -1,40 +1,51 @@
-﻿using System;
+﻿using Noesis;
+using ShevaEngine.Core;
+using System;
 using System.IO;
 
-namespace ShevaEngine.NoesisUI;
-
-internal class FontProvider : Noesis.FontProvider
+namespace NoesisApp
 {
-    public override Stream? OpenFont(Uri folder, string id)
+    public class EmbeddedFontProvider : FontProvider
     {
-        string filePath = Path.Combine(
-            Directory.GetCurrentDirectory(),
-            "Assets",
-            folder.OriginalString,
-            id);
-
-        return new StreamReader(filePath).BaseStream;
-    }
-
-    public override void ScanFolder(Uri folder)
-    {
-        string folderPath = Path.Combine(
-            Directory.GetCurrentDirectory(),
-            "Content",
-            folder.OriginalString);
-
-        if (!Directory.Exists(folderPath))
+        public EmbeddedFontProvider()
         {
-            return;
+            RegisterFontResources();            
         }
 
-        foreach (string filename in Directory.GetFiles(folderPath))
+        private void RegisterFontResources()
         {
-            if (string.Compare(Path.GetExtension(filename), ".ttf", true) == 0 ||
-                string.Compare(Path.GetExtension(filename), ".otf", true) == 0)
+            if (ShevaServices.GetService<IEmbeddedFilesService>() is IEmbeddedFilesService embeddedFilesService)
             {
-                RegisterFont(folder, filename);
+                foreach (string name in embeddedFilesService.GetAllResourcesWithExtensions(".ttf", ".ttc", ".otf"))
+                {
+                    if (name.EndsWith(".ttf", StringComparison.OrdinalIgnoreCase) ||
+                        name.EndsWith(".ttc", StringComparison.OrdinalIgnoreCase) ||
+                        name.EndsWith(".otf", StringComparison.OrdinalIgnoreCase))
+                    {
+                        int lastDot = name.LastIndexOf('.', name.Length - 5);
+                        string folder = lastDot != -1 ? name.Substring(0, lastDot).Replace('.', '/') : string.Empty;
+                        string filename = lastDot != -1 ? name.Substring(lastDot + 1) : name;
+
+                        RegisterFont(new Uri(folder, UriKind.RelativeOrAbsolute), filename);
+                    }
+                }
             }
+        }
+
+        public override Stream OpenFont(Uri folder, string filename)
+        {
+            string path = folder.GetPath();
+            if (path.Length > 0 && !path.EndsWith("/")) path += "/";
+            path += filename;
+
+            path = path.Replace('/', '.');
+
+            if (ShevaServices.GetService<IEmbeddedFilesService>().TryGetStream(path, out Stream stream))
+            {
+                return stream;
+            }
+
+            return null!;
         }
     }
 }

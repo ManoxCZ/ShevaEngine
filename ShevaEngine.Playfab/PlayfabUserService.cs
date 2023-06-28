@@ -25,35 +25,23 @@ public class PlayfabUserService : IUserService
     {
         UserData.OnNext(ConnectingUserData.Instance);
 
-        
-
         LoginWithCustomIDRequest request = new()
         {
             CreateAccount = true,
             CustomId = "User"
         };
+        
+        if (await PlayFabClientAPI.LoginWithCustomIDAsync(request) is PlayFabResult<LoginResult> result)
+        {
+            PlayfabUserData userData = new(result.Result.AuthenticationContext);
 
-        //LoginWithPlayFabRequest request2 = new()
-        //{
-        //    Username = "ManoxCZ",
-        //    TitleId = TITLE_ID,
-        //    Password = "passwd",            
-        //};
+            if (await userData.GetData())
+            {
+                UserData.OnNext(userData);                
 
-        //if (await PlayFabClientAPI.LoginWithCustomIDAsync(request) is PlayFabResult<LoginResult> result)
-        //{
-        //    GetUserDataRequest userDataRequest = new()
-        //    {
-        //        PlayFabId = result.Result.PlayFabId
-        //    };
-
-        //    if (await PlayFabClientAPI.GetUserDataAsync(userDataRequest) is PlayFabResult<GetUserDataResult> userDataResult)
-        //    {
-        //       // UserData.OnNext(new PlayfabUserData(userDataResult));
-        //    }
-
-        //    return true;
-        //}
+                return true;
+            }
+        }
 
         UserData.OnNext(null);
 

@@ -7,8 +7,8 @@ namespace ShevaEngine.Core.UserAccounts
         public static ConnectingUserData Instance = new();
 
 
-        public string GamerName => "Connecting";
+        public string GamerName { get; set; } = "Connecting";
 
-        public Texture2D? GamerPicture => null;
+        public Texture2D? GamerPicture { get; set; } = null;
     }
 }

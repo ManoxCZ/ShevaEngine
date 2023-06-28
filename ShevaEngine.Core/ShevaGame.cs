@@ -30,8 +30,7 @@ namespace ShevaEngine.Core
         private Type[] _initialComponentTypes;
         private readonly GameSettings _gameSettings = null!;
         public GraphicsDeviceManager GraphicsDeviceManager { get; private set; }
-        public Input Input { get; } = new();
-        public ReplaySubject<InputState> InputState { get; } = new ReplaySubject<InputState>();
+        public Input Input { get; } = new();        
         private readonly Stack<ShevaGameComponent> _gameComponents = new();
         private bool _showProfilerInfo = true;
 
@@ -202,7 +201,7 @@ namespace ShevaEngine.Core
             _profilerDraw.LoadContent(this);
 
             _log.LogInformation("All game components initialized");
-        }
+        }        
 
         /// <summary>
         /// On exiting.
@@ -211,8 +210,7 @@ namespace ShevaEngine.Core
         {
             ShevaGameComponent? component = PopGameComponent();
             component?.Dispose();
-
-            InputState.Dispose();                        
+            
             Input.Dispose();            
 
             base.OnExiting(sender, args);
@@ -229,9 +227,8 @@ namespace ShevaEngine.Core
 
             Input.Update();
 
-            InputState inputState = new InputState(time, Window);
-            InputState.OnNext(inputState);
-
+            InputState inputState = new(time);
+            
             lock (_gameComponents)
             {
                 if (_gameComponents.Count > 0)
