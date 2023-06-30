@@ -7,7 +7,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Reactive.Linq;
-using System.Reactive.Subjects;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -29,10 +28,9 @@ namespace ShevaEngine.Core
         private readonly ProfilerDataDraw _profilerDraw = new();        
         private Type[] _initialComponentTypes;
         private readonly GameSettings _gameSettings = null!;
-        public GraphicsDeviceManager GraphicsDeviceManager { get; private set; }
-        public Input Input { get; } = new();        
+        public GraphicsDeviceManager GraphicsDeviceManager { get; private set; }        
         private readonly Stack<ShevaGameComponent> _gameComponents = new();
-        private bool _showProfilerInfo = true;
+        private bool _showProfilerInfo = false;
 
 
         /// <summary>
@@ -209,9 +207,7 @@ namespace ShevaEngine.Core
         protected override void OnExiting(object sender, EventArgs args)
         {
             ShevaGameComponent? component = PopGameComponent();
-            component?.Dispose();
-            
-            Input.Dispose();            
+            component?.Dispose();                        
 
             base.OnExiting(sender, args);
         }
@@ -223,9 +219,7 @@ namespace ShevaEngine.Core
         {
             using var _ = _profilerService.BeginScope("Update");
             
-            base.Update(time);
-
-            Input.Update();
+            base.Update(time);            
 
             InputState inputState = new(time);
             
