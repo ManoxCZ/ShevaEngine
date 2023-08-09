@@ -36,11 +36,13 @@ public class Layer<U> : ILayer where U : UserControl, new()
     {
         RunOnUIThread(() =>
         {
-            _view = GUI.CreateView(new U());
-
-            _view.Renderer.Init(NoesisUIWrapper.Device);
+            _view = GUI.CreateView(new U());            
 
             _view.SetFlags(RenderFlags.LCD | RenderFlags.PPAA);
+
+            var device = new MonogameNoesisRenderDevice(ShevaGame.Instance.GraphicsDevice);
+
+            _view.Renderer.Init(device);
         });
     }
 
@@ -56,30 +58,16 @@ public class Layer<U> : ILayer where U : UserControl, new()
     {
         using var profilerScope = ShevaServices.GetService<ProfilerService>().BeginScope(typeof(U).Name);
 
-#if WINDOWSDX
-        using (D3X11RenderState _ = new(ShevaGame.Instance.GraphicsDevice))
-#elif DESKTOPGL
-        throw new NotImplementedException();
-#endif
-        {
-            _view.Renderer.UpdateRenderTree();
+        _view.Renderer.UpdateRenderTree();
 
-            _view.Renderer.RenderOffscreen();
-        }        
+        _view.Renderer.RenderOffscreen();
 
         foreach (Viewport viewport in GetChildrenOfType<Viewport>(_view.Content))
         {
             viewport.Render(time);
         }
 
-#if WINDOWSDX
-        using (D3X11RenderState _ = new(ShevaGame.Instance.GraphicsDevice))
-#elif DESKTOPGL
-        throw new NotImplementedException();
-#endif
-        {
-            _view.Renderer.Render();
-        }        
+        _view.Renderer.Render();
     }
 
     public static IEnumerable<T> GetChildrenOfType<T>(DependencyObject root)

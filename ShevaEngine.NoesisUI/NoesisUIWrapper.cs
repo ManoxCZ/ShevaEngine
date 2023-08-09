@@ -50,10 +50,10 @@ public class NoesisUIWrapper
         
         GUI.LoadApplicationResources(themeFilename + ".xaml");
 
-#if WINDOWSDX
-        Device = new RenderDeviceD3D11(((SharpDX.Direct3D11.Device)ShevaGame.Instance.GraphicsDevice.Handle).ImmediateContext.NativePointer, false);
-#elif DESKTOPGL
-        //Device = new RenderDeviceGL(false);        
-#endif
+//#if WINDOWSDX
+//        Device = new RenderDeviceD3D11(((SharpDX.Direct3D11.Device)ShevaGame.Instance.GraphicsDevice.Handle).ImmediateContext.NativePointer, false);
+//#elif DESKTOPGL
+//        Device = new RenderDeviceGL(false);        
+//#endif
     }
 }
