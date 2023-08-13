@@ -1,0 +1,3 @@
+[submodule "3rdParty/Noesis-Managed"]
+	path = 3rdParty/Noesis-Managed
+	url = https://github.com/Noesis/Managed.git
