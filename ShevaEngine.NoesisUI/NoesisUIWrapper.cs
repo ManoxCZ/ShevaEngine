@@ -14,7 +14,7 @@ public class NoesisUIWrapper
     public static void Initialize(string licenseName, string licenseKey, string themeFilename = "Themes.Theme")
     {
         ILogger log = ShevaServices.GetService<ILoggerFactory>().CreateLogger<NoesisUIWrapper>();
-
+        
         Dispatcher = Dispatcher.CurrentDispatcher;
 
         Log.SetLogCallback((level, channel, message) =>

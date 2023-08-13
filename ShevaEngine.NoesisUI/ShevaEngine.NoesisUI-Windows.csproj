@@ -7,14 +7,11 @@
 		<Configurations>Debug;Release</Configurations>
 		<Nullable>enable</Nullable>
 		<AssemblyName>ShevaEngine.NoesisUI</AssemblyName>
-		<RootNamespace>ShevaEngine.NoesisUI</RootNamespace>
-		<DefineConstants>WINDOWSDX</DefineConstants>
+		<RootNamespace>ShevaEngine.NoesisUI</RootNamespace>		
 		<AllowUnsafeBlocks>True</AllowUnsafeBlocks>		
 	</PropertyGroup>
 	<ItemGroup>
-	  <PackageReference Include="Noesis.GUI" Version="3.2.1" />
-	</ItemGroup>
-	<ItemGroup>
+		<ProjectReference Include="..\3rdParty\Noesis-Managed\Src\Noesis\Core\Noesis.GUI.csproj" />		
 		<ProjectReference Include="..\ShevaEngine.Core\ShevaEngine.Core-Windows.csproj" />
 	</ItemGroup>
 </Project>
