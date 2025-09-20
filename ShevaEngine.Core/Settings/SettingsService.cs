@@ -5,7 +5,7 @@ namespace ShevaEngine.Core.Settings;
 
 public class SettingsService : IDisposable
 {
-    private readonly SortedDictionary<Type, ShevaGameSettings> _settings = new();
+    private readonly SortedDictionary<string, ShevaGameSettings> _settings = new();
 
 
     public void Dispose()
@@ -20,14 +20,20 @@ public class SettingsService : IDisposable
 
     public T GetSettings<T>() where T : ShevaGameSettings, new()
     {
-        if (_settings.TryGetValue(typeof(T), out var settings))
+        try
         {
-            return (T)settings;
+            if (_settings.TryGetValue(typeof(T).FullName, out var settings))
+            {
+                return (T)settings;
+            }
+        }
+        catch (Exception ex)
+        {
         }
 
         T newSettings = ShevaGameSettings.Load<T>();
 
-        _settings.Add(typeof(T), newSettings);
+        _settings.Add(typeof(T).FullName, newSettings);
 
         return newSettings;
     }

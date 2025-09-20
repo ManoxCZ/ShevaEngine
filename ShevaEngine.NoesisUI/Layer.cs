@@ -40,9 +40,7 @@ public class Layer<U> : ILayer where U : UserControl, new()
 
             _view.SetFlags(RenderFlags.LCD | RenderFlags.PPAA);
 
-            var device = new MonogameNoesisRenderDevice(ShevaGame.Instance.GraphicsDevice);
-
-            _view.Renderer.Init(device);
+            _view.Renderer.Init(NoesisUIWrapper.Device);
         });
     }
 
@@ -93,6 +91,10 @@ public class Layer<U> : ILayer where U : UserControl, new()
         RunOnUIThread(() =>
         {
             _view.SetSize(width, height);
+
+            _view.Update(0);
+
+            _view.Renderer.UpdateRenderTree();
         });
     }
 
@@ -142,12 +144,12 @@ public class Layer<U> : ILayer where U : UserControl, new()
 
     public bool UpdateKeyUpEvent(Keys key)
     {
-        return _view.KeyUp(KeyConverter.Convert(key));
+        return _view.KeyUp(Noesis.MonoGame.KeyConverter.Convert(key));
     }
 
     public bool UpdateKeyDownEvent(Keys key)
     {
-        return _view.KeyDown(KeyConverter.Convert(key));
+        return _view.KeyDown(Noesis.MonoGame.KeyConverter.Convert(key));
     }
 
     public bool UpdateInputTextEvent(char key)

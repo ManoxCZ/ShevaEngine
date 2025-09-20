@@ -1,15 +1,14 @@
-﻿using Microsoft.Xna.Framework.Graphics;
-using System;
+﻿using System;
 
-namespace ShevaEngine.NoesisUI;
+namespace Noesis.MonoGame;
 
-internal sealed class NoesisTexture : Noesis.Texture
+public sealed class NoesisTexture : Texture
 {
     public string Label { get; }
-    public Texture2D Texture { get; }
+    public Microsoft.Xna.Framework.Graphics.Texture2D Texture { get; }
 
 
-    public NoesisTexture(string label, Texture2D texture)
+    public NoesisTexture(string label, Microsoft.Xna.Framework.Graphics.Texture2D texture)
     {
         Label = label;
         Texture = texture;
@@ -23,32 +22,32 @@ internal sealed class NoesisTexture : Noesis.Texture
 
     public override bool IsInverted => false;
 
-    public override bool HasAlpha => Texture.Format == SurfaceFormat.Color;
+    public override bool HasAlpha => Texture.Format == Microsoft.Xna.Framework.Graphics.SurfaceFormat.Color;
 
 
-    public static SurfaceFormat GetSurfaceFormat(Noesis.TextureFormat format)
+    public static Microsoft.Xna.Framework.Graphics.SurfaceFormat GetSurfaceFormat(Noesis.TextureFormat format)
     {
         switch (format)
         {
-            case Noesis.TextureFormat.RGBA8:
-                return SurfaceFormat.Color;                
-            
-            case Noesis.TextureFormat.R8:
-                return SurfaceFormat.Alpha8;
+            case TextureFormat.RGBA8:
+                return Microsoft.Xna.Framework.Graphics.SurfaceFormat.Color;
+
+            case TextureFormat.R8:
+                return Microsoft.Xna.Framework.Graphics.SurfaceFormat.Alpha8;
 
             default:
                 throw new NotSupportedException($"Format ${format} is not supported");
-        }        
+        }
     }
 
-    public static int GetPixelSizeForSurfaceFormat(SurfaceFormat format)
+    public static int GetPixelSizeForSurfaceFormat(Microsoft.Xna.Framework.Graphics.SurfaceFormat format)
     {
         switch (format)
         {
-            case SurfaceFormat.Color:
+            case Microsoft.Xna.Framework.Graphics.SurfaceFormat.Color:
                 return 4;
 
-            case SurfaceFormat.Alpha8:
+            case Microsoft.Xna.Framework.Graphics.SurfaceFormat.Alpha8:
                 return 1;
 
             default:

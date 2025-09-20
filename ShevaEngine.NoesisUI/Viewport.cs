@@ -4,7 +4,6 @@ using Noesis;
 using ShevaEngine.Core;
 using ShevaEngine.Core.Profiler;
 using ShevaEngine.Core.UI;
-using System;
 using System.Reflection;
 
 namespace ShevaEngine.NoesisUI;
@@ -104,70 +103,22 @@ public sealed class Viewport : Grid, IViewport
                 Name = $"{nameof(Viewport)} - Render target"
             };
 
-#if WINDOWSDX
-            if (typeof(RenderTarget2D).GetField("_renderTargetViews", BindingFlags.Instance | BindingFlags.NonPublic) is FieldInfo info &&
-                info.GetValue(_renderTarget) is SharpDX.Direct3D11.RenderTargetView[] targets &&
-                targets.Length > 0 &&
-                targets[0].Resource is SharpDX.Direct3D11.Resource handle)
+            _image.Source = new TextureSource(new Noesis.MonoGame.NoesisTexture(_renderTarget.Name, _renderTarget));
+            _image.Width = finalSize.Width;
+            _image.Height = finalSize.Height;
+
+            _depthTarget?.Dispose();
+
+            _depthTarget = new RenderTarget2D(
+                    ShevaGame.Instance.GraphicsDevice,
+                    (int)finalSize.Width,
+                    (int)finalSize.Height,
+                    false,
+                    SurfaceFormat.Single,
+                    DepthFormat.None)
             {
-
-                _image.Source = new TextureSource(
-                    RenderDeviceD3D11.WrapTexture(
-                        _renderTarget, 
-                        handle.NativePointer, 
-                        _renderTarget.Width, 
-                        _renderTarget.Height, 
-                        1, 
-                        false,
-                        true));
-
-                _image.Width = finalSize.Width;
-                _image.Height = finalSize.Height;
-
-                _depthTarget?.Dispose();
-
-                _depthTarget = new RenderTarget2D(
-                        ShevaGame.Instance.GraphicsDevice,
-                        (int)finalSize.Width,
-                        (int)finalSize.Height,
-                        false,
-                        SurfaceFormat.Single,
-                        DepthFormat.None)
-                {
-                    Name = $"{nameof(Viewport)} - Depth render target"
-                };
-            }
-#elif DESKTOPGL
-            if (typeof(RenderTarget2D).GetField("glTexture", BindingFlags.Instance | BindingFlags.NonPublic) is FieldInfo info &&
-                info.GetValue(_renderTarget) is int textureId)
-            {                
-                _image.Source = new TextureSource(
-                    RenderDeviceGL.WrapTexture(
-                        _renderTarget,
-                        textureId,
-                        _renderTarget.Width,
-                        _renderTarget.Height,
-                        1,
-                        false,
-                        true));
-
-                _image.Width = finalSize.Width;
-                _image.Height = finalSize.Height;
-
-                _depthTarget?.Dispose();
-
-                _depthTarget = new RenderTarget2D(
-                        ShevaGame.Instance.GraphicsDevice,
-                        (int)finalSize.Width,
-                        (int)finalSize.Height,
-                        false,
-                        SurfaceFormat.Single,
-                        DepthFormat.None)
-                {
-                    Name = $"{nameof(Viewport)} - Depth render target"
-                };
-            }
-#endif
+                Name = $"{nameof(Viewport)} - Depth render target"
+            };
         }
 
         if (Camera != null)

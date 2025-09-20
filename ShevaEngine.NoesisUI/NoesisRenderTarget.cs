@@ -1,18 +1,18 @@
-﻿using Microsoft.Xna.Framework.Graphics;
+﻿
+namespace Noesis.MonoGame;
 
-namespace ShevaEngine.NoesisUI;
-
-internal class NoesisRenderTarget : Noesis.RenderTarget
+public class NoesisRenderTarget : RenderTarget
 {
     public string Label { get; }
-    public RenderTarget2D RenderTarget2D { get; }
+    public Microsoft.Xna.Framework.Graphics.RenderTarget2D RenderTarget2D { get; }
+    public override Texture Texture { get; }
 
 
-    public NoesisRenderTarget(string label, RenderTarget2D renderTarget2D)
+    public NoesisRenderTarget(string label, Microsoft.Xna.Framework.Graphics.RenderTarget2D renderTarget2D)
     {
         Label = label;
         RenderTarget2D = renderTarget2D;
+     
+        Texture = new NoesisTexture(Label + "_Texture", RenderTarget2D);
     }
-
-    public override Noesis.Texture Texture => new NoesisTexture(Label + "_Texture", RenderTarget2D);
 }

@@ -1,8 +1,7 @@
-
 #----------------------------- Global Properties ----------------------------#
 
-/outputDir:bin/$(Platform)
-/intermediateDir:obj/$(Platform)
+/outputDir:bin /$(Platform)
+/intermediateDir:obj /$(Platform)
 /platform:Windows
 /config:
 /profile:HiDef
@@ -13,405 +12,367 @@
 
 #---------------------------------- Content ---------------------------------#
 
-#begin Effects/Ocean.fx
+# begin Noesis/Effects/RGBA.fx
 /importer:EffectImporter
 /processor:EffectProcessor
-/processorParam:DebugMode=Auto
-/build:Effects/Ocean.fx
+/processorParam:DebugMode = Auto
+/processorParam:Defines=EFFECT_RGBA
+/build:Noesis/Effects/RGBA.fx
 
-#begin Graphics/Caustics_001.bmp
-/importer:TextureImporter
-/processor:TextureProcessor
-/processorParam:ColorKeyColor=255,0,255,255
-/processorParam:ColorKeyEnabled=True
-/processorParam:GenerateMipmaps=False
-/processorParam:PremultiplyAlpha=True
-/processorParam:ResizeToPowerOfTwo=False
-/processorParam:MakeSquare=False
-/processorParam:TextureFormat=Compressed
-/build:Graphics/Caustics_001.bmp
+# begin Noesis/Effects/Mask.fx
+/importer:EffectImporter
+/processor:EffectProcessor
+/processorParam:DebugMode = Auto
+/processorParam:Defines=EFFECT_MASK
+/build:Noesis/Effects/Mask.fx
 
-#begin Graphics/Caustics_002.bmp
-/importer:TextureImporter
-/processor:TextureProcessor
-/processorParam:ColorKeyColor=255,0,255,255
-/processorParam:ColorKeyEnabled=True
-/processorParam:GenerateMipmaps=False
-/processorParam:PremultiplyAlpha=True
-/processorParam:ResizeToPowerOfTwo=False
-/processorParam:MakeSquare=False
-/processorParam:TextureFormat=Compressed
-/build:Graphics/Caustics_002.bmp
+# begin Noesis/Effects/Clear.fx
+/importer:EffectImporter
+/processor:EffectProcessor
+/processorParam:DebugMode = Auto
+/processorParam:Defines=EFFECT_CLEAR
+/build:Noesis/Effects/Clear.fx
 
-#begin Graphics/Caustics_003.bmp
-/importer:TextureImporter
-/processor:TextureProcessor
-/processorParam:ColorKeyColor=255,0,255,255
-/processorParam:ColorKeyEnabled=True
-/processorParam:GenerateMipmaps=False
-/processorParam:PremultiplyAlpha=True
-/processorParam:ResizeToPowerOfTwo=False
-/processorParam:MakeSquare=False
-/processorParam:TextureFormat=Compressed
-/build:Graphics/Caustics_003.bmp
+# begin Noesis/Effects/Path_Solid.fx
+/importer:EffectImporter
+/processor:EffectProcessor
+/processorParam:DebugMode = Auto
+/processorParam:Defines=HAS_COLOR;EFFECT_PATH;PAINT_SOLID
+/build:Noesis/Effects/Path_Solid.fx
 
-#begin Graphics/Caustics_004.bmp
-/importer:TextureImporter
-/processor:TextureProcessor
-/processorParam:ColorKeyColor=255,0,255,255
-/processorParam:ColorKeyEnabled=True
-/processorParam:GenerateMipmaps=False
-/processorParam:PremultiplyAlpha=True
-/processorParam:ResizeToPowerOfTwo=False
-/processorParam:MakeSquare=False
-/processorParam:TextureFormat=Compressed
-/build:Graphics/Caustics_004.bmp
+# begin Noesis/Effects/Path_Linear.fx
+/importer:EffectImporter
+/processor:EffectProcessor
+/processorParam:DebugMode = Auto
+/processorParam:Defines=HAS_UV0;EFFECT_PATH;PAINT_LINEAR
+/build:Noesis/Effects/Path_Linear.fx
 
-#begin Graphics/Caustics_005.bmp
-/importer:TextureImporter
-/processor:TextureProcessor
-/processorParam:ColorKeyColor=255,0,255,255
-/processorParam:ColorKeyEnabled=True
-/processorParam:GenerateMipmaps=False
-/processorParam:PremultiplyAlpha=True
-/processorParam:ResizeToPowerOfTwo=False
-/processorParam:MakeSquare=False
-/processorParam:TextureFormat=Compressed
-/build:Graphics/Caustics_005.bmp
+# begin Noesis/Effects/Path_Radial.fx
+/importer:EffectImporter
+/processor:EffectProcessor
+/processorParam:DebugMode = Auto
+/processorParam:Defines=HAS_UV0;EFFECT_PATH;PAINT_RADIAL
+/build:Noesis/Effects/Path_Radial.fx
 
-#begin Graphics/Caustics_006.bmp
-/importer:TextureImporter
-/processor:TextureProcessor
-/processorParam:ColorKeyColor=255,0,255,255
-/processorParam:ColorKeyEnabled=True
-/processorParam:GenerateMipmaps=False
-/processorParam:PremultiplyAlpha=True
-/processorParam:ResizeToPowerOfTwo=False
-/processorParam:MakeSquare=False
-/processorParam:TextureFormat=Compressed
-/build:Graphics/Caustics_006.bmp
+# begin Noesis/Effects/Path_Pattern.fx
+/importer:EffectImporter
+/processor:EffectProcessor
+/processorParam:DebugMode = Auto
+/processorParam:Defines=HAS_UV0;EFFECT_PATH;PAINT_PATTERN
+/build:Noesis/Effects/Path_Pattern.fx
 
-#begin Graphics/Caustics_007.bmp
-/importer:TextureImporter
-/processor:TextureProcessor
-/processorParam:ColorKeyColor=255,0,255,255
-/processorParam:ColorKeyEnabled=True
-/processorParam:GenerateMipmaps=False
-/processorParam:PremultiplyAlpha=True
-/processorParam:ResizeToPowerOfTwo=False
-/processorParam:MakeSquare=False
-/processorParam:TextureFormat=Compressed
-/build:Graphics/Caustics_007.bmp
+# begin Noesis/Effects/Path_Pattern_Clamp.fx
+/importer:EffectImporter
+/processor:EffectProcessor
+/processorParam:DebugMode = Auto
+/processorParam:Defines=HAS_UV0;HAS_RECT;EFFECT_PATH;PAINT_PATTERN;CLAMP_PATTERN
+/build:Noesis/Effects/Path_Pattern_Clamp.fx
 
-#begin Graphics/Caustics_008.bmp
-/importer:TextureImporter
-/processor:TextureProcessor
-/processorParam:ColorKeyColor=255,0,255,255
-/processorParam:ColorKeyEnabled=True
-/processorParam:GenerateMipmaps=False
-/processorParam:PremultiplyAlpha=True
-/processorParam:ResizeToPowerOfTwo=False
-/processorParam:MakeSquare=False
-/processorParam:TextureFormat=Compressed
-/build:Graphics/Caustics_008.bmp
+# begin Noesis/Effects/Path_Pattern_Repeat.fx
+/importer:EffectImporter
+/processor:EffectProcessor
+/processorParam:DebugMode = Auto
+/processorParam:Defines=HAS_UV0;HAS_RECT;HAS_TILE;EFFECT_PATH;PAINT_PATTERN;REPEAT_PATTERN
+/build:Noesis/Effects/Path_Pattern_Repeat.fx
 
-#begin Graphics/Caustics_009.bmp
-/importer:TextureImporter
-/processor:TextureProcessor
-/processorParam:ColorKeyColor=255,0,255,255
-/processorParam:ColorKeyEnabled=True
-/processorParam:GenerateMipmaps=False
-/processorParam:PremultiplyAlpha=True
-/processorParam:ResizeToPowerOfTwo=False
-/processorParam:MakeSquare=False
-/processorParam:TextureFormat=Compressed
-/build:Graphics/Caustics_009.bmp
+# begin Noesis/Effects/Path_Pattern_MirrorU.fx
+/importer:EffectImporter
+/processor:EffectProcessor
+/processorParam:DebugMode = Auto
+/processorParam:Defines=HAS_UV0;HAS_RECT;HAS_TILE;EFFECT_PATH;PAINT_PATTERN;MIRRORU_PATTERN
+/build:Noesis/Effects/Path_Pattern_MirrorU.fx
 
-#begin Graphics/Caustics_010.bmp
-/importer:TextureImporter
-/processor:TextureProcessor
-/processorParam:ColorKeyColor=255,0,255,255
-/processorParam:ColorKeyEnabled=True
-/processorParam:GenerateMipmaps=False
-/processorParam:PremultiplyAlpha=True
-/processorParam:ResizeToPowerOfTwo=False
-/processorParam:MakeSquare=False
-/processorParam:TextureFormat=Compressed
-/build:Graphics/Caustics_010.bmp
+# begin Noesis/Effects/Path_Pattern_MirrorV.fx
+/importer:EffectImporter
+/processor:EffectProcessor
+/processorParam:DebugMode = Auto
+/processorParam:Defines=HAS_UV0;HAS_RECT;HAS_TILE;EFFECT_PATH;PAINT_PATTERN;MIRRORV_PATTERN
+/build:Noesis/Effects/Path_Pattern_MirrorV.fx
 
-#begin Graphics/Caustics_011.bmp
-/importer:TextureImporter
-/processor:TextureProcessor
-/processorParam:ColorKeyColor=255,0,255,255
-/processorParam:ColorKeyEnabled=True
-/processorParam:GenerateMipmaps=False
-/processorParam:PremultiplyAlpha=True
-/processorParam:ResizeToPowerOfTwo=False
-/processorParam:MakeSquare=False
-/processorParam:TextureFormat=Compressed
-/build:Graphics/Caustics_011.bmp
+# begin Noesis/Effects/Path_Pattern_Mirror.fx
+/importer:EffectImporter
+/processor:EffectProcessor
+/processorParam:DebugMode = Auto
+/processorParam:Defines=HAS_UV0;HAS_RECT;HAS_TILE;EFFECT_PATH;PAINT_PATTERN;MIRROR_PATTERN
+/build:Noesis/Effects/Path_Pattern_Mirror.fx
 
-#begin Graphics/Caustics_012.bmp
-/importer:TextureImporter
-/processor:TextureProcessor
-/processorParam:ColorKeyColor=255,0,255,255
-/processorParam:ColorKeyEnabled=True
-/processorParam:GenerateMipmaps=False
-/processorParam:PremultiplyAlpha=True
-/processorParam:ResizeToPowerOfTwo=False
-/processorParam:MakeSquare=False
-/processorParam:TextureFormat=Compressed
-/build:Graphics/Caustics_012.bmp
+# begin Noesis/Effects/Path_AA_Solid.fx
+/importer:EffectImporter
+/processor:EffectProcessor
+/processorParam:DebugMode = Auto
+/processorParam:Defines=HAS_COLOR;HAS_COVERAGE;EFFECT_PATH_AA;PAINT_SOLID
+/build:Noesis/Effects/Path_AA_Solid.fx
 
-#begin Graphics/Caustics_013.bmp
-/importer:TextureImporter
-/processor:TextureProcessor
-/processorParam:ColorKeyColor=255,0,255,255
-/processorParam:ColorKeyEnabled=True
-/processorParam:GenerateMipmaps=False
-/processorParam:PremultiplyAlpha=True
-/processorParam:ResizeToPowerOfTwo=False
-/processorParam:MakeSquare=False
-/processorParam:TextureFormat=Compressed
-/build:Graphics/Caustics_013.bmp
+# begin Noesis/Effects/Path_AA_Linear.fx
+/importer:EffectImporter
+/processor:EffectProcessor
+/processorParam:DebugMode = Auto
+/processorParam:Defines=HAS_UV0;HAS_COVERAGE;EFFECT_PATH_AA;PAINT_LINEAR
+/build:Noesis/Effects/Path_AA_Linear.fx
 
-#begin Graphics/Caustics_014.bmp
-/importer:TextureImporter
-/processor:TextureProcessor
-/processorParam:ColorKeyColor=255,0,255,255
-/processorParam:ColorKeyEnabled=True
-/processorParam:GenerateMipmaps=False
-/processorParam:PremultiplyAlpha=True
-/processorParam:ResizeToPowerOfTwo=False
-/processorParam:MakeSquare=False
-/processorParam:TextureFormat=Compressed
-/build:Graphics/Caustics_014.bmp
+# begin Noesis/Effects/Path_AA_Radial.fx
+/importer:EffectImporter
+/processor:EffectProcessor
+/processorParam:DebugMode = Auto
+/processorParam:Defines=HAS_UV0;HAS_COVERAGE;EFFECT_PATH_AA;PAINT_RADIAL
+/build:Noesis/Effects/Path_AA_Radial.fx
 
-#begin Graphics/Caustics_015.bmp
-/importer:TextureImporter
-/processor:TextureProcessor
-/processorParam:ColorKeyColor=255,0,255,255
-/processorParam:ColorKeyEnabled=True
-/processorParam:GenerateMipmaps=False
-/processorParam:PremultiplyAlpha=True
-/processorParam:ResizeToPowerOfTwo=False
-/processorParam:MakeSquare=False
-/processorParam:TextureFormat=Compressed
-/build:Graphics/Caustics_015.bmp
+# begin Noesis/Effects/Path_AA_Pattern.fx
+/importer:EffectImporter
+/processor:EffectProcessor
+/processorParam:DebugMode = Auto
+/processorParam:Defines=HAS_UV0;HAS_COVERAGE;EFFECT_PATH_AA;PAINT_PATTERN
+/build:Noesis/Effects/Path_AA_Pattern.fx
 
-#begin Graphics/Caustics_016.bmp
-/importer:TextureImporter
-/processor:TextureProcessor
-/processorParam:ColorKeyColor=255,0,255,255
-/processorParam:ColorKeyEnabled=True
-/processorParam:GenerateMipmaps=False
-/processorParam:PremultiplyAlpha=True
-/processorParam:ResizeToPowerOfTwo=False
-/processorParam:MakeSquare=False
-/processorParam:TextureFormat=Compressed
-/build:Graphics/Caustics_016.bmp
+# begin Noesis/Effects/Path_AA_Pattern_Clamp.fx
+/importer:EffectImporter
+/processor:EffectProcessor
+/processorParam:DebugMode = Auto
+/processorParam:Defines=HAS_UV0;HAS_COVERAGE;HAS_RECT;EFFECT_PATH_AA;PAINT_PATTERN;CLAMP_PATTERN
+/build:Noesis/Effects/Path_AA_Pattern_Clamp.fx
 
-#begin Graphics/Caustics_017.bmp
-/importer:TextureImporter
-/processor:TextureProcessor
-/processorParam:ColorKeyColor=255,0,255,255
-/processorParam:ColorKeyEnabled=True
-/processorParam:GenerateMipmaps=False
-/processorParam:PremultiplyAlpha=True
-/processorParam:ResizeToPowerOfTwo=False
-/processorParam:MakeSquare=False
-/processorParam:TextureFormat=Compressed
-/build:Graphics/Caustics_017.bmp
+# begin Noesis/Effects/Path_AA_Pattern_Repeat.fx
+/importer:EffectImporter
+/processor:EffectProcessor
+/processorParam:DebugMode = Auto
+/processorParam:Defines=HAS_UV0;HAS_COVERAGE;HAS_RECT;HAS_TILE;EFFECT_PATH_AA;PAINT_PATTERN;REPEAT_PATTERN
+/build:Noesis/Effects/Path_AA_Pattern_Repeat.fx
 
-#begin Graphics/Caustics_018.bmp
-/importer:TextureImporter
-/processor:TextureProcessor
-/processorParam:ColorKeyColor=255,0,255,255
-/processorParam:ColorKeyEnabled=True
-/processorParam:GenerateMipmaps=False
-/processorParam:PremultiplyAlpha=True
-/processorParam:ResizeToPowerOfTwo=False
-/processorParam:MakeSquare=False
-/processorParam:TextureFormat=Compressed
-/build:Graphics/Caustics_018.bmp
+# begin Noesis/Effects/Path_AA_Pattern_MirrorU.fx
+/importer:EffectImporter
+/processor:EffectProcessor
+/processorParam:DebugMode = Auto
+/processorParam:Defines=HAS_UV0;HAS_COVERAGE;HAS_RECT;HAS_TILE;EFFECT_PATH_AA;PAINT_PATTERN;MIRRORU_PATTERN
+/build:Noesis/Effects/Path_AA_Pattern_MirrorU.fx
 
-#begin Graphics/Caustics_019.bmp
-/importer:TextureImporter
-/processor:TextureProcessor
-/processorParam:ColorKeyColor=255,0,255,255
-/processorParam:ColorKeyEnabled=True
-/processorParam:GenerateMipmaps=False
-/processorParam:PremultiplyAlpha=True
-/processorParam:ResizeToPowerOfTwo=False
-/processorParam:MakeSquare=False
-/processorParam:TextureFormat=Compressed
-/build:Graphics/Caustics_019.bmp
+# begin Noesis/Effects/Path_AA_Pattern_MirrorV.fx
+/importer:EffectImporter
+/processor:EffectProcessor
+/processorParam:DebugMode = Auto
+/processorParam:Defines=HAS_UV0;HAS_COVERAGE;HAS_RECT;HAS_TILE;EFFECT_PATH_AA;PAINT_PATTERN;MIRRORV_PATTERN
+/build:Noesis/Effects/Path_AA_Pattern_MirrorV.fx
 
-#begin Graphics/Caustics_020.bmp
-/importer:TextureImporter
-/processor:TextureProcessor
-/processorParam:ColorKeyColor=255,0,255,255
-/processorParam:ColorKeyEnabled=True
-/processorParam:GenerateMipmaps=False
-/processorParam:PremultiplyAlpha=True
-/processorParam:ResizeToPowerOfTwo=False
-/processorParam:MakeSquare=False
-/processorParam:TextureFormat=Compressed
-/build:Graphics/Caustics_020.bmp
+# begin Noesis/Effects/Path_AA_Pattern_Mirror.fx
+/importer:EffectImporter
+/processor:EffectProcessor
+/processorParam:DebugMode = Auto
+/processorParam:Defines=HAS_UV0;HAS_COVERAGE;HAS_RECT;HAS_TILE;EFFECT_PATH_AA;PAINT_PATTERN;MIRROR_PATTERN
+/build:Noesis/Effects/Path_AA_Pattern_Mirror.fx
 
-#begin Graphics/Caustics_021.bmp
-/importer:TextureImporter
-/processor:TextureProcessor
-/processorParam:ColorKeyColor=255,0,255,255
-/processorParam:ColorKeyEnabled=True
-/processorParam:GenerateMipmaps=False
-/processorParam:PremultiplyAlpha=True
-/processorParam:ResizeToPowerOfTwo=False
-/processorParam:MakeSquare=False
-/processorParam:TextureFormat=Compressed
-/build:Graphics/Caustics_021.bmp
+# begin Noesis/Effects/SDF_Solid.fx
+/importer:EffectImporter
+/processor:EffectProcessor
+/processorParam:DebugMode = Auto
+/processorParam:Defines=HAS_COLOR;HAS_UV1;SDF;EFFECT_SDF;PAINT_SOLID
+/build:Noesis/Effects/SDF_Solid.fx
 
-#begin Graphics/Caustics_022.bmp
-/importer:TextureImporter
-/processor:TextureProcessor
-/processorParam:ColorKeyColor=255,0,255,255
-/processorParam:ColorKeyEnabled=True
-/processorParam:GenerateMipmaps=False
-/processorParam:PremultiplyAlpha=True
-/processorParam:ResizeToPowerOfTwo=False
-/processorParam:MakeSquare=False
-/processorParam:TextureFormat=Compressed
-/build:Graphics/Caustics_022.bmp
+# begin Noesis/Effects/SDF_Linear.fx
+/importer:EffectImporter
+/processor:EffectProcessor
+/processorParam:DebugMode = Auto
+/processorParam:Defines=HAS_UV0;HAS_UV1;SDF;EFFECT_SDF;PAINT_LINEAR
+/build:Noesis/Effects/SDF_Linear.fx
 
-#begin Graphics/Caustics_023.bmp
-/importer:TextureImporter
-/processor:TextureProcessor
-/processorParam:ColorKeyColor=255,0,255,255
-/processorParam:ColorKeyEnabled=True
-/processorParam:GenerateMipmaps=False
-/processorParam:PremultiplyAlpha=True
-/processorParam:ResizeToPowerOfTwo=False
-/processorParam:MakeSquare=False
-/processorParam:TextureFormat=Compressed
-/build:Graphics/Caustics_023.bmp
+# begin Noesis/Effects/SDF_Radial.fx
+/importer:EffectImporter
+/processor:EffectProcessor
+/processorParam:DebugMode = Auto
+/processorParam:Defines=HAS_UV0;HAS_UV1;SDF;EFFECT_SDF;PAINT_RADIAL
+/build:Noesis/Effects/SDF_Radial.fx
 
-#begin Graphics/Caustics_024.bmp
-/importer:TextureImporter
-/processor:TextureProcessor
-/processorParam:ColorKeyColor=255,0,255,255
-/processorParam:ColorKeyEnabled=True
-/processorParam:GenerateMipmaps=False
-/processorParam:PremultiplyAlpha=True
-/processorParam:ResizeToPowerOfTwo=False
-/processorParam:MakeSquare=False
-/processorParam:TextureFormat=Compressed
-/build:Graphics/Caustics_024.bmp
+# begin Noesis/Effects/SDF_Pattern.fx
+/importer:EffectImporter
+/processor:EffectProcessor
+/processorParam:DebugMode = Auto
+/processorParam:Defines=HAS_UV0;HAS_UV1;SDF;EFFECT_SDF;PAINT_PATTERN
+/build:Noesis/Effects/SDF_Pattern.fx
 
-#begin Graphics/Caustics_025.bmp
-/importer:TextureImporter
-/processor:TextureProcessor
-/processorParam:ColorKeyColor=255,0,255,255
-/processorParam:ColorKeyEnabled=True
-/processorParam:GenerateMipmaps=False
-/processorParam:PremultiplyAlpha=True
-/processorParam:ResizeToPowerOfTwo=False
-/processorParam:MakeSquare=False
-/processorParam:TextureFormat=Compressed
-/build:Graphics/Caustics_025.bmp
+# begin Noesis/Effects/SDF_Pattern_Clamp.fx
+/importer:EffectImporter
+/processor:EffectProcessor
+/processorParam:DebugMode = Auto
+/processorParam:Defines=HAS_UV0;HAS_UV1;HAS_RECT;SDF;EFFECT_SDF;PAINT_PATTERN;CLAMP_PATTERN
+/build:Noesis/Effects/SDF_Pattern_Clamp.fx
 
-#begin Graphics/Caustics_026.bmp
-/importer:TextureImporter
-/processor:TextureProcessor
-/processorParam:ColorKeyColor=255,0,255,255
-/processorParam:ColorKeyEnabled=True
-/processorParam:GenerateMipmaps=False
-/processorParam:PremultiplyAlpha=True
-/processorParam:ResizeToPowerOfTwo=False
-/processorParam:MakeSquare=False
-/processorParam:TextureFormat=Compressed
-/build:Graphics/Caustics_026.bmp
+# begin Noesis/Effects/SDF_Pattern_Repeat.fx
+/importer:EffectImporter
+/processor:EffectProcessor
+/processorParam:DebugMode = Auto
+/processorParam:Defines=HAS_UV0;HAS_UV1;HAS_RECT;HAS_TILE;SDF;EFFECT_SDF;PAINT_PATTERN;REPEAT_PATTERN
+/build:Noesis/Effects/SDF_Pattern_Repeat.fx
 
-#begin Graphics/Caustics_027.bmp
-/importer:TextureImporter
-/processor:TextureProcessor
-/processorParam:ColorKeyColor=255,0,255,255
-/processorParam:ColorKeyEnabled=True
-/processorParam:GenerateMipmaps=False
-/processorParam:PremultiplyAlpha=True
-/processorParam:ResizeToPowerOfTwo=False
-/processorParam:MakeSquare=False
-/processorParam:TextureFormat=Compressed
-/build:Graphics/Caustics_027.bmp
+# begin Noesis/Effects/SDF_Pattern_MirrorU.fx
+/importer:EffectImporter
+/processor:EffectProcessor
+/processorParam:DebugMode = Auto
+/processorParam:Defines=HAS_UV0;HAS_UV1;HAS_RECT;HAS_TILE;SDF;EFFECT_SDF;PAINT_PATTERN;MIRRORU_PATTERN
+/build:Noesis/Effects/SDF_Pattern_MirrorU.fx
 
-#begin Graphics/Caustics_028.bmp
-/importer:TextureImporter
-/processor:TextureProcessor
-/processorParam:ColorKeyColor=255,0,255,255
-/processorParam:ColorKeyEnabled=True
-/processorParam:GenerateMipmaps=False
-/processorParam:PremultiplyAlpha=True
-/processorParam:ResizeToPowerOfTwo=False
-/processorParam:MakeSquare=False
-/processorParam:TextureFormat=Compressed
-/build:Graphics/Caustics_028.bmp
+# begin Noesis/Effects/SDF_Pattern_MirrorV.fx
+/importer:EffectImporter
+/processor:EffectProcessor
+/processorParam:DebugMode = Auto
+/processorParam:Defines=HAS_UV0;HAS_UV1;HAS_RECT;HAS_TILE;SDF;EFFECT_SDF;PAINT_PATTERN;MIRRORV_PATTERN
+/build:Noesis/Effects/SDF_Pattern_MirrorV.fx
 
-#begin Graphics/Caustics_029.bmp
-/importer:TextureImporter
-/processor:TextureProcessor
-/processorParam:ColorKeyColor=255,0,255,255
-/processorParam:ColorKeyEnabled=True
-/processorParam:GenerateMipmaps=False
-/processorParam:PremultiplyAlpha=True
-/processorParam:ResizeToPowerOfTwo=False
-/processorParam:MakeSquare=False
-/processorParam:TextureFormat=Compressed
-/build:Graphics/Caustics_029.bmp
+# begin Noesis/Effects/SDF_Pattern_Mirror.fx
+/importer:EffectImporter
+/processor:EffectProcessor
+/processorParam:DebugMode = Auto
+/processorParam:Defines=HAS_UV0;HAS_UV1;HAS_RECT;HAS_TILE;SDF;EFFECT_SDF;PAINT_PATTERN;MIRROR_PATTERN
+/build:Noesis/Effects/SDF_Pattern_Mirror.fx
 
-#begin Graphics/Caustics_030.bmp
-/importer:TextureImporter
-/processor:TextureProcessor
-/processorParam:ColorKeyColor=255,0,255,255
-/processorParam:ColorKeyEnabled=True
-/processorParam:GenerateMipmaps=False
-/processorParam:PremultiplyAlpha=True
-/processorParam:ResizeToPowerOfTwo=False
-/processorParam:MakeSquare=False
-/processorParam:TextureFormat=Compressed
-/build:Graphics/Caustics_030.bmp
+# begin Noesis/Effects/SDF_LCD_Solid.fx
+/importer:EffectImporter
+/processor:EffectProcessor
+/processorParam:DebugMode = Auto
+/processorParam:Defines=HAS_COLOR;HAS_UV1;SDF;EFFECT_SDF_LCD;PAINT_SOLID
+/build:Noesis/Effects/SDF_LCD_Solid.fx
 
-#begin Graphics/Caustics_031.bmp
-/importer:TextureImporter
-/processor:TextureProcessor
-/processorParam:ColorKeyColor=255,0,255,255
-/processorParam:ColorKeyEnabled=True
-/processorParam:GenerateMipmaps=False
-/processorParam:PremultiplyAlpha=True
-/processorParam:ResizeToPowerOfTwo=False
-/processorParam:MakeSquare=False
-/processorParam:TextureFormat=Compressed
-/build:Graphics/Caustics_031.bmp
+# begin Noesis/Effects/SDF_LCD_Linear.fx
+/importer:EffectImporter
+/processor:EffectProcessor
+/processorParam:DebugMode = Auto
+/processorParam:Defines=HAS_UV0;HAS_UV1;SDF;EFFECT_SDF_LCD;PAINT_LINEAR
+/build:Noesis/Effects/SDF_LCD_Linear.fx
 
-#begin Graphics/Caustics_032.bmp
-/importer:TextureImporter
-/processor:TextureProcessor
-/processorParam:ColorKeyColor=255,0,255,255
-/processorParam:ColorKeyEnabled=True
-/processorParam:GenerateMipmaps=False
-/processorParam:PremultiplyAlpha=True
-/processorParam:ResizeToPowerOfTwo=False
-/processorParam:MakeSquare=False
-/processorParam:TextureFormat=Compressed
-/build:Graphics/Caustics_032.bmp
+# begin Noesis/Effects/SDF_LCD_Radial.fx
+/importer:EffectImporter
+/processor:EffectProcessor
+/processorParam:DebugMode = Auto
+/processorParam:Defines=HAS_UV0;HAS_UV1;SDF;EFFECT_SDF_LCD;PAINT_RADIAL
+/build:Noesis/Effects/SDF_LCD_Radial.fx
 
-#begin Graphics/OceanNormalMap.jpg
-/importer:TextureImporter
-/processor:TextureProcessor
-/processorParam:ColorKeyColor=255,0,255,255
-/processorParam:ColorKeyEnabled=False
-/processorParam:GenerateMipmaps=False
-/processorParam:PremultiplyAlpha=False
-/processorParam:ResizeToPowerOfTwo=False
-/processorParam:MakeSquare=False
-/processorParam:TextureFormat=Compressed
-/build:Graphics/OceanNormalMap.jpg
+# begin Noesis/Effects/SDF_LCD_Pattern.fx
+/importer:EffectImporter
+/processor:EffectProcessor
+/processorParam:DebugMode = Auto
+/processorParam:Defines=HAS_UV0;HAS_UV1;SDF;EFFECT_SDF_LCD;PAINT_PATTERN
+/build:Noesis/Effects/SDF_LCD_Pattern.fx
+
+# begin Noesis/Effects/SDF_LCD_Pattern_Clamp.fx
+/importer:EffectImporter
+/processor:EffectProcessor
+/processorParam:DebugMode = Auto
+/processorParam:Defines=HAS_UV0;HAS_UV1;HAS_RECT;SDF;EFFECT_SDF_LCD;PAINT_PATTERN;CLAMP_PATTERN
+/build:Noesis/Effects/SDF_LCD_Pattern_Clamp.fx
+
+# begin Noesis/Effects/SDF_LCD_Pattern_Repeat.fx
+/importer:EffectImporter
+/processor:EffectProcessor
+/processorParam:DebugMode = Auto
+/processorParam:Defines=HAS_UV0;HAS_UV1;HAS_RECT;HAS_TILE;SDF;EFFECT_SDF_LCD;PAINT_PATTERN;REPEAT_PATTERN
+/build:Noesis/Effects/SDF_LCD_Pattern_Repeat.fx
+
+# begin Noesis/Effects/SDF_LCD_Pattern_MirrorU.fx
+/importer:EffectImporter
+/processor:EffectProcessor
+/processorParam:DebugMode = Auto
+/processorParam:Defines=HAS_UV0;HAS_UV1;HAS_RECT;HAS_TILE;SDF;EFFECT_SDF_LCD;PAINT_PATTERN;MIRRORU_PATTERN
+/build:Noesis/Effects/SDF_LCD_Pattern_MirrorU.fx
+
+# begin Noesis/Effects/SDF_LCD_Pattern_MirrorV.fx
+/importer:EffectImporter
+/processor:EffectProcessor
+/processorParam:DebugMode = Auto
+/processorParam:Defines=HAS_UV0;HAS_UV1;HAS_RECT;HAS_TILE;SDF;EFFECT_SDF_LCD;PAINT_PATTERN;MIRRORV_PATTERN
+/build:Noesis/Effects/SDF_LCD_Pattern_MirrorV.fx
+
+# begin Noesis/Effects/SDF_LCD_Pattern_Mirror.fx
+/importer:EffectImporter
+/processor:EffectProcessor
+/processorParam:DebugMode = Auto
+/processorParam:Defines=HAS_UV0;HAS_UV1;HAS_RECT;HAS_TILE;SDF;EFFECT_SDF_LCD;PAINT_PATTERN;MIRROR_PATTERN
+/build:Noesis/Effects/SDF_LCD_Pattern_Mirror.fx
+
+# begin Noesis/Effects/Opacity_Solid.fx
+/importer:EffectImporter
+/processor:EffectProcessor
+/processorParam:DebugMode = Auto
+/processorParam:Defines=HAS_COLOR;HAS_UV1;EFFECT_OPACITY;PAINT_SOLID
+/build:Noesis/Effects/Opacity_Solid.fx
+
+# begin Noesis/Effects/Opacity_Linear.fx
+/importer:EffectImporter
+/processor:EffectProcessor
+/processorParam:DebugMode = Auto
+/processorParam:Defines=HAS_UV0;HAS_UV1;EFFECT_OPACITY;PAINT_LINEAR
+/build:Noesis/Effects/Opacity_Linear.fx
+
+# begin Noesis/Effects/Opacity_Radial.fx
+/importer:EffectImporter
+/processor:EffectProcessor
+/processorParam:DebugMode = Auto
+/processorParam:Defines=HAS_UV0;HAS_UV1;EFFECT_OPACITY;PAINT_RADIAL
+/build:Noesis/Effects/Opacity_Radial.fx
+
+# begin Noesis/Effects/Opacity_Pattern.fx
+/importer:EffectImporter
+/processor:EffectProcessor
+/processorParam:DebugMode = Auto
+/processorParam:Defines=HAS_UV0;HAS_UV1;EFFECT_OPACITY;PAINT_PATTERN
+/build:Noesis/Effects/Opacity_Pattern.fx
+
+# begin Noesis/Effects/Opacity_Pattern_Clamp.fx
+/importer:EffectImporter
+/processor:EffectProcessor
+/processorParam:DebugMode = Auto
+/processorParam:Defines=HAS_UV0;HAS_UV1;HAS_RECT;EFFECT_OPACITY;PAINT_PATTERN;CLAMP_PATTERN
+/build:Noesis/Effects/Opacity_Pattern_Clamp.fx
+
+# begin Noesis/Effects/Opacity_Pattern_Repeat.fx
+/importer:EffectImporter
+/processor:EffectProcessor
+/processorParam:DebugMode = Auto
+/processorParam:Defines=HAS_UV0;HAS_UV1;HAS_RECT;HAS_TILE;EFFECT_OPACITY;PAINT_PATTERN;REPEAT_PATTERN
+/build:Noesis/Effects/Opacity_Pattern_Repeat.fx
+
+# begin Noesis/Effects/Opacity_Pattern_MirrorU.fx
+/importer:EffectImporter
+/processor:EffectProcessor
+/processorParam:DebugMode = Auto
+/processorParam:Defines=HAS_UV0;HAS_UV1;HAS_RECT;HAS_TILE;EFFECT_OPACITY;PAINT_PATTERN;MIRRORU_PATTERN
+/build:Noesis/Effects/Opacity_Pattern_MirrorU.fx
+
+# begin Noesis/Effects/Opacity_Pattern_MirrorV.fx
+/importer:EffectImporter
+/processor:EffectProcessor
+/processorParam:DebugMode = Auto
+/processorParam:Defines=HAS_UV0;HAS_UV1;HAS_RECT;HAS_TILE;EFFECT_OPACITY;PAINT_PATTERN;MIRRORV_PATTERN
+/build:Noesis/Effects/Opacity_Pattern_MirrorV.fx
+
+# begin Noesis/Effects/Opacity_Pattern_Mirror.fx
+/importer:EffectImporter
+/processor:EffectProcessor
+/processorParam:DebugMode = Auto
+/processorParam:Defines=HAS_UV0;HAS_UV1;HAS_RECT;HAS_TILE;EFFECT_OPACITY;PAINT_PATTERN;MIRROR_PATTERN
+/build:Noesis/Effects/Opacity_Pattern_Mirror.fx
+
+# begin Noesis/Effects/Upsample.fx
+/importer:EffectImporter
+/processor:EffectProcessor
+/processorParam:DebugMode = Auto
+/processorParam:Defines=HAS_COLOR;HAS_UV0;HAS_UV1;EFFECT_UPSAMPLE
+/build:Noesis/Effects/Upsample.fx
+
+# begin Noesis/Effects/Downsample.fx
+/importer:EffectImporter
+/processor:EffectProcessor
+/processorParam:DebugMode = Auto
+/processorParam:Defines=HAS_UV0;HAS_UV1;DOWNSAMPLE;EFFECT_DOWNSAMPLE
+/build:Noesis/Effects/Downsample.fx
+
+# begin Noesis/Effects/Shadow.fx
+/importer:EffectImporter
+/processor:EffectProcessor
+/processorParam:DebugMode = Auto
+/processorParam:Defines=HAS_COLOR;HAS_UV1;HAS_RECT;EFFECT_SHADOW;PAINT_SOLID
+/build:Noesis/Effects/Shadow.fx
+
+# begin Noesis/Effects/Blur.fx
+/importer:EffectImporter
+/processor:EffectProcessor
+/processorParam:DebugMode = Auto
+/processorParam:Defines=HAS_COLOR;HAS_UV1;EFFECT_BLUR;PAINT_SOLID
+/build:Noesis/Effects/Blur.fx
 

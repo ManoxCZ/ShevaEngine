@@ -4,7 +4,6 @@ using ShevaEngine.Core.Settings;
 using ShevaEngine.Core.UI;
 using System;
 using System.Collections.Generic;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement.TaskbarClock;
 
 namespace ShevaEngine.Core
 {

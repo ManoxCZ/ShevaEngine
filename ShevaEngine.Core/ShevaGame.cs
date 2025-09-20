@@ -33,20 +33,12 @@ namespace ShevaEngine.Core
         private bool _showProfilerInfo = false;
 
 
-        /// <summary>
-        /// Constructor.
-        /// </summary>
         public ShevaGame(Type[] initialComponents, string windowTitle = WINDOW_TITLE)
             : base()
         {
             Instance = this;
 
-#if WINDOWSDX
             SynchronizationContext = SynchronizationContext.Current!;
-#elif DESKTOPGL
-            SynchronizationContext.SetSynchronizationContext(new());
-            SynchronizationContext = SynchronizationContext.Current!;
-#endif
 
             InitializeServices();            
 
@@ -83,9 +75,6 @@ namespace ShevaEngine.Core
             IsMouseVisible = true;                        
         }
 
-        /// <summary>
-        /// Initialize services.
-        /// </summary>
         private void InitializeServices()
         {
             Services.AddService<IFileSystemService>(new FileSystemService());
@@ -104,9 +93,6 @@ namespace ShevaEngine.Core
             Services.AddService<IEmbeddedFilesService>(new EmbeddedFilesService());
         }
 
-        /// <summary>
-        /// Unhandled exception handler.
-        /// </summary>
         private static void UnhandledExceptionHandler(object sender, UnhandledExceptionEventArgs args)
         {
             if (System.Reflection.Assembly.GetEntryAssembly()?.GetName().Name is string assemblyName &&
@@ -117,17 +103,10 @@ namespace ShevaEngine.Core
                     assemblyName,
                     "crash.log");
 
-                File.WriteAllLines(dataPath, new string[]
-                {
-                    "UnhandledException",
-                    exceptionText
-                });
+                File.WriteAllLines(dataPath, ["UnhandledException", exceptionText]);
             }
         }
 
-        /// <summary>
-        /// Initialize engine.
-        /// </summary>
         protected override void Initialize()
         {
             _log.LogInformation("Initialization started");            
@@ -146,6 +125,11 @@ namespace ShevaEngine.Core
                     {
                         _gameSettings.Resolution.OnNext(new Resolution(Window.ClientBounds.Width, Window.ClientBounds.Height));
 
+                        if (!GraphicsDeviceManager.IsFullScreen)
+                        {
+                            _gameSettings.WindowedResolution.OnNext(new Resolution(Window.ClientBounds.Width, Window.ClientBounds.Height));
+                        }
+
                         ShevaGameSettings.Save(_gameSettings);
                     }
                     else
@@ -155,19 +139,10 @@ namespace ShevaEngine.Core
                 });
 
             IsFixedTimeStep = false;
-
-            //Settings.MusicVolume.Subscribe(item =>
-            //         {
-            //             MediaPlayer.Volume = item;
-
-            //         });                        
-
+            
             _log.LogInformation("Initialization ended");
         }
 
-        /// <summary>
-        /// Loaf content.
-        /// </summary>
         protected override void LoadContent()
         {
             _log.LogInformation("Loading content started");
@@ -199,22 +174,16 @@ namespace ShevaEngine.Core
             _profilerDraw.LoadContent(this);
 
             _log.LogInformation("All game components initialized");
-        }        
+        }
 
-        /// <summary>
-        /// On exiting.
-        /// </summary>
-        protected override void OnExiting(object sender, EventArgs args)
+        protected override void EndRun()
         {
             ShevaGameComponent? component = PopGameComponent();
-            component?.Dispose();                        
+            component?.Dispose();
 
-            base.OnExiting(sender, args);
+            base.EndRun();
         }
-        
-        /// <summary>
-        /// Update().
-        /// </summary>        
+
         protected override void Update(GameTime time)
         {
             using var _ = _profilerService.BeginScope("Update");
@@ -232,9 +201,6 @@ namespace ShevaEngine.Core
             }
         }
 
-        /// <summary>
-        /// Draw().
-        /// </summary>
         protected override void Draw(GameTime gameTime)
         {
             using (var _ = _profilerService.BeginScope("Draw"))
@@ -242,10 +208,10 @@ namespace ShevaEngine.Core
                 if (_gameSettings.Fullscreen.Value != GraphicsDeviceManager.IsFullScreen)
                 {
                     DisplayMode displayMode = GraphicsAdapter.DefaultAdapter.CurrentDisplayMode;
-
+                    GraphicsDeviceManager.HardwareModeSwitch = false;
                     GraphicsDeviceManager.IsFullScreen = _gameSettings.Fullscreen.Value;
-                    GraphicsDeviceManager.PreferredBackBufferWidth = _gameSettings.Fullscreen.Value ? displayMode.Width : _gameSettings.Resolution.Value.Width;
-                    GraphicsDeviceManager.PreferredBackBufferHeight = _gameSettings.Fullscreen.Value ? displayMode.Height : _gameSettings.Resolution.Value.Height;
+                    GraphicsDeviceManager.PreferredBackBufferWidth = _gameSettings.Fullscreen.Value ? displayMode.Width : _gameSettings.WindowedResolution.Value.Width;
+                    GraphicsDeviceManager.PreferredBackBufferHeight = _gameSettings.Fullscreen.Value ? displayMode.Height : _gameSettings.WindowedResolution.Value.Height;
 
                     GraphicsDeviceManager.ApplyChanges();
                 }
@@ -269,9 +235,6 @@ namespace ShevaEngine.Core
             }
         }
 
-        /// <summary>
-        /// Push game component.
-        /// </summary>        
         public void PushGameComponent(ShevaGameComponent component)
         {
             if (component == null)
@@ -296,9 +259,6 @@ namespace ShevaEngine.Core
             }
         }
 
-        /// <summary>
-        /// Push game component.
-        /// </summary>        
         public async Task<bool> PushGameComponentAsync(ShevaGameComponent component)
         {
             if (component == null)
@@ -314,9 +274,6 @@ namespace ShevaEngine.Core
             return true;
         }
 
-        /// <summary>
-        /// Pop game component.
-        /// </summary>        
         public ShevaGameComponent? PopGameComponent()
         {
             lock (_gameComponents)
@@ -337,9 +294,6 @@ namespace ShevaEngine.Core
             }
         }
 
-        /// <summary>
-        /// Set fullscreen.
-        /// </summary>		
         public void SetFullscreen(bool fullscreen)
         {
             _gameSettings.Fullscreen.OnNext(fullscreen);
