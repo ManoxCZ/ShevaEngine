@@ -1,0 +1,20 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+	<PropertyGroup>
+		<TargetFramework>net9.0-windows</TargetFramework>
+		<Platforms>x64</Platforms>
+		<OutputType>Library</OutputType>
+		<AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+		<Configurations>Debug;Release</Configurations>
+		<Nullable>enable</Nullable>
+		<AssemblyName>ShevaEngine.Physics</AssemblyName>
+		<RootNamespace>ShevaEngine.Physics</RootNamespace>
+	</PropertyGroup>
+	<ItemGroup>		
+		<PackageReference Include="MonoGame.Framework.WindowsDX" Version="3.8.4" />
+	</ItemGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\3rdParty\BepuPhysics\BepuPhysics\BepuPhysics.csproj" />
+		<ProjectReference Include="..\3rdParty\BepuPhysics\BepuUtilities\BepuUtilities.csproj" />
+		<ProjectReference Include="..\ShevaEngine.Core\ShevaEngine.Core-Windows.csproj" />
+	</ItemGroup>
+</Project>
