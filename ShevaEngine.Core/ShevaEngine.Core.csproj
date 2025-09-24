@@ -4,22 +4,10 @@
 		<Platforms>x64</Platforms>
 		<OutputType>Library</OutputType>
 		<AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
-		<Configurations>Debug;Release</Configurations>
+		<Configurations>Debug DX;Release DX;Debug OpenGL;Release OpenGL</Configurations>
 		<Nullable>enable</Nullable>
 		<AssemblyName>ShevaEngine.Core</AssemblyName>
 		<RootNamespace>ShevaEngine.Core</RootNamespace>
-		<DefineConstants>WINDOWSDX</DefineConstants>
-	</PropertyGroup>
-	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x86'">
-		<WarningLevel>7</WarningLevel>
-	</PropertyGroup>
-	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x86'">
-		<WarningLevel>7</WarningLevel>
-	</PropertyGroup>
-	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-		<WarningLevel>7</WarningLevel>
-	</PropertyGroup>
-	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
 		<WarningLevel>7</WarningLevel>
 	</PropertyGroup>
 	<ItemGroup>
@@ -28,8 +16,13 @@
 	<ItemGroup>
 		<PackageReference Include="Microsoft.Extensions.FileProviders.Embedded" Version="9.0.6" />
 		<PackageReference Include="Microsoft.Extensions.Logging" Version="9.0.6" />
-		<PackageReference Include="MonoGame.Content.Builder.Task" Version="3.8.4" />
-		<PackageReference Include="MonoGame.Framework.WindowsDX" Version="3.8.4" />
+		<PackageReference Include="MonoGame.Content.Builder.Task" Version="3.8.4" />		
 		<PackageReference Include="System.Reactive" Version="6.0.1" />
+	</ItemGroup>
+	<ItemGroup Condition="'$(Configuration)|$(Platform)'=='Debug DX|x64' Or '$(Configuration)|$(Platform)'=='Release DX|x64'">
+		<PackageReference Include="MonoGame.Framework.WindowsDX" Version="3.8.4" />		
+	</ItemGroup>
+	<ItemGroup Condition="'$(Configuration)|$(Platform)'=='Debug OpenGL|x64' Or '$(Configuration)|$(Platform)'=='Release OpenGL|x64'">
+		<PackageReference Include="MonoGame.Framework.DesktopGL" Version="3.8.4" />		
 	</ItemGroup>
 </Project>

@@ -1,11 +1,13 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-  <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>    
-    <OutputPath>..\ContentPipeline</OutputPath>
-    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
-  </PropertyGroup>  
-  <ItemGroup>
-    <PackageReference Include="MonoGame.Framework.Content.Pipeline" Version="3.8.1" />
-    <PackageReference Include="MonoGame.Framework.DesktopGL" Version="3.8.1" />
-  </ItemGroup>
+	<PropertyGroup>
+		<TargetFramework>net6.0</TargetFramework>
+		<Platforms>x64</Platforms>
+		<OutputPath>..\ContentPipeline</OutputPath>
+		<AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+		<Configurations>Debug DX;Release DX;Debug OpenGL;Release OpenGL</Configurations>
+	</PropertyGroup>
+	<ItemGroup>
+		<PackageReference Include="MonoGame.Framework.Content.Pipeline" Version="3.8.1" />
+		<PackageReference Include="MonoGame.Framework.DesktopGL" Version="3.8.1" />
+	</ItemGroup>	
 </Project>

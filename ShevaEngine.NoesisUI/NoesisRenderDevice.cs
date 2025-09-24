@@ -13,11 +13,19 @@ namespace Noesis.MonoGame;
 
 public sealed class NoesisRenderDevice : RenderDevice
 {
+#if WINDOWSDX
     private const string PATTERN_TEXTURE_SLOT = "pattern";
     private const string RAMPS_TEXTURE_SLOT = "ramps";
     private const string IMAGE_TEXTURE_SLOT = "image";
     private const string GLYPHS_TEXTURE_SLOT = "glyphs";
     private const string SHADOW_TEXTURE_SLOT = "shadow";
+#else
+    private const string PATTERN_TEXTURE_SLOT = "patternSampler+pattern";
+    private const string RAMPS_TEXTURE_SLOT = "ramps";
+    private const string IMAGE_TEXTURE_SLOT = "imageSampler+image";
+    private const string GLYPHS_TEXTURE_SLOT = "glyphsSampler+glyphs";
+    private const string SHADOW_TEXTURE_SLOT = "shadowSampler+shadow";
+#endif
     private const string PROJECTION_MATRIX_PARAMETER = "projectionMtx";
     private const string TEXTURE_SIZE_PARAMETER = "textureSize";
     private const string OPACITY_PARAMETER = "opacity";

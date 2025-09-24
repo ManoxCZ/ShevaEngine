@@ -1,9 +1,11 @@
 ﻿using Microsoft.Extensions.Logging;
+using Noesis;
+using ShevaEngine.Core;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 
-namespace ShevaEngine.Core.UI;
+namespace ShevaEngine.NoesisUI;
 
 public class ViewModel : INotifyPropertyChanged
 {
@@ -13,7 +15,7 @@ public class ViewModel : INotifyPropertyChanged
 
     public ViewModel()
     {
-        Log = ShevaServices.GetService<ILoggerFactory>().CreateLogger(GetType());    
+        Log = ShevaServices.GetService<ILoggerFactory>().CreateLogger(GetType());
     }
 
     public virtual void Dispose()
@@ -28,10 +30,17 @@ public class ViewModel : INotifyPropertyChanged
 
     protected void OnPropertyChanged(string name)
     {
-        ShevaGame.Instance.SynchronizationContext.Send(_ =>
+        if (NoesisUIWrapper.Dispatcher is Dispatcher dispatcher)
         {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
-        }, null);
+            if (!dispatcher.CheckAccess())
+            {
+                dispatcher.Invoke(() => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name)));
+            }
+            else
+            {
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
+            }
+        }
     }
 }
 

@@ -11,9 +11,9 @@ namespace ShevaEngine.NoesisUI;
 
 public class Layer<U> : ILayer where U : UserControl, new()
 {
-    public bool IsActive { get; set; } = true;    
+    public bool IsActive { get; set; } = true;
     private View _view = null!;
-    
+
     public object DataContext
     {
         get => _view.Content.DataContext;
@@ -36,7 +36,7 @@ public class Layer<U> : ILayer where U : UserControl, new()
     {
         RunOnUIThread(() =>
         {
-            _view = GUI.CreateView(new U());            
+            _view = GUI.CreateView(new U());
 
             _view.SetFlags(RenderFlags.LCD | RenderFlags.PPAA);
 
@@ -100,7 +100,7 @@ public class Layer<U> : ILayer where U : UserControl, new()
 
     public bool UpdateInput(in InputState state)
     {
-        bool eventHandled = false;        
+        bool eventHandled = false;
 
         eventHandled = eventHandled || UpdateMouse(state);
 
@@ -156,9 +156,19 @@ public class Layer<U> : ILayer where U : UserControl, new()
     {
         return _view.Char(key);
     }
-    
+
     public void RunOnUIThread(Action action)
     {
-        ShevaGame.Instance.SynchronizationContext.Send((_) => action(), null);
-    }    
+        if (NoesisUIWrapper.Dispatcher is Dispatcher dispatcher)
+        {
+            if (!dispatcher.CheckAccess())
+            {
+                dispatcher.Invoke(action);
+            }
+            else
+            {
+                action();
+            }
+        }
+    }
 }

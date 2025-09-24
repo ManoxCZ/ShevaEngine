@@ -4,26 +4,38 @@ using ShevaEngine.Core.Settings;
 using ShevaEngine.Core.UI;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 
 namespace ShevaEngine.Core
 {
-    /// <summary>
-    /// Game component.
-    /// </summary>
-    public abstract class ShevaGameComponent : ViewModel, IDisposable
-    {        
+    public abstract class ShevaGameComponent : IDisposable, INotifyPropertyChanged
+    {
+        protected readonly List<IDisposable> Disposables = new();
         private readonly List<ILayer> _layers = new();
         public bool IsInitialized { get; private set; } = false;
         public bool IsContentLoaded { get; private set; } = false;
-     
+
+        public event PropertyChangedEventHandler? PropertyChanged;
+        protected void OnPropertyChanged(string name)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
+        }
+
 
         public ShevaGameComponent()
-        {            
+        {
         }
-        
-        /// <summary>
-        /// Initialize method.
-        /// </summary>
+
+        public virtual void Dispose()
+        {
+            foreach (IDisposable disposable in Disposables)
+            {
+                disposable.Dispose();
+            }
+
+            Disposables.Clear();
+        }
+
         public virtual void Initialize(ShevaGame game)
         {
             IsInitialized = true;
@@ -40,17 +52,11 @@ namespace ShevaEngine.Core
             }
         }
 
-        /// <summary>
-        /// Load content.
-        /// </summary>		
         public virtual void LoadContent(ShevaGame game)
         {
             IsContentLoaded = true;
         }
 
-        /// <summary>
-        /// Unload content.
-        /// </summary>
         public virtual void UnloadContent()
         {
 
@@ -77,9 +83,6 @@ namespace ShevaEngine.Core
             }
         }
 
-        /// <summary>
-        /// Activate method.
-        /// </summary>
         public virtual void Activate(ShevaGame game)
         {
             if (ShevaServices.GetService<SettingsService>().GetSettings<GameSettings>() is GameSettings gameSettings)
@@ -96,11 +99,8 @@ namespace ShevaEngine.Core
                 gameWindow.KeyUp += Window_KeyUp;
                 gameWindow.TextInput += Window_TextInput;
             }
-        }        
+        }
 
-        /// <summary>
-        /// Deactivate method.
-        /// </summary>
         public virtual void Deactivate(ShevaGame game)
         {
             if (game.Window is GameWindow gameWindow)
@@ -124,7 +124,7 @@ namespace ShevaEngine.Core
                     if (!eventHandled)
                     {
                         eventHandled = eventHandled || layer.UpdateKeyUpEvent(e.Key);
-                    }                    
+                    }
                 }
             }
         }
@@ -165,9 +165,6 @@ namespace ShevaEngine.Core
             }
         }
 
-        /// <summary>
-        /// Update method.
-        /// </summary>		
         public virtual void Update(GameTime time, in InputState inputState)
         {
             bool eventHandled = false;
@@ -179,7 +176,7 @@ namespace ShevaEngine.Core
                 if (layer.IsActive)
                 {
                     if (!eventHandled)
-                    { 
+                    {
                         eventHandled = eventHandled || layer.UpdateInput(inputState);
                     }
 
@@ -188,9 +185,6 @@ namespace ShevaEngine.Core
             }
         }
 
-        /// <summary>
-        /// Draw method.
-        /// </summary>
         public virtual void Draw(GameTime gameTime)
         {
             ShevaGame.Instance.GraphicsDevice.Clear(ClearOptions.Target | ClearOptions.DepthBuffer | ClearOptions.Stencil, Color.Orange, 1, 0);

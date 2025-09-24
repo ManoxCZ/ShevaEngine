@@ -9,7 +9,7 @@ namespace ShevaEngine.NoesisUI;
 public class NoesisUIWrapper
 {
     public static RenderDevice? Device { get; private set; }
-
+    public static Dispatcher? Dispatcher { get; private set; }
 
     public static void Initialize(string licenseName, string licenseKey, string themeFilename = "Themes.Theme")
     {
@@ -53,5 +53,6 @@ public class NoesisUIWrapper
             GlyphCacheHeight = 2048,
             OffscreenSampleCount = 0
         };
+        Dispatcher = Dispatcher.CurrentDispatcher;
     }
 }

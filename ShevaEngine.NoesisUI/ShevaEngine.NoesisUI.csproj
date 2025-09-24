@@ -1,0 +1,35 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+	<PropertyGroup>
+		<TargetFramework >net9.0-windows</TargetFramework>
+		<Platforms>x64</Platforms>
+		<OutputType>Library</OutputType>
+		<AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+		<Configurations>Debug DX;Release DX;Debug OpenGL;Release OpenGL</Configurations>
+		<Nullable>enable</Nullable>
+		<AssemblyName>ShevaEngine.NoesisUI</AssemblyName>
+		<RootNamespace>ShevaEngine.NoesisUI</RootNamespace>		
+		<AllowUnsafeBlocks>True</AllowUnsafeBlocks>		
+	</PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug DX|x64' Or '$(Configuration)|$(Platform)'=='Release DX|x64'">
+		<DefineConstants>WINDOWSDX</DefineConstants>
+	</PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug OpenGL|x64' Or '$(Configuration)|$(Platform)'=='Release OpenGL|x64'">
+		<DefineConstants>DESKTOPGL</DefineConstants>
+	</PropertyGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\3rdParty\Noesis-Managed\Src\Noesis\Core\Noesis.GUI.csproj" />		
+		<ProjectReference Include="..\ShevaEngine.Core\ShevaEngine.Core.csproj" />
+		<PackageReference Include="MonoGame.Content.Builder.Task" Version="3.8.4" />		
+	</ItemGroup>
+	<ItemGroup Condition="'$(Configuration)|$(Platform)'=='Debug DX|x64' Or '$(Configuration)|$(Platform)'=='Release DX|x64'">
+		<PackageReference Include="MonoGame.Framework.WindowsDX" Version="3.8.4" />		
+	</ItemGroup>
+	<ItemGroup Condition="'$(Configuration)|$(Platform)'=='Debug OpenGL|x64' Or '$(Configuration)|$(Platform)'=='Release OpenGL|x64'">
+		<PackageReference Include="MonoGame.Framework.DesktopGL" Version="3.8.4" />		
+	</ItemGroup>
+	<ItemGroup>
+	  <None Update="Noesis.dll">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </None>
+	</ItemGroup>
+</Project>

@@ -8,6 +8,7 @@ namespace ShevaEngine.Core
     public abstract class MaterialWithLights : Material
     {
         public const int MaxLightsCount = 4;
+        private EffectParameter _ambientLightParameter;
         private EffectParameter? _lightCountParameter;
         private EffectParameter? _lightTypesParameter;
         private EffectParameter? _lightPositionsParameter;
@@ -16,6 +17,11 @@ namespace ShevaEngine.Core
         private EffectParameter? _lightShadowMapSizesParameter;
         private EffectParameter? _light1ShadowMapParameter;
 
+        public Color AmbientLight
+        {
+            get => Color.FromNonPremultiplied(new Vector4(_ambientLightParameter.GetValueVector3(), 1));
+            set => _ambientLightParameter?.SetValue(value.ToVector3());
+        }
         public IEnumerable<Light> Lights
         {
             set
@@ -66,13 +72,14 @@ namespace ShevaEngine.Core
         protected MaterialWithLights(Effect effect)
             : base(effect)
         {
+            _ambientLightParameter = GetParameter("AmbientLight")!;
             _lightCountParameter = GetParameter("LightsCount");
             _lightTypesParameter = GetParameter("LightTypes");
             _lightPositionsParameter = GetParameter("LightPositions");
             _lightColorsParameter = GetParameter("LightColors");
             _lightViewProjMatricesParameter = GetParameter("LightViewProjs");
             _lightShadowMapSizesParameter = GetParameter("LightShadowMapSizes");
-            _light1ShadowMapParameter = GetParameter("Light1ShadowMap");
+            _light1ShadowMapParameter = GetParameter("Light1ShadowMap");            
         }
 
         /// <summary>

@@ -46,6 +46,7 @@ namespace ShevaEngine.Core
                         meshPart.Effect = new ColoredMaterial()
                         {
                             Animated = false,
+                            AmbientLight = Color.FromNonPremultiplied(128, 128, 128, 255),
                             Transparent = basicEffect.Alpha != 1.0f,
                             Color = Color.FromNonPremultiplied(new Vector4(temp, basicEffect.Alpha)),
                             SpecularFactor = basicEffect.SpecularPower
@@ -56,6 +57,7 @@ namespace ShevaEngine.Core
                         meshPart.Effect = new TexturedMaterial()
                         {
                             Animated = false,
+                            AmbientLight = Color.FromNonPremultiplied(128, 128, 128, 255),
                             Transparent = basicEffect.Alpha != 1.0f,
                             Color = Color.FromNonPremultiplied(new Vector4(basicEffect.DiffuseColor, basicEffect.Alpha)),
                             SpecularFactor = basicEffect.SpecularPower,
@@ -70,6 +72,7 @@ namespace ShevaEngine.Core
                         meshPart.Effect = new ColoredMaterial()
                         {
                             Animated = true,
+                            AmbientLight = Color.FromNonPremultiplied(128, 128, 128, 255),
                             Bones = Material.BonesIdentity,
                             Transparent = skinnedEffect.Alpha != 1.0f,
                             Color = Color.FromNonPremultiplied(new Vector4(skinnedEffect.DiffuseColor, skinnedEffect.Alpha)),
