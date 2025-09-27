@@ -19,15 +19,14 @@ public class ShevaGame : Game
     private readonly ILogger _log;
 
     private readonly ProfilerService _profilerService = new();
-    private readonly ProfilerDataDraw _profilerDraw = new();        
-    private Type[] _initialComponentTypes;
+    private readonly ProfilerDataDraw _profilerDraw = new();            
     private readonly GameSettings _gameSettings = null!;
     public GraphicsDeviceManager GraphicsDeviceManager { get; private set; }        
     private readonly Stack<ShevaGameComponent> _gameComponents = new();
     private bool _showProfilerInfo = false;
 
 
-    public ShevaGame(Type[] initialComponents, string windowTitle = WINDOW_TITLE)
+    public ShevaGame(string windowTitle = WINDOW_TITLE)
         : base()
     {
         Instance = this;        
@@ -42,8 +41,6 @@ public class ShevaGame : Game
         {
             _gameSettings = gameSettings;
         }            
-
-        _initialComponentTypes = initialComponents;
 
         _log.LogInformation($"Sheva Engine {VersionUtils.GetVersion()}");
         
@@ -122,7 +119,10 @@ public class ShevaGame : Game
                         _gameSettings.WindowedResolution.OnNext(new Resolution(Window.ClientBounds.Width, Window.ClientBounds.Height));
                     }
 
-                    ShevaGameSettings.Save(_gameSettings);
+                    if (Services.GetService<SettingsService>() is SettingsService settingsService)
+                    {
+                        settingsService.Save<GameSettings>();
+                    }
                 }
                 else
                 {
@@ -144,28 +144,8 @@ public class ShevaGame : Game
         TextureUtils.Prepare(GraphicsDevice);
 
         _log.LogInformation("Loading content finished");
-
-        _log.LogInformation("Initialize game components");
-
-        foreach (Type componentType in _initialComponentTypes)
-        {
-            _log.LogInformation($"Creating new component instance of type: {componentType}");
-
-            if (Activator.CreateInstance(componentType) is ShevaGameComponent gameComponent)
-            {
-                _log.LogInformation($"Component added to game");
-
-                PushGameComponentAsync(gameComponent);
-            }
-            else
-            {
-                _log.LogInformation($"Invalid component type");
-            }
-        }
-
+        
         _profilerDraw.LoadContent(this);
-
-        _log.LogInformation("All game components initialized");
     }
 
     protected override void EndRun()
@@ -290,6 +270,9 @@ public class ShevaGame : Game
     {
         _gameSettings.Fullscreen.OnNext(fullscreen);
 
-        ShevaGameSettings.Save(_gameSettings);
+        if (Services.GetService<SettingsService>() is SettingsService settingsService)
+        {
+            settingsService.Save<GameSettings>();
+        }
     }
 }

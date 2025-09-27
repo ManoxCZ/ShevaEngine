@@ -111,6 +111,21 @@ namespace ShevaEngine.Core
             return null;
         }
 
+        public ReadOnlySpan<byte> ReadAllBytes(string filename)
+        {
+            string completeFilename = Path.Combine(
+                Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
+                System.Reflection.Assembly.GetEntryAssembly().GetName().Name,
+                filename);
+
+            if (File.Exists(completeFilename))
+            {
+                return File.ReadAllBytes(completeFilename);
+            }
+
+            return null;
+        }
+
         /// <summary>
         /// Write file content.
         /// </summary>
