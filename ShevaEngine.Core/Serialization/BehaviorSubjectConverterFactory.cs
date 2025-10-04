@@ -4,36 +4,45 @@ using System.Reflection;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-namespace ShevaEngine.Core;
 
-public class BehaviorSubjectConverterFactory : JsonConverterFactory
+namespace ShevaEngine.Core
 {
-    public override bool CanConvert(Type typeToConvert)
+    public class BehaviorSubjectConverterFactory : JsonConverterFactory
     {
-        if (!typeToConvert.IsGenericType)
+        /// <summary>
+        /// Can convert.
+        /// </summary>
+        public override bool CanConvert(Type typeToConvert)
         {
-            return false;
+            if (!typeToConvert.IsGenericType)
+            {
+                return false;
+            }
+
+            if (typeToConvert.GetGenericTypeDefinition() != typeof(BehaviorSubject<>))
+            {
+                return false;
+            }
+
+            return true;
         }
 
-        if (typeToConvert.GetGenericTypeDefinition() != typeof(BehaviorSubject<>))
+        /// <summary>
+        /// Create converter.
+        /// </summary>
+        public override JsonConverter CreateConverter(Type type, JsonSerializerOptions options)
         {
-            return false;
+            Type valueType = type.GetGenericArguments()[0];
+
+            JsonConverter converter = (JsonConverter)Activator.CreateInstance(
+                typeof(BehaviorSubjectConverter<>).MakeGenericType(
+                    new Type[] { valueType }),
+                BindingFlags.Instance | BindingFlags.Public,
+                binder: null,
+                args: new object[] { options },
+                culture: null);
+
+            return converter;
         }
-
-        return true;
-    }
-
-    public override JsonConverter CreateConverter(Type type, JsonSerializerOptions options)
-    {
-        Type valueType = type.GetGenericArguments()[0];
-
-        JsonConverter converter = (JsonConverter)Activator.CreateInstance(
-            typeof(BehaviorSubjectConverter<>).MakeGenericType([valueType]),
-            BindingFlags.Instance | BindingFlags.Public,
-            binder: null,
-            args: [options],
-            culture: null);
-
-        return converter;
     }
 }

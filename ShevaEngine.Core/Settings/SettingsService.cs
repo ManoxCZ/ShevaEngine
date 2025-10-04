@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text.Json;
-using System.Text.Json.Nodes;
 
 namespace ShevaEngine.Core.Settings;
 
@@ -20,40 +18,23 @@ public class SettingsService : IDisposable
         _settings.Clear();
     }
 
-    public T? GetSettings<T>() where T : ShevaGameSettings, new()
+    public T GetSettings<T>() where T : ShevaGameSettings, new()
     {
-        if (typeof(T).FullName is string typeFullName &&
-            !string.IsNullOrEmpty(typeFullName))
+        try
         {
-            if (_settings.TryGetValue(typeFullName, out var settings))
+            if (_settings.TryGetValue(typeof(T).FullName, out var settings))
             {
                 return (T)settings;
             }
-
-            T newSettings = new();
-            _settings.Add(typeFullName, newSettings);
-            
-            newSettings.Initialize(this);
-
-            ReadOnlySpan<byte> bytes = ShevaServices.GetService<IFileSystemService>().ReadAllBytes($"{typeof(T).Name}.settings");
-            Utf8JsonReader reader = new(bytes);
-
-            if (JsonNode.Parse(ref reader) is JsonNode rootNode)
-            {
-                newSettings.Deserialize(rootNode);
-            }
-
-            return newSettings;
         }
-
-        return default;
-    }
-
-    public void Save<T>() where T : ShevaGameSettings, new()
-    {
-        if (GetSettings<T>() is T settings)
+        catch (Exception ex)
         {
-            //ShevaServices.GetService<IFileSystemService>().WriteFileContent($"{typeof(T).Name}.settings", Serializer.Serialize(settings));
         }
+
+        T newSettings = ShevaGameSettings.Load<T>();
+
+        _settings.Add(typeof(T).FullName, newSettings);
+
+        return newSettings;
     }
 }

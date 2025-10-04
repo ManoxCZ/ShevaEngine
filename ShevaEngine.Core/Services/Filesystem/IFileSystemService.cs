@@ -1,18 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
-namespace ShevaEngine.Core;
-
-public interface IFileSystemService
+namespace ShevaEngine.Core
 {
-    string UserDataPath { get; }
+    public interface IFileSystemService
+    {
+        string UserDataPath { get; }
 
-    bool FileExists(string path);
-    void DeleteFile(string path);
-    bool DirectoryExists(string subdirectoryPath);
-    bool CreateDirectory(string subdirectoryPath);
-    IEnumerable<string> GetSubdirectories(string subdirectoryPath);
-    string? ReadFileContent(string filename);
-    ReadOnlySpan<byte> ReadAllBytes(string filename);
-    void WriteFileContent(string filename, string content);
+        bool FileExists(string path);
+        void DeleteFile(string path);
+        bool DirectoryExists(string subdirectoryPath);
+        bool CreateDirectory(string subdirectoryPath);
+        IEnumerable<string> GetSubdirectories(string subdirectoryPath);
+        string? ReadFileContent(string filename);
+        void WriteFileContent(string filename, string content);
+    }
 }

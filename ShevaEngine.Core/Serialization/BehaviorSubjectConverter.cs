@@ -3,41 +3,54 @@ using System.Reactive.Subjects;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-namespace ShevaEngine.Core;
 
-public class BehaviorSubjectConverter<T> : JsonConverter<BehaviorSubject<T>>
+namespace ShevaEngine.Core
 {
-    public BehaviorSubjectConverter(JsonSerializerOptions options)
-    {
-    }
 
-    public override bool CanConvert(Type typeToConvert)
+    /// <summary>
+    /// Behavior subject serializer.
+    /// </summary>
+    public class BehaviorSubjectConverter<T> : JsonConverter<BehaviorSubject<T>>
     {
-        if (!typeToConvert.IsGenericType)
+        /// <summary>
+        /// Constructor.
+        /// </summary>        
+        public BehaviorSubjectConverter(JsonSerializerOptions options)
         {
-            return false;
         }
 
-        if (typeToConvert.GetGenericTypeDefinition() != typeof(BehaviorSubject<>))
+        /// <summary>
+        /// Can convert.
+        /// </summary>
+        public override bool CanConvert(Type typeToConvert)
         {
-            return false;
+            if (!typeToConvert.IsGenericType)
+            {
+                return false;
+            }
+
+            if (typeToConvert.GetGenericTypeDefinition() != typeof(BehaviorSubject<>))
+            {
+                return false;
+            }
+
+            return true;
         }
 
-        return true;
-    }
-
-    public override BehaviorSubject<T> Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
-    {
-        if (JsonSerializer.Deserialize<T>(ref reader, options) is T value)
+        /// <summary>
+        /// Read method.
+        /// </summary>
+        public override BehaviorSubject<T> Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
         {
-            return new BehaviorSubject<T>(value);
+            return new BehaviorSubject<T>(JsonSerializer.Deserialize<T>(ref reader, options));
         }
 
-        return new BehaviorSubject<T>(default!);
-    }
-
-    public override void Write(Utf8JsonWriter writer, BehaviorSubject<T> subject, JsonSerializerOptions options)
-    {
-        JsonSerializer.Serialize(writer, subject.Value, options);
+        /// <summary>
+        /// Write method.
+        /// </summary>
+        public override void Write(Utf8JsonWriter writer, BehaviorSubject<T> subject, JsonSerializerOptions options)
+        {
+            JsonSerializer.Serialize(writer, subject.Value, options);
+        }
     }
 }
