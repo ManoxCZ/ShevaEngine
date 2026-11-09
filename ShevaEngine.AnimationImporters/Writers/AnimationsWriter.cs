@@ -1,90 +1,96 @@
 using Microsoft.Xna.Framework.Content.Pipeline;
 using Microsoft.Xna.Framework.Content.Pipeline.Serialization.Compiler;
+using ShevaEngine.AnimationImporters.Animation;
 using System.Collections.Generic;
 
-namespace AnimationImporters
+namespace ShevaEngine.AnimationImporters.Writers;
+
+[ContentTypeWriter]
+class AnimationsDataWriter : ContentTypeWriter<AnimationsContent>
 {
-    [ContentTypeWriter]
-    class AnimationsDataWriter : ContentTypeWriter<AnimationsContent>
+    protected override void Write(ContentWriter output, AnimationsContent value)
     {
-        protected override void Write(ContentWriter output, AnimationsContent value)
+        WriteClips(output, value.Clips);
+        WriteBindPose(output, value.BindPose);
+        WriteInvBindPose(output, value.InvBindPose);
+        WriteSkeletonHierarchy(output, value.SkeletonHierarchy);
+        WriteBoneNames(output, value.BoneNames);
+    }
+
+    private void WriteClips(ContentWriter output, Dictionary<string, ClipContent> clips)
+    {
+        int count = clips.Count;
+        output.Write(count);
+
+        foreach (var clip in clips)
         {
-            WriteClips(output, value.Clips);
-            WriteBindPose(output, value.BindPose);
-            WriteInvBindPose(output, value.InvBindPose);
-            WriteSkeletonHierarchy(output, value.SkeletonHierarchy);
-            WriteBoneNames(output, value.BoneNames);
+            output.Write(clip.Key);
+            output.WriteObject(clip.Value);
         }
 
-        private void WriteClips(ContentWriter output, Dictionary<string, ClipContent> clips)
+        return;
+    }
+
+    private void WriteBindPose(ContentWriter output, List<Microsoft.Xna.Framework.Matrix> bindPoses)
+    {
+        int count = bindPoses.Count;
+        output.Write((int)count);
+
+        for (int i = 0; i < count; i++)
         {
-            int count = clips.Count;
-            output.Write(count);
-
-            foreach (var clip in clips)
-            {
-                output.Write(clip.Key);
-                output.WriteObject(clip.Value);
-            }
-
-            return;
+            output.Write(bindPoses[i]);
         }
 
-        private void WriteBindPose(ContentWriter output, List<Microsoft.Xna.Framework.Matrix> bindPoses)
+        return;
+    }
+
+    private void WriteInvBindPose(ContentWriter output, List<Microsoft.Xna.Framework.Matrix> invBindPoses)
+    {
+        int count = invBindPoses.Count;
+        output.Write(count);
+
+        for (int i = 0; i < count; i++)
         {
-            int count = bindPoses.Count;
-            output.Write((int)count);
-
-            for (int i = 0; i < count; i++)
-                output.Write(bindPoses[i]);
-
-            return;
+            output.Write(invBindPoses[i]);
         }
 
-        private void WriteInvBindPose(ContentWriter output, List<Microsoft.Xna.Framework.Matrix> invBindPoses)
+        return;
+    }
+
+    private void WriteSkeletonHierarchy(ContentWriter output, List<int> skeletonHierarchy)
+    {
+        int count = skeletonHierarchy.Count;
+        output.Write(count);
+
+        for (int i = 0; i < count; i++)
         {
-            int count = invBindPoses.Count;
-            output.Write(count);
-
-            for (int i = 0; i < count; i++)
-                output.Write(invBindPoses[i]);
-
-            return;
+            output.Write(skeletonHierarchy[i]);
         }
 
-        private void WriteSkeletonHierarchy(ContentWriter output, List<int> skeletonHierarchy)
+        return;
+    }
+
+    private void WriteBoneNames(ContentWriter output, List<string> boneNames)
+    {
+        int count = boneNames.Count;
+        output.Write(count);
+
+        for (int boneIndex = 0; boneIndex < count; boneIndex++)
         {
-            int count = skeletonHierarchy.Count;
-            output.Write(count);
-
-            for (int i = 0; i < count; i++)
-                output.Write(skeletonHierarchy[i]);
-
-            return;
+            var boneName = boneNames[boneIndex];
+            output.Write(boneName);
         }
 
-        private void WriteBoneNames(ContentWriter output, List<string> boneNames)
-        {
-            int count = boneNames.Count;
-            output.Write(count);
+        return;
+    }
 
-            for (int boneIndex = 0; boneIndex < count; boneIndex++)
-            {
-                var boneName = boneNames[boneIndex];
-                output.Write(boneName);
-            }
+    public override string GetRuntimeType(TargetPlatform targetPlatform)
+    {
+        return "ShevaEngine.Core.Animations, ShevaEngine.Core";
+    }
 
-            return;
-        }
-
-        public override string GetRuntimeType(TargetPlatform targetPlatform)
-        {
-            return "ShevaEngine.Core.Animations, ShevaEngine.Core";
-        }
-
-        public override string GetRuntimeReader(TargetPlatform targetPlatform)
-        {
-            return "ShevaEngine.Core.AnimationsReader, ShevaEngine.Core";
-        }
+    public override string GetRuntimeReader(TargetPlatform targetPlatform)
+    {
+        return "ShevaEngine.Core.AnimationsReader, ShevaEngine.Core";
     }
 }

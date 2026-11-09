@@ -1,9 +1,18 @@
-﻿#include "../../../ShevaEngine.Core/Content/Effects/Defines.fx"
-#include "../../../ShevaEngine.Core/Content/Effects/VertexStructures.fx"
-#include "../../../ShevaEngine.Core/Content/Effects/Lightning.fx"
-#include "../../../ShevaEngine.Core/Content/Effects/Utils.fx"
-#include "../../../ShevaEngine.Core/Content/Effects/Skinned.fx"
-#include "../../../ShevaEngine.Core/Content/Effects/TextureVariation.fx"
+#if OPENGL
+#define VS_SHADERMODEL vs_3_0
+#define PS_SHADERMODEL ps_3_0
+#define SV_POSITION POSITION
+#else
+#define VS_SHADERMODEL vs_6_0
+#define PS_SHADERMODEL ps_6_0
+#endif
+
+﻿#include "../../../ShevaEngine.Core.Content/Assets/Effects/Defines.fxh"
+#include "../../../ShevaEngine.Core.Content/Assets/Effects/VertexStructures.fx"
+#include "../../../ShevaEngine.Core.Content/Assets/Effects/Lightning.fx"
+#include "../../../ShevaEngine.Core.Content/Assets/Effects/Utils.fx"
+#include "../../../ShevaEngine.Core.Content/Assets/Effects/Skinned.fx"
+#include "../../../ShevaEngine.Core.Content/Assets/Effects/TextureVariation.fx"
 
 static const float pi = 3.14159265;
 static const float cos30Deg = cos(pi / 6);
@@ -137,7 +146,7 @@ sampler TextureChannel3NormSample = sampler_state
 	[unroll]
     for(int i = 0; i < 4; i++)
     {
-        hts[i] = tex2Dlod(tex, float4(offsets[i],0,0)).x * 25.0f;
+        hts[i] = HeightmapTexture.Sample(HeightmapTextureSampler, offsets[i]).x * 25.0f;
     }
                
     float2 _step = float2(1.0, 0.0);
@@ -163,7 +172,7 @@ VertexShaderOutputPNTWD MainVSP(const VertexShaderInputP input, matrix transform
         0,
         (float) (y * TileSize * cos30Deg)), 1.0);
     
-    float4 texColor = tex2Dlod(HeightmapTextureSampler, float4(position.xz / TextureSize, 0, 0));
+    float4 texColor = HeightmapTexture.Sample(HeightmapTextureSampler, float4(position.xz / TextureSize, 0, 0));
     
     position.y = texColor.r * VerticalScale - WaterLevel;
     
@@ -180,7 +189,7 @@ OutputWithDepth MainPSPN(VertexShaderOutputPNTWD input)
 {	
 	OutputWithDepth result;
 
-	float4 splat = tex2D(SplatMapSample, input.TextureCoordinates0);		
+	float4 splat = SplatMapTexture.Sample(SplatMapSample, input.TextureCoordinates0);		
 
 	float2 uv = input.TextureCoordinates0 * 128;
 
@@ -225,7 +234,7 @@ OutputWithDepth MainPSPN(VertexShaderOutputPNTWD input)
 	return result;
 }
 
-float4 MainPSPNShadows(VertexShaderOutputPNWD input) : COLOR
+float4 MainPSPNShadows(VertexShaderOutputPNWD input) : SV_Target0
 {	
 	return float4(input.Depth.x / input.Depth.y,0.0f,0.0f,0.0f);	
 	//return float4(input.Depth,0.0f,0.0f,0.0f);	

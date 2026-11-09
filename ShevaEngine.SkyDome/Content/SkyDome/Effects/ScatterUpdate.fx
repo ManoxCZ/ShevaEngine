@@ -3,8 +3,8 @@
 	#define VS_SHADERMODEL vs_3_0
 	#define PS_SHADERMODEL ps_3_0
 #else
-	#define VS_SHADERMODEL vs_5_0
-	#define PS_SHADERMODEL ps_5_0
+	#define VS_SHADERMODEL vs_6_0
+	#define PS_SHADERMODEL ps_6_0
 #endif
 
 float PI = 3.1415159;
@@ -89,8 +89,8 @@ float2 t(float3 P, float3 Px)
 
 struct PS_OUTPUT_UPDATE
 {
-    float4 RayLeigh : COLOR0;
-    float4 Mie : COLOR1;
+    float4 RayLeigh : SV_Target0;
+    float4 Mie : SV_Target1;
 };
 
 PS_OUTPUT_UPDATE MainPS(VertexShaderOutput input)

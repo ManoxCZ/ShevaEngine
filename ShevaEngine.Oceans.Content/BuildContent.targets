@@ -1,0 +1,33 @@
+<Project>
+	<Target Name="BuildContent" BeforeTargets="BeforeCompile">
+		<PropertyGroup>
+			<ContentRoot>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)'))</ContentRoot>
+			<ContentCommand>$(ContentRoot)bin\$(Platform)\$(Configuration)\Game.Content.exe</ContentCommand>
+			<ContentOutput>$([System.IO.Path]::Combine('$(ProjectDir)','$(OutputPath)'))</ContentOutput>
+			<ContentTemp>$([System.IO.Path]::Combine('$(ProjectDir)','$(IntermediateOutputPath)'))</ContentTemp>
+		</PropertyGroup>
+
+		<MSBuild Projects="$(MSBuildThisFileDirectory)ShevaEngine.Oceans.Content.csproj"
+				 Targets="Build"
+				 RemoveProperties="Configuration;TargetFramework;RuntimeIdentifier;RuntimeIdentifiers" />
+
+		<Exec Command='"$(ContentCommand)" build -p $(MonoGamePlatform) -s ShevaEngine.Oceans.Content/Assets -o $(ContentOutput) -i $(ContentTemp)'
+			  WorkingDirectory="$(MSBuildThisFileDirectory)..\" />
+	</Target>
+	<Target Name="AddGeneratedContentAssets"
+		AfterTargets="BuildContent">
+		<ItemGroup>
+			<GeneratedAsset Include="$(ProjectDir)$(OutputPath)Content\**\*" />
+
+			<AndroidAsset Include="@(GeneratedAsset)"
+			  Condition="'$(MonoGamePlatform)' == 'Android'">
+				<Link>Content\%(GeneratedAsset.RecursiveDir)%(GeneratedAsset.Filename)%(GeneratedAsset.Extension)</Link>
+			</AndroidAsset>
+
+			<BundledResource Include="@(GeneratedAsset)"
+			  Condition="'$(MonoGamePlatform)' == 'MacOSX' Or '$(MonoGamePlatform)' == 'iOS'">
+				<Link>Content\%(GeneratedAsset.RecursiveDir)%(GeneratedAsset.Filename)%(GeneratedAsset.Extension)</Link>
+			</BundledResource>
+		</ItemGroup>
+	</Target>
+</Project>

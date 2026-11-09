@@ -67,7 +67,7 @@ namespace ShevaEngine.Core
                 }
                 if (meshPart.Effect is SkinnedEffect skinnedEffect)
                 {
-                    //if (skinnedEffect.Texture == null)
+                    if (skinnedEffect.Texture == null)
                     {
                         meshPart.Effect = new ColoredMaterial()
                         {
@@ -79,18 +79,19 @@ namespace ShevaEngine.Core
                             SpecularFactor = skinnedEffect.SpecularPower
                         };
                     }
-                    //else
-                    //{
-                    //	meshPart.Effect = new TexturedMaterial()
-                    //	{
-                    //		Animated = true,
-                    //		Bones = Material.BonesIdentity,
-                    //		Transparent = skinnedEffect.Alpha != 255,
-                    //		Color = Color.FromNonPremultiplied(new Vector4(skinnedEffect.DiffuseColor, skinnedEffect.Alpha)),
-                    //		SpecularFactor = skinnedEffect.SpecularPower,
-                    //		Texture = skinnedEffect.Texture
-                    //	};
-                    //}
+                    else
+                    {
+                        meshPart.Effect = new TexturedMaterial()
+                        {
+                            Animated = true,
+                            Bones = Material.BonesIdentity,
+                            AmbientLight = Color.FromNonPremultiplied(128, 128, 128, 255),
+                            Transparent = skinnedEffect.Alpha != 1.0f,
+                            Color = Color.FromNonPremultiplied(new Vector4(skinnedEffect.DiffuseColor, skinnedEffect.Alpha)),
+                            SpecularFactor = skinnedEffect.SpecularPower,
+                            Texture = skinnedEffect.Texture
+                        };
+                    }
                 }
             }
         }

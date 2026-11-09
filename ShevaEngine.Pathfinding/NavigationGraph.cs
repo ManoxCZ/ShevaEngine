@@ -77,10 +77,10 @@ public class NavigationGraph
         {
             path.Push(currentNode.Node);
 
-            NavigationGraphNode temp = currentNode.Connection.Node1;
+            NavigationGraphNode? temp = currentNode.Connection?.Node1;
 
             if (currentNode.Node == temp)
-                temp = currentNode.Connection.Node2;
+                temp = currentNode.Connection?.Node2;
 
             currentNode = closedNodes.First(node => node.Node == temp);
         }

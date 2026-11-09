@@ -1,6 +1,6 @@
 ﻿using Microsoft.Xna.Framework.Graphics;
 
-namespace ShevaEngine.Core.Graphics.Materials
+namespace ShevaEngine.Core
 {
     public class PhysicallyBasedMaterial : TexturedNormalMaterial
     {
@@ -65,7 +65,7 @@ namespace ShevaEngine.Core.Graphics.Materials
             {
                 if (_uniformRoughness is EffectParameter parameter)
                 {
-                    parameter.GetValueSingle();
+                    return parameter.GetValueSingle();
                 }
 
                 return null;
@@ -86,7 +86,7 @@ namespace ShevaEngine.Core.Graphics.Materials
             {
                 if (_uniformMetallic is EffectParameter parameter)
                 {
-                    parameter.GetValueSingle();
+                    return parameter.GetValueSingle();
                 }
 
                 return null;

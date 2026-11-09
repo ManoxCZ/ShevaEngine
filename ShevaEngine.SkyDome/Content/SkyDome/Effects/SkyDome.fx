@@ -3,8 +3,8 @@
 	#define VS_SHADERMODEL vs_3_0
 	#define PS_SHADERMODEL ps_3_0
 #else
-	#define VS_SHADERMODEL vs_4_0_level_9_1
-	#define PS_SHADERMODEL ps_4_0_level_9_1
+	#define VS_SHADERMODEL vs_6_0
+	#define PS_SHADERMODEL ps_6_0
 #endif
 
 matrix WorldViewProjection;
@@ -12,13 +12,13 @@ matrix WorldViewProjection;
 struct VertexShaderInput
 {
 	float4 Position : POSITION0;
-	float4 Color : COLOR0;
+	float4 Color : SV_Target0;
 };
 
 struct VertexShaderOutput
 {
 	float4 Position : SV_POSITION;
-	float4 Color : COLOR0;
+	float4 Color : SV_Target0;
 };
 
 VertexShaderOutput MainVS(in VertexShaderInput input)
@@ -31,7 +31,7 @@ VertexShaderOutput MainVS(in VertexShaderInput input)
 	return output;
 }
 
-float4 MainPS(VertexShaderOutput input) : COLOR
+float4 MainPS(VertexShaderOutput input) : SV_Target0
 {
 	return input.Color;
 }

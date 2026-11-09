@@ -4,119 +4,109 @@ using Microsoft.Xna.Framework.Graphics;
 using ShevaEngine.Core;
 using System.Linq;
 
-namespace ShevaEngine.Oceans
+namespace ShevaEngine.Oceans;
+
+public class OceanPostProcess : PostProcess
 {
-    /// <summary>
-    /// Post process.
-    /// </summary>
-    public class OceanPostProcess : PostProcess
+    private RenderingPipeline _pipeline = null!; 
+    private Ocean _ocean;
+    private Model _oceanModel = null!;
+    private OceanMaterial _oceanMaterial = null!;
+    private Color _oceanColor;
+    public Color OceanColor
     {
-        private RenderingPipeline _pipeline;
-        private Ocean _ocean;
-        private Model _oceanModel;
-        private OceanMaterial _oceanMaterial;
-        private Color _oceanColor;
-        public Color OceanColor
+        get => _oceanColor;
+        set
         {
-            get => _oceanColor;
-            set
-            {
-                _oceanColor = value;
+            _oceanColor = value;
 
-                if (_oceanMaterial != null)
-                    _oceanMaterial.OceanColor = value;
-            }
+            if (_oceanMaterial != null)
+                _oceanMaterial.OceanColor = value;
         }
-        private Color _skyColor;
-        public Color SkyColor
+    }
+    private Color _skyColor;
+    public Color SkyColor
+    {
+        get => _skyColor;
+        set
         {
-            get => _skyColor;
-            set
-            {
-                _skyColor = value;
+            _skyColor = value;
 
-                if (_oceanMaterial != null)
-                    _oceanMaterial.SkyColor = value;
-            }
+            if (_oceanMaterial != null)
+                _oceanMaterial.SkyColor = value;
         }
-        private float _depthFactor;
-        public float DepthFactor
+    }
+    private float _depthFactor;
+    public float DepthFactor
+    {
+        get => _depthFactor;
+        set
         {
-            get => _depthFactor;
-            set
-            {
-                _depthFactor = value;
+            _depthFactor = value;
 
-                if (_oceanMaterial != null)
-                    _oceanMaterial.DepthFactor = value;
-            }
+            if (_oceanMaterial != null)
+                _oceanMaterial.DepthFactor = value;
         }
-        private float _lightFactor;
-        public float LightFactor
+    }
+    private float _lightFactor;
+    public float LightFactor
+    {
+        get => _lightFactor;
+        set
         {
-            get => _lightFactor;
-            set
-            {
-                _lightFactor = value;
+            _lightFactor = value;
 
-                if (_oceanMaterial != null)
-                    _oceanMaterial.LightFactor = value;
-            }
+            if (_oceanMaterial != null)
+                _oceanMaterial.LightFactor = value;
         }
+    }
 
-        /// <summary>
-        /// Constructor.
-        /// </summary>		
-        public OceanPostProcess(Ocean ocean)
+    public OceanPostProcess(Ocean ocean)
+    {
+        _ocean = ocean;
+    }
+
+    public override void LoadContent(ContentManager content)
+    {
+        base.LoadContent(content);
+
+        _oceanMaterial = new OceanMaterial(_ocean)
         {
-            _ocean = ocean;
-        }
+            NormalTexture = content.Load<Texture2D>(@"Content\Graphics\OceanNormalMap"),
+            CausticsTexture = content.Load<Texture2D>(@"Content\Graphics\Caustics_001"),
+            CausticsTextures = Enumerable.Range(1, 32).Select(item => content.Load<Texture2D>($@"Content\Graphics\Caustics_{item:000}")).ToArray(),
+            OceanColor = OceanColor,
+            SkyColor = SkyColor,
+            DepthFactor = DepthFactor,
+            LightFactor = LightFactor
+        };
 
-        /// <summary>
-        /// Load content.
-        /// </summary>		
-        public override void LoadContent(ContentManager content)
-        {
-            base.LoadContent(content);
+        _oceanModel = PlaneMesh.GenerateModel(120, 60);
+        _oceanModel.Meshes[0].MeshParts[0].Effect = _oceanMaterial;
 
-            _oceanMaterial = new OceanMaterial(_ocean)
-            {
-                NormalTexture = content.Load<Texture2D>(@"Content\Graphics\OceanNormalMap"),
-                CausticsTexture = content.Load<Texture2D>(@"Content\Graphics\Caustics_001"),
-                CausticsTextures = Enumerable.Range(1, 32).Select(item => content.Load<Texture2D>($@"Content\Graphics\Caustics_{item:000}")).ToArray(),
-                OceanColor = OceanColor,
-                SkyColor = SkyColor,
-                DepthFactor = DepthFactor,
-                LightFactor = LightFactor
-            };
+        _pipeline = new RenderingPipeline("Ocean post process");
+        _pipeline.AddObject(_oceanModel, Matrix.Identity);
+    }
 
-            _oceanModel = PlaneMesh.GenerateModel(120, 60);
-            _oceanModel.Meshes[0].MeshParts[0].Effect = _oceanMaterial;
+    /// <summary>
+    /// Apply.
+    /// </summary>
+    public override void Apply(Camera camera, GameTime time, IScene scene)
+    {
+        _pipeline.GameTime = time;
+        _pipeline.SetCamera(camera);
 
-            _pipeline = new RenderingPipeline("Ocean post process");
-            _pipeline.AddObject(_oceanModel, Matrix.Identity);
-        }
+        _pipeline.ClearLights();
 
-        /// <summary>
-        /// Apply.
-        /// </summary>
-        public override void Apply(Camera camera, GameTime time, IScene scene)
-        {
-            _pipeline.GameTime = time;
-            _pipeline.SetCamera(camera);
+        foreach (Light light in scene.GetLights())
+            _pipeline.AddLight(light);
 
-            _pipeline.ClearLights();
+        _oceanMaterial.RefractionTexture = InputTexture;
+        _oceanMaterial.DepthTexture = DepthTexture;
 
-            foreach (Light light in scene.GetLights())
-                _pipeline.AddLight(light);
+        _pipeline.Draw();
 
-            _oceanMaterial.RefractionTexture = InputTexture;
-            _oceanMaterial.DepthTexture = DepthTexture;
-
-            _pipeline.Draw();
-
-            _oceanMaterial.RefractionTexture = null!;
-            _oceanMaterial.DepthTexture = null!;
-        }
+        _oceanMaterial.RefractionTexture = null!;
+        _oceanMaterial.DepthTexture = null!;
     }
 }

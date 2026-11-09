@@ -258,6 +258,7 @@ namespace ShevaEngine.Core
                                                 new VertexBufferBinding(_instancesBuffer, 0, 1));
                                         Device.Indices = modelPart.Key.IndexBuffer;
 
+
                                         Device.DrawInstancedPrimitives(
                                             PrimitiveType.TriangleList,
                                             modelPart.Key.VertexOffset,

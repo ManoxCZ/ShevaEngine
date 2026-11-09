@@ -4,48 +4,43 @@ using Microsoft.Xna.Framework.Content.Pipeline.Processors;
 using Microsoft.Xna.Framework.Graphics;
 using System.ComponentModel;
 
-namespace AnimationImporters
+namespace ShevaEngine.AnimationImporters;
+
+[ContentProcessor(DisplayName = "Animated Model")]
+public class AnimatedModelProcessor : ModelProcessor
 {
-    [ContentProcessor(DisplayName = "Animated Model")]
-    public class AnimatedModelProcessor : ModelProcessor
+    [DisplayName("MaxBones")]
+    [DefaultValue(SkinnedEffect.MaxBones)]
+    public int MaxBones { get; set; } = SkinnedEffect.MaxBones;
+
+    [DisplayName("Generate Keyframes Frequency")]
+    [DefaultValue(0)] // (0=no, 30=30fps, 60=60fps)
+    public int GenerateKeyframesFrequency { get; set; } = 0;
+
+    [DisplayName("Fix BoneRoot from MonoGame importer")]
+    [DefaultValue(false)]
+    public bool FixRealBoneRoot { get; set; }
+
+    [DefaultValue(MaterialProcessorDefaultEffect.SkinnedEffect)]
+    public override MaterialProcessorDefaultEffect DefaultEffect
     {
-        [DisplayName("MaxBones")]
-        [DefaultValue(SkinnedEffect.MaxBones)]
-        public int MaxBones { get; set; } = SkinnedEffect.MaxBones;
+        get { return base.DefaultEffect; }
+        set { base.DefaultEffect = value; }
+    }
 
-        [DisplayName("Generate Keyframes Frequency")]
-        [DefaultValue(0)] // (0=no, 30=30fps, 60=60fps)
-        public int GenerateKeyframesFrequency { get; set; } = 0;
 
-        [DisplayName("Fix BoneRoot from MonoGame importer")]
-        [DefaultValue(false)]
-        public bool FixRealBoneRoot { get; set; }
+    public override ModelContent Process(NodeContent input, ContentProcessorContext context)
+    {
+        ModelContent model = base.Process(input, context);
 
-        [DefaultValue(MaterialProcessorDefaultEffect.SkinnedEffect)]
-        public override MaterialProcessorDefaultEffect DefaultEffect
+        model.Tag = new AnimationsProcessor()
         {
-            get { return base.DefaultEffect; }
-            set { base.DefaultEffect = value; }
+            MaxBones = MaxBones,
+            GenerateKeyframesFrequency = GenerateKeyframesFrequency,
+            FixRealBoneRoot = FixRealBoneRoot,
         }
+        .Process(input, context);
 
-
-        /// <summary>
-        /// Process method.
-        /// </summary>
-        public override ModelContent Process(NodeContent input, ContentProcessorContext context)
-        {
-            AnimationsProcessor animationProcessor = new AnimationsProcessor()
-            {
-                MaxBones = MaxBones,
-                GenerateKeyframesFrequency = GenerateKeyframesFrequency,
-                FixRealBoneRoot = FixRealBoneRoot,
-            };
-
-            ModelContent model = base.Process(input, context);
-
-            model.Tag = animationProcessor.Process(input, context); ;
-
-            return model;
-        }
+        return model;
     }
 }

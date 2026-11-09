@@ -117,15 +117,57 @@ namespace ShevaEngine.Core
         /// </summary>		
         public virtual void Apply(MaterialProfile matProfile, Camera camera, float gameTime, VertexDeclaration declaration)
         {
+            if (declaration == null)
+            {
+                Log.LogError("VertexDeclaration is null");
+                return;
+            }
+
             _viewParameter?.SetValue(camera.ViewMatrix);
             _projParameter?.SetValue(camera.ProjectionMatrix);
             _cameraPositionParameter?.SetValue(camera.Position);
             _gameTimeParameter?.SetValue(gameTime);
 
+            if (Techniques.Count <= (int)matProfile)
+            {
+                Log.LogError($"MaterialProfile {matProfile} is out of range for available techniques (count: {Techniques.Count})");
+                return;
+            }
+
+            var technique = Techniques[(int)matProfile];
+            string passName = declaration.Name ?? "";
+            EffectPass pass = null;
+
             if (Animated)
-                Techniques[(int)matProfile].Passes[declaration.Name + @"Animated"].Apply();
+            {
+                string animatedPassName = passName + "Animated";
+                pass = technique.Passes[animatedPassName];
+                if (pass == null)
+                {
+                    Log.LogWarning("Animated pass " + animatedPassName + " not found, falling back to " + passName);
+                    pass = technique.Passes[passName];
+                }
+            }
             else
-                Techniques[(int)matProfile].Passes[declaration.Name].Apply();
+            {
+                pass = technique.Passes[passName];
+            }
+
+            if (pass == null)
+            {
+                Log.LogError("No suitable pass found for vertex declaration: " + passName);
+                if (technique.Passes.Count > 0)
+                {
+                    pass = technique.Passes[0];
+                }
+                else
+                {
+                    Log.LogError("No passes available in technique!");
+                    return;
+                }
+            }
+
+            pass.Apply();
         }
     }
 }
