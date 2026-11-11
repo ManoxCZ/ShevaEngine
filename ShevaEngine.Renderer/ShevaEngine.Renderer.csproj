@@ -10,5 +10,16 @@
 	</ItemGroup>
 	<ItemGroup>
 		<ProjectReference Include="..\ShevaEngine.Core\ShevaEngine.Core.csproj" />
+		<ProjectReference Include="..\ShevaEngine.Renderer.Content\ShevaEngine.Renderer.Content.csproj" />
 	</ItemGroup>
+	<Import Project="..\ShevaEngine.Renderer.Content\BuildContent.targets" />
+	<Target Name="IncludeMonoGameContentInProjectOutput" BeforeTargets="GetCopyToOutputDirectoryItems">
+		<ItemGroup>
+			<_ContentFilesToCopy Include="$(TargetDir)Content\**\*.*" />
+			<ContentWithTargetPath Include="@(_ContentFilesToCopy)">
+				<TargetPath>Content\%(RecursiveDir)%(Filename)%(Extension)</TargetPath>
+				<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+			</ContentWithTargetPath>
+		</ItemGroup>
+	</Target>
 </Project>

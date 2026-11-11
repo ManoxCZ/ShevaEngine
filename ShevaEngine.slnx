@@ -11,6 +11,9 @@
   <Project Path="ShevaEngine.Core/ShevaEngine.Core.csproj">
     <Platform Project="x64" />
   </Project>
+  <Project Path="ShevaEngine.Renderer.Content/ShevaEngine.Renderer.Content.csproj">
+    <Platform Project="x64" />
+  </Project>
   <Project Path="ShevaEngine.Renderer/ShevaEngine.Renderer.csproj">
     <Platform Project="x64" />
   </Project>

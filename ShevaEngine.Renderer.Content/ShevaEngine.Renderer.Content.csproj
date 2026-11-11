@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Library</OutputType>
+    <AssemblyName>ShevaEngine.Renderer.Content</AssemblyName>
+    <RootNamespace>ShevaEngine.Renderer.Content</RootNamespace>
+    <TargetFramework>net9.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="MonoGame.Content.Builder.Task" Version="3.8.6" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <MonoGameContentReference Include="Assets\Content.mgcb" />
+  </ItemGroup>
+
+</Project>

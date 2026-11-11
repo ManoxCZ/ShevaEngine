@@ -1,0 +1,13 @@
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+  <Target Name="BuildContent" Condition=" '$(BuildingInsideVisualStudio)' == 'true' ">
+    <ItemGroup>
+      <MonoGameContent Include="$(ProjectDir)Assets\Content.mgcb" />
+    </ItemGroup>
+
+    <BuildContent Include="@(MonoGameContent)">
+      <OutputPath>$(TargetDir)Content</OutputPath>
+    </BuildContent>
+  </Target>
+
+</Project>
