@@ -1,0 +1,47 @@
+<Solution>
+  <Configurations>
+    <Platform Name="x64" />
+  </Configurations>
+  <Project Path="ShevaEngine.AnimationImporters/ShevaEngine.ContentImporters.csproj">
+    <Platform Project="x64" />
+  </Project>
+  <Project Path="ShevaEngine.Core.Content/ShevaEngine.Core.Content.csproj">
+    <Platform Project="x64" />
+  </Project>
+  <Project Path="ShevaEngine.Core/ShevaEngine.Core.csproj">
+    <Platform Project="x64" />
+  </Project>
+  <Project Path="ShevaEngine.Renderer/ShevaEngine.Renderer.csproj">
+    <Platform Project="x64" />
+  </Project>
+  <Project Path="ShevaEngine.Oceans.Content/ShevaEngine.Oceans.Content.csproj">
+    <Platform Project="x64" />
+  </Project>
+  <Project Path="ShevaEngine.Oceans/ShevaEngine.Oceans.csproj">
+    <Platform Project="x64" />
+  </Project>
+  <Project Path="ShevaEngine.ParticleSystems.Content/ShevaEngine.ParticleSystems.Content.csproj">
+    <Platform Project="x64" />
+  </Project>
+  <Project Path="ShevaEngine.ParticleSystems/ShevaEngine.ParticleSystems.csproj">
+    <Platform Project="x64" />
+  </Project>
+  <Project Path="ShevaEngine.Pathfinding/ShevaEngine.Pathfinding.csproj">
+    <Platform Project="x64" />
+  </Project>
+  <Project Path="ShevaEngine.PostProcesses.Content/ShevaEngine.PostProcesses.Content.csproj">
+    <Platform Project="x64" />
+  </Project>
+  <Project Path="ShevaEngine.PostProcesses/ShevaEngine.PostProcesses.csproj">
+    <Platform Project="x64" />
+  </Project>
+  <Project Path="ShevaEngine.SkyDome/ShevaEngine.SkyDome.csproj">
+    <Platform Project="x64" />
+  </Project>
+  <Project Path="ShevaEngine.Terrain/ShevaEngine.Terrain.csproj">
+    <Platform Project="x64" />
+  </Project>
+  <Folder Name="/Solution Items/">
+    <File Path="Directory.Build.props" />
+  </Folder>
+</Solution>
